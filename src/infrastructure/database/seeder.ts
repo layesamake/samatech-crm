@@ -82,9 +82,161 @@ export async function seedDatabase() {
     });
   }
 
+  // ---------------------------------------------------------
+  // Clients, Factures et Paiements
+  // ---------------------------------------------------------
+  const clientProfiles: unknown[] = [];
+  const invoices: unknown[] = [];
+  const invoiceLines: unknown[] = [];
+  const payments: unknown[] = [];
+
+  // Also force some extra ones just to have data
+  const clientContacts = [contacts[4], contacts[1]]; // Ousmane Sow, Fatou Diop
+  
+  for (const contact of clientContacts) {
+    const clientProfileId = uuidv4();
+    clientProfiles.push({
+      id: clientProfileId,
+      contactId: contact.id,
+      convertedAt: now,
+      clientNumber: `CLI-2026-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // Create Invoices for this client
+    
+    // 1. Facture payée (Encaissement)
+    const inv1Id = uuidv4();
+    const inv1Total = 50000;
+    invoices.push({
+      id: inv1Id,
+      number: `FAC-2026-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+      clientProfileId: clientProfileId,
+      status: 'PAYEE',
+      issueDate: '2026-07-01',
+      dueDate: '2026-07-15',
+      currency: 'XOF',
+      currencyScale: 0,
+      subtotalMinor: inv1Total,
+      taxesMinor: 0,
+      grandTotalMinor: inv1Total,
+      paidTotalMinor: inv1Total,
+      balanceMinor: 0,
+      clientSnapshot: { displayName: contact.displayName },
+      companySnapshot: { displayName: 'SAMTECH' },
+      createdAt: now,
+      updatedAt: now,
+      issuedAt: '2026-07-01T10:00:00Z',
+    });
+    invoiceLines.push({
+      id: uuidv4(),
+      invoiceId: inv1Id,
+      productId: prod1.id,
+      position: 0,
+      quantityScaled: 1,
+      quantityScale: 0,
+      unitPriceMinor: inv1Total,
+      totalMinor: inv1Total,
+      description: 'Consultation SI',
+      createdAt: now,
+      updatedAt: now,
+    });
+    payments.push({
+      id: uuidv4(),
+      invoiceId: inv1Id,
+      clientProfileId: clientProfileId,
+      paymentDate: '2026-07-10',
+      method: 'VIREMENT',
+      status: 'VALIDE',
+      amountMinor: inv1Total,
+      currency: 'XOF',
+      currencyScale: 0,
+      createdAt: now,
+    });
+
+    // 2. Facture en retard (Créance en retard)
+    const inv2Id = uuidv4();
+    const inv2Total = 250000;
+    invoices.push({
+      id: inv2Id,
+      number: `FAC-2026-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+      clientProfileId: clientProfileId,
+      status: 'EMISE',
+      issueDate: '2026-06-01',
+      dueDate: '2026-06-30', // Overdue
+      currency: 'XOF',
+      currencyScale: 0,
+      subtotalMinor: inv2Total,
+      taxesMinor: 0,
+      grandTotalMinor: inv2Total,
+      paidTotalMinor: 0,
+      balanceMinor: inv2Total,
+      clientSnapshot: { displayName: contact.displayName },
+      companySnapshot: { displayName: 'SAMTECH' },
+      createdAt: now,
+      updatedAt: now,
+      issuedAt: '2026-06-01T10:00:00Z',
+    });
+    invoiceLines.push({
+      id: uuidv4(),
+      invoiceId: inv2Id,
+      productId: prod2.id,
+      position: 0,
+      quantityScaled: 1,
+      quantityScale: 0,
+      unitPriceMinor: inv2Total,
+      totalMinor: inv2Total,
+      description: 'Développement Web',
+      createdAt: now,
+      updatedAt: now,
+    });
+
+    // 3. Facture actuelle (Créance non échue)
+    const inv3Id = uuidv4();
+    const inv3Total = 100000;
+    invoices.push({
+      id: inv3Id,
+      number: `FAC-2026-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+      clientProfileId: clientProfileId,
+      status: 'EMISE',
+      issueDate: '2026-07-15',
+      dueDate: '2026-07-30', // Not yet due
+      currency: 'XOF',
+      currencyScale: 0,
+      subtotalMinor: inv3Total,
+      taxesMinor: 0,
+      grandTotalMinor: inv3Total,
+      paidTotalMinor: 0,
+      balanceMinor: inv3Total,
+      clientSnapshot: { displayName: contact.displayName },
+      companySnapshot: { displayName: 'SAMTECH' },
+      createdAt: now,
+      updatedAt: now,
+      issuedAt: '2026-07-15T10:00:00Z',
+    });
+    invoiceLines.push({
+      id: uuidv4(),
+      invoiceId: inv3Id,
+      productId: prod3.id,
+      position: 0,
+      quantityScaled: 1,
+      quantityScale: 0,
+      unitPriceMinor: inv3Total,
+      totalMinor: inv3Total,
+      description: 'Licence Windows',
+      createdAt: now,
+      updatedAt: now,
+    });
+  }
+
   await db.contacts.bulkPut(contacts);
   await db.prospectProfiles.bulkPut(profiles);
   await db.notes.bulkPut(notes);
+  await db.clientProfiles.bulkPut(clientProfiles);
+  await db.invoices.bulkPut(invoices);
+  await db.invoiceLines.bulkPut(invoiceLines);
+  await db.payments.bulkPut(payments);
 
-  return { success: true, count: sampleContacts.length };
+  return { success: true, count: sampleContacts.length + invoices.length };
 }

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { FileText, Users, DollarSign, Clock, ChevronRight } from 'lucide-react';
+import { FileText, User, ReceiptText, Timer, Clock, ChevronRight, DollarSign } from 'lucide-react';
 import { GetStatisticsUseCase } from '@/modules/statistics/application/get-statistics';
 import { StatisticsReport, formatMinorExact, PeriodPreset } from '@/modules/statistics/domain/statistics';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -66,36 +66,31 @@ export function MobileDashboard() {
         </Link>
         <Link href="/prospects/nouveau" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shadow-sm relative">
-             <Users className="w-6 h-6" />
+             <User className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
                   <span className="text-[10px] text-white font-bold">+</span>
                 </div>
              </div>
           </div>
-          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouveau<br/>prospect</span>
+          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouveau<br/>client</span>
         </Link>
         <Link href="/payments" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-red-500 shadow-sm relative">
-             <DollarSign className="w-6 h-6" />
+             <ReceiptText className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
                   <span className="text-[10px] text-white font-bold">+</span>
                 </div>
              </div>
           </div>
-          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouveau<br/>paiement</span>
+          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouvelle<br/>dépense</span>
         </Link>
         <Link href="/follow-ups" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
-          <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 shadow-sm relative">
-             <Clock className="w-6 h-6" />
-             <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
-                <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
-                  <span className="text-[10px] text-white font-bold">+</span>
-                </div>
-             </div>
+          <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shadow-sm relative">
+             <Timer className="w-6 h-6" />
           </div>
-          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouvelle<br/>relance</span>
+          <span className="text-xs text-center font-medium leading-tight text-slate-700">Ajouter<br/>l&apos;heure du<br/>journal</span>
         </Link>
       </section>
 
