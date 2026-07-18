@@ -77,18 +77,18 @@ export default function ProspectDetailPage() {
   const whatsappLink = `https://wa.me/${contact.normalizedWhatsappPhone.replace('+', '')}`;
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 min-h-screen">
+    <div className="flex flex-col h-full bg-muted/50 min-h-screen">
       <header className="sticky top-0 z-10 bg-card text-card-foreground border-b px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
-          <Link href="/prospects" aria-label="Retour aux prospects" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-slate-700 active:bg-slate-100">
+          <Link href="/prospects" aria-label="Retour aux prospects" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-muted-foreground active:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Link>
-          <h1 className="text-xl font-bold text-slate-800 line-clamp-1">{contact.displayName}</h1>
+          <h1 className="text-xl font-bold text-foreground line-clamp-1">{contact.displayName}</h1>
         </div>
         <div className="flex items-center gap-2">
           <Link href={`/prospects/${id}/modifier`} aria-label="Modifier ce prospect">
             <Button variant="ghost" size="icon" aria-hidden="true" tabIndex={-1}>
-              <Edit className="h-5 w-5 text-slate-600" />
+              <Edit className="h-5 w-5 text-muted-foreground" />
             </Button>
           </Link>
         </div>
@@ -127,49 +127,49 @@ export default function ProspectDetailPage() {
         </div>
 
         {/* Informations */}
-        <div className="bg-card text-card-foreground rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="bg-card text-card-foreground rounded-xl shadow-sm border border-border overflow-hidden">
           <div className="p-4 border-b border-slate-50">
-            <h2 className="font-semibold text-slate-800 mb-4">Informations</h2>
+            <h2 className="font-semibold text-foreground mb-4">Informations</h2>
             
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-500">Statut</span>
+                <span className="text-muted-foreground">Statut</span>
                 <span className="font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded">{profile.status}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Niveau d&apos;intérêt</span>
-                <span className="font-medium text-slate-800">{profile.interestLevel.replace('_', ' ')}</span>
+                <span className="text-muted-foreground">Niveau d&apos;intérêt</span>
+                <span className="font-medium text-foreground">{profile.interestLevel.replace('_', ' ')}</span>
               </div>
               {locationName && (
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Localité</span>
-                  <span className="font-medium text-slate-800">{locationName} {locationArchived && <span className="text-amber-700">(Archivée)</span>}</span>
+                  <span className="text-muted-foreground">Localité</span>
+                  <span className="font-medium text-foreground">{locationName} {locationArchived && <span className="text-amber-700">(Archivée)</span>}</span>
                 </div>
               )}
               {interestNames.length > 0 && (
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Produits / Services</span>
-                  <span className="font-medium text-slate-800 text-right">{interestNames.map((item) => `${item.name}${item.inactive ? ' (Inactif)' : ''}`).join(', ')}</span>
+                  <span className="text-muted-foreground">Produits / Services</span>
+                  <span className="font-medium text-foreground text-right">{interestNames.map((item) => `${item.name}${item.inactive ? ' (Inactif)' : ''}`).join(', ')}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-slate-500">Téléphone</span>
-                <span className="font-medium text-slate-800">{contact.whatsappPhone}</span>
+                <span className="text-muted-foreground">Téléphone</span>
+                <span className="font-medium text-foreground">{contact.whatsappPhone}</span>
               </div>
               {contact.companyName && (
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Entreprise</span>
-                  <span className="font-medium text-slate-800">{contact.companyName}</span>
+                  <span className="text-muted-foreground">Entreprise</span>
+                  <span className="font-medium text-foreground">{contact.companyName}</span>
                 </div>
               )}
             </div>
           </div>
           
-          <div className="p-4 bg-slate-50">
-            <h2 className="font-semibold text-slate-800 mb-3 text-sm flex items-center gap-2">
+          <div className="p-4 bg-muted/50">
+            <h2 className="font-semibold text-foreground mb-3 text-sm flex items-center gap-2">
               <Calendar className="h-4 w-4" /> Historique
             </h2>
-            <div className="space-y-2 text-xs text-slate-700">
+            <div className="space-y-2 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>Premier contact</span>
                 <span>{profile.firstContactDate}</span>
@@ -187,8 +187,8 @@ export default function ProspectDetailPage() {
         </div>
 
         <section className="rounded-xl border bg-card text-card-foreground p-4">
-          <h2 className="font-semibold text-slate-800">Chronologie commerciale</h2>
-          {!prospect.events?.length ? <p className="mt-2 text-sm text-slate-700">Aucun événement.</p> : <ol className="mt-3 space-y-3">{prospect.events.map((event) => <li key={event.id} className="border-l-2 border-slate-300 pl-3"><div className="flex flex-wrap justify-between gap-2"><strong className="text-sm">{event.title}</strong><time className="text-xs text-slate-700">{new Date(event.occurredAt).toLocaleString('fr-FR')}</time></div>{event.summary && <p className="text-sm text-slate-700">{event.summary}</p>}<span className="text-xs text-slate-700">{event.type}</span></li>)}</ol>}
+          <h2 className="font-semibold text-foreground">Chronologie commerciale</h2>
+          {!prospect.events?.length ? <p className="mt-2 text-sm text-muted-foreground">Aucun événement.</p> : <ol className="mt-3 space-y-3">{prospect.events.map((event) => <li key={event.id} className="border-l-2 border-border pl-3"><div className="flex flex-wrap justify-between gap-2"><strong className="text-sm">{event.title}</strong><time className="text-xs text-muted-foreground">{new Date(event.occurredAt).toLocaleString('fr-FR')}</time></div>{event.summary && <p className="text-sm text-muted-foreground">{event.summary}</p>}<span className="text-xs text-muted-foreground">{event.type}</span></li>)}</ol>}
         </section>
 
         {!contact.archivedAt && (

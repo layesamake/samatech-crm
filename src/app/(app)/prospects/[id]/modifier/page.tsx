@@ -98,16 +98,16 @@ export default function ModifierProspectPage() {
   }
 
   return (
-    <div className="flex flex-col bg-slate-50 min-h-screen">
+    <div className="flex flex-col bg-muted/50 min-h-screen">
       <header className="sticky top-0 z-10 bg-card text-card-foreground border-b px-4 py-3 flex items-center gap-3">
-        <Link href={`/prospects/${id}`} aria-label="Retour à la fiche prospect" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-slate-700 active:bg-slate-100">
+        <Link href={`/prospects/${id}`} aria-label="Retour à la fiche prospect" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-muted-foreground active:bg-muted">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-xl font-bold text-slate-800 line-clamp-1">Modifier {prospect.contact.displayName}</h1>
+        <h1 className="text-xl font-bold text-foreground line-clamp-1">Modifier {prospect.contact.displayName}</h1>
       </header>
 
       <main className="flex-1 p-4 pb-12">
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto space-y-5 bg-card text-card-foreground p-5 rounded-xl shadow-sm border border-slate-100">
+        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto space-y-5 bg-card text-card-foreground p-5 rounded-xl shadow-sm border border-border">
           
           {error && (
             <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">

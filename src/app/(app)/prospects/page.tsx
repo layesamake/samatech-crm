@@ -37,11 +37,11 @@ export default function ProspectsPage() {
   );
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 min-h-screen">
+    <div className="flex flex-col h-full bg-muted/50 min-h-screen">
       {/* Header Mobile-First */}
       <header className="sticky top-0 z-10 bg-card text-card-foreground border-b px-4 py-3 flex flex-col gap-3 shadow-sm">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-800">Prospects</h1>
+          <h1 className="text-xl font-bold text-foreground">Prospects</h1>
         </div>
         
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
@@ -51,14 +51,14 @@ export default function ProspectsPage() {
               aria-label="Rechercher un prospect par nom ou numéro"
               type="text"
               placeholder="Rechercher par nom, numéro..."
-              className="w-full bg-slate-100 border-transparent focus:bg-card text-card-foreground focus:border-blue-500 rounded-lg pl-9 pr-4 py-2 text-sm outline-none transition-all"
+              className="w-full bg-muted border-transparent focus:bg-card text-card-foreground focus:border-blue-500 rounded-lg pl-9 pr-4 py-2 text-sm outline-none transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <select 
             aria-label="Filtrer par statut"
-            className="bg-slate-100 border-transparent rounded-lg px-3 py-2 text-sm outline-none"
+            className="bg-muted border-transparent rounded-lg px-3 py-2 text-sm outline-none"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
           >
@@ -69,9 +69,9 @@ export default function ProspectsPage() {
             <option value="A_RELANCER">À Relancer</option>
             <option value="NEGOCIATION">Négociation</option>
           </select>
-          <select aria-label="Filtrer par localité" className="bg-slate-100 rounded-lg px-3 py-2 text-sm" value={locationId} onChange={(e) => setLocationId(e.target.value)}><option value="">Toutes localités</option>{locations.map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}</select>
-          <select aria-label="Filtrer par produit" className="bg-slate-100 rounded-lg px-3 py-2 text-sm" value={productId} onChange={(e) => setProductId(e.target.value)}><option value="">Tous produits</option>{products.map((product) => <option key={product.id} value={product.id}>{product.name}</option>)}</select>
-          <label className="flex items-center gap-2 text-sm text-slate-600 bg-slate-100 px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-200 transition-colors">
+          <select aria-label="Filtrer par localité" className="bg-muted rounded-lg px-3 py-2 text-sm" value={locationId} onChange={(e) => setLocationId(e.target.value)}><option value="">Toutes localités</option>{locations.map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}</select>
+          <select aria-label="Filtrer par produit" className="bg-muted rounded-lg px-3 py-2 text-sm" value={productId} onChange={(e) => setProductId(e.target.value)}><option value="">Tous produits</option>{products.map((product) => <option key={product.id} value={product.id}>{product.name}</option>)}</select>
+          <label className="flex items-center gap-2 text-sm text-muted-foreground bg-muted px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-200 transition-colors">
             <input 
               type="checkbox" 
               checked={showArchived} 
@@ -88,12 +88,12 @@ export default function ProspectsPage() {
         {!prospects ? (
           <div className="flex justify-center p-8 text-slate-400">Chargement...</div>
         ) : prospects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-8 text-center bg-card text-card-foreground rounded-xl border border-dashed border-slate-300">
+          <div className="flex flex-col items-center justify-center p-8 text-center bg-card text-card-foreground rounded-xl border border-dashed border-border">
             <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-3">
               <Plus className="h-6 w-6 text-blue-500" />
             </div>
-            <h3 className="font-semibold text-slate-800 mb-1">Aucun prospect</h3>
-            <p className="text-sm text-slate-500 mb-4 max-w-xs">
+            <h3 className="font-semibold text-foreground mb-1">Aucun prospect</h3>
+            <p className="text-sm text-muted-foreground mb-4 max-w-xs">
               Commencez par ajouter votre premier prospect pour suivre vos opportunités.
             </p>
             <Link href="/prospects/nouveau">
@@ -104,14 +104,14 @@ export default function ProspectsPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {prospects.map((p: Prospect) => (
               <Link key={p.contact.id} href={`/prospects/${p.contact.id}`}>
-                <div className="bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-slate-100 active:scale-[0.98] transition-transform">
+                <div className="bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-border active:scale-[0.98] transition-transform">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-slate-800 line-clamp-1">{p.contact.displayName}</h3>
+                    <h3 className="font-semibold text-foreground line-clamp-1">{p.contact.displayName}</h3>
                     <span className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-700">
                       {p.profile.status}
                     </span>
                   </div>
-                  <div className="text-sm text-slate-600 mb-1">{p.contact.whatsappPhone}</div>
+                  <div className="text-sm text-muted-foreground mb-1">{p.contact.whatsappPhone}</div>
                   <div className="text-xs text-slate-400">
                     Niveau: {p.profile.interestLevel.replace('_', ' ')}
                   </div>

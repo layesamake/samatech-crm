@@ -44,7 +44,7 @@ export function MobileDashboard() {
   const overduePct = totalReceivable > 0 ? (overdueReceivable / totalReceivable) * 100 : 0;
 
   return (
-    <div className="flex flex-col gap-6 p-4 pb-20 bg-slate-50 min-h-full">
+    <div className="flex flex-col gap-6 p-4 pb-20 bg-muted/50 min-h-full">
       {/* Welcome Section */}
       <section>
         <div className="flex items-center gap-2 mb-1">
@@ -55,7 +55,7 @@ export function MobileDashboard() {
       </section>
 
       {/* Quick Actions Card */}
-      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100 flex justify-between items-start gap-2 overflow-x-auto scrollbar-hide">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border flex justify-between items-start gap-2 overflow-x-auto scrollbar-hide">
         <Link href="/invoices/new" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 shadow-sm relative">
              <FileText className="w-6 h-6" />
@@ -65,7 +65,7 @@ export function MobileDashboard() {
                 </div>
              </div>
           </div>
-          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouvelle<br/>facture</span>
+          <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouvelle<br/>facture</span>
         </Link>
         <Link href="/prospects/nouveau" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shadow-sm relative">
@@ -76,7 +76,7 @@ export function MobileDashboard() {
                 </div>
              </div>
           </div>
-          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouveau<br/>client</span>
+          <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouveau<br/>client</span>
         </Link>
         <Link href="/payments" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-red-500 shadow-sm relative">
@@ -87,20 +87,20 @@ export function MobileDashboard() {
                 </div>
              </div>
           </div>
-          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouvelle<br/>dépense</span>
+          <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouvelle<br/>dépense</span>
         </Link>
         <Link href="/follow-ups" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shadow-sm relative">
              <Timer className="w-6 h-6" />
           </div>
-          <span className="text-xs text-center font-medium leading-tight text-slate-700">Ajouter<br/>l&apos;heure du<br/>journal</span>
+          <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Ajouter<br/>l&apos;heure du<br/>journal</span>
         </Link>
       </section>
 
       {/* Accounts Receivable Card */}
-      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border">
         <div className="flex justify-between items-start mb-4">
-          <h2 className="font-semibold text-slate-800 flex items-center gap-2">
+          <h2 className="font-semibold text-foreground flex items-center gap-2">
             <DollarSign className="w-4 h-4" />
             Récapitulatif des créances
           </h2>
@@ -111,7 +111,7 @@ export function MobileDashboard() {
         </p>
         
         {/* Simple Bar Chart */}
-        <div className="h-40 flex items-end gap-8 border-b border-slate-100 pb-2 mb-4 relative">
+        <div className="h-40 flex items-end gap-8 border-b border-border pb-2 mb-4 relative">
           {/* Y-axis labels mockup */}
           <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-slate-400">
              <span>{totalReceivable > 0 ? formatMinorExact(money.receivableMinor, primary.currency, primary.scale) : '1000'}</span>
@@ -136,9 +136,9 @@ export function MobileDashboard() {
       </section>
 
       {/* Recent Transactions Card */}
-      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="font-semibold text-slate-800 flex items-center gap-2">
+          <h2 className="font-semibold text-foreground flex items-center gap-2">
             <Clock className="w-4 h-4" />
             Transactions récentes
           </h2>
@@ -175,14 +175,14 @@ export function MobileDashboard() {
       </section>
 
       {/* Sales / Expenses Card (Ventes / Facturé) */}
-      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border">
          <div className="flex justify-between items-center mb-6">
-          <h2 className="font-semibold text-slate-800">Facturation & Encaissements</h2>
-          <span className="text-xs text-muted-foreground bg-slate-100 px-2 py-1 rounded">Ce mois</span>
+          <h2 className="font-semibold text-foreground">Facturation & Encaissements</h2>
+          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">Ce mois</span>
         </div>
 
         {/* Mock Chart for Sales */}
-        <div className="h-48 flex items-end justify-between gap-1 border-b border-slate-100 pb-2 mb-4">
+        <div className="h-48 flex items-end justify-between gap-1 border-b border-border pb-2 mb-4">
            {report.series.slice(-6).map((item, i) => {
               const maxVal = Math.max(...report.series.map(s => Number(s.billedMinor) + Number(s.collectedMinor)), 1);
               const billedPct = (Number(item.billedMinor) / maxVal) * 100;
@@ -217,10 +217,10 @@ export function MobileDashboard() {
       </section>
 
       {/* Top Debtors */}
-      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border">
          <div className="flex justify-between items-center mb-4">
-          <h2 className="font-semibold text-slate-800">Clients débiteurs</h2>
-          <span className="text-xs text-muted-foreground bg-slate-100 px-2 py-1 rounded">Actuel</span>
+          <h2 className="font-semibold text-foreground">Clients débiteurs</h2>
+          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">Actuel</span>
         </div>
         
         {report.receivables.topDebtors.length > 0 ? (
@@ -234,7 +234,7 @@ export function MobileDashboard() {
                         <span className="font-medium">{debtor.label}</span>
                         <span className="font-semibold">{formatMinorExact(amount, primary.currency, primary.scale)}</span>
                      </div>
-                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                     <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                         <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.max(pct, 2)}%` }}></div>
                      </div>
                   </div>

@@ -11,7 +11,7 @@ const PRESET_LABELS: Record<PeriodPreset, string> = { TODAY: 'Aujourd’hui', LA
 
 function Money({ minor, currency, scale }: { minor: string; currency: string; scale: number }) { return <>{formatMinorExact(minor, currency, scale)}</>; }
 function MetricCard({ label, value, detail, tone = 'default' }: { label: string; value: React.ReactNode; detail: string; tone?: 'default' | 'blue' | 'green' | 'amber' }) {
-  const tones = { default: 'border-slate-200', blue: 'border-blue-300 bg-blue-50/40', green: 'border-emerald-300 bg-emerald-50/40', amber: 'border-amber-300 bg-amber-50/40' };
+  const tones = { default: 'border-border', blue: 'border-blue-300 bg-blue-50/40', green: 'border-emerald-300 bg-emerald-50/40', amber: 'border-amber-300 bg-amber-50/40' };
   return <article className={`rounded-xl border p-4 ${tones[tone]}`}><p className="text-sm text-muted-foreground">{label}</p><p className="mt-1 text-2xl font-bold tabular-nums">{value}</p><p className="mt-1 text-xs text-muted-foreground">{detail}</p></article>;
 }
 function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {

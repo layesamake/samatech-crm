@@ -189,7 +189,7 @@ export default function CompanySettingsForm() {
                {logoDataUri ? (
                  <img src={logoDataUri} alt="Logo" className="w-16 h-16 object-contain border rounded-md" />
                ) : (
-                 <div className="w-16 h-16 bg-slate-100 border rounded-md flex items-center justify-center text-xs text-slate-400">Aucun</div>
+                 <div className="w-16 h-16 bg-muted border rounded-md flex items-center justify-center text-xs text-slate-400">Aucun</div>
                )}
                <input 
                  type="file" 
@@ -206,7 +206,7 @@ export default function CompanySettingsForm() {
                {signatureDataUri ? (
                  <img src={signatureDataUri} alt="Signature" className="w-16 h-16 object-contain border rounded-md" />
                ) : (
-                 <div className="w-16 h-16 bg-slate-100 border rounded-md flex items-center justify-center text-xs text-slate-400">Aucune</div>
+                 <div className="w-16 h-16 bg-muted border rounded-md flex items-center justify-center text-xs text-slate-400">Aucune</div>
                )}
                <input 
                  type="file" 

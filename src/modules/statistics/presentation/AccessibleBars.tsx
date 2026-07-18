@@ -16,7 +16,7 @@ export function AccessibleBars({ title, items, emptyLabel = 'Aucune donnée sur 
           const width = Number((toBigInt(item.value) * BigInt(100)) / maximum);
           return <div key={item.label} className="grid grid-cols-[minmax(7rem,1fr)_2fr_auto] items-center gap-2 text-sm">
             <span className="truncate" title={item.label}>{item.label}</span>
-            <span className="h-3 overflow-hidden rounded-full bg-slate-100" aria-hidden="true"><span className="block h-full rounded-full bg-blue-600" style={{ width: `${Math.max(width, 2)}%` }} /></span>
+            <span className="h-3 overflow-hidden rounded-full bg-muted" aria-hidden="true"><span className="block h-full rounded-full bg-blue-600" style={{ width: `${Math.max(width, 2)}%` }} /></span>
             <strong className="tabular-nums">{item.display ?? String(item.value)}</strong>
           </div>;
         })}

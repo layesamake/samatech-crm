@@ -36,7 +36,7 @@ export default function InvoiceDetailPage() { const { id } = useParams<{ id: str
       </header>
 
       {/* Aperçu type A4 */}
-      <main className="bg-card text-card-foreground shadow-xl w-full min-h-[1056px] mx-auto p-8 sm:p-12 md:p-16 text-sm text-slate-800 font-sans relative">
+      <main className="bg-white shadow-xl w-full min-h-[1056px] mx-auto p-8 sm:p-12 md:p-16 text-sm text-slate-800 font-sans relative">
         {invoice.status === 'ANNULEE' && (
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-15deg] border-4 border-red-500 text-red-500 text-6xl font-bold p-4 opacity-20 pointer-events-none">
             ANNULÉE
