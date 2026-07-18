@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SAMTECH CRM — V1 bêta
 
-## Getting Started
+Application de gestion commerciale hors ligne (PWA).
 
-First, run the development server:
+Version courante : `1.0.0-beta.1`. Cette version est destinée à une phase pilote supervisée ; aucune publication n’est implicite.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Documentation
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La documentation de référence se trouve dans le dossier `DOCS/`.
+Veuillez lire les fichiers présents dans ce dossier avant toute modification majeure.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Commandes de Développement
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` : Démarrer le serveur de développement.
+- `npm run build` : Compiler l'application pour la production.
+- `npm run start` : Démarrer l'application en mode production.
+- `npm run lint` : Lancer l'analyse ESLint.
+- `npm run test` : Lancer les tests unitaires avec Vitest.
+- `npm run test:accessibility` : Auditer les routes importantes avec axe-core.
+- `npm run test:responsive` : Contrôler les largeurs 320 à 1440 px et le paysage.
+- `npm run test:performance` : Mesurer le jeu de données représentatif.
+- `npm run test:lighthouse` : Mesurer deux écrans mobiles représentatifs.
+- `npm run test:pwa-update` : Vérifier mise à jour, hors-ligne et conservation IndexedDB.
+- `npm run test:v1-beta` : Exécuter le parcours transversal de la bêta.
 
-## Learn More
+## Accès Rapide
 
-To learn more about Next.js, take a look at the following resources:
+- [Diagnostic de Développement](/dev-diagnostic) : Vérifier l'état d'IndexedDB et PWA (disponible en dev).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Sauvegarde et sécurité locale
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `/settings/backup` exporte et restaure localement les vingt collections métier au format JSON version 1.
+- `/settings/security` configure un PIN local facultatif et le verrouillage de l'interface.
+- Le fichier de sauvegarde n'est pas chiffré et doit être conservé en lieu sûr. Le PIN protège l'interface; il ne chiffre pas IndexedDB.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Consultez aussi `DOCS/USER_GUIDE.md`, `DOCS/PILOT_TEST_PLAN.md`, `DOCS/RELEASE_CHECKLIST.md`, `DOCS/KNOWN_LIMITATIONS.md` et `DOCS/RELEASE_NOTES_BETA.md`.

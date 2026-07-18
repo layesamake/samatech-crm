@@ -1,0 +1,15 @@
+import { Clock, SystemClock } from '@/modules/follow-ups/domain/follow-up';
+import { calculateInvoiceLine, calculateInvoiceTotals, DraftInvoiceInput, DraftInvoiceInputSchema, InvoiceLineRecord, InvoiceRecord } from '../domain/invoice';
+import { DexieInvoiceRepository, InvoiceSearchCriteria } from '../infrastructure/dexie-invoice-repository';
+
+export class ManageInvoicesUseCase {
+  constructor(private readonly repository = new DexieInvoiceRepository(), private readonly clock: Clock = new SystemClock()) {}
+  list(criteria: InvoiceSearchCriteria = {}) { return this.repository.list(criteria); }
+  get(id: string) { return this.repository.get(id); }
+  formOptions() { return this.repository.formOptions(); }
+  private buildLines(invoiceId: string, input: DraftInvoiceInput, now: string): InvoiceLineRecord[] { return input.lines.map((value, index) => ({ id: value.id || crypto.randomUUID(), invoiceId, ...calculateInvoiceLine({ ...value, position: index }, input.taxesEnabled), createdAt: now, updatedAt: now })); }
+  async createDraft(input: DraftInvoiceInput) { const value = DraftInvoiceInputSchema.parse(input); const now = this.clock.now().toISOString(); const id = crypto.randomUUID(); const lines = this.buildLines(id, value, now); const totals = calculateInvoiceTotals(lines); const invoice: InvoiceRecord = { id, clientProfileId: value.clientProfileId, status: 'BROUILLON', issueDate: value.issueDate || undefined, dueDate: value.dueDate || undefined, currency: value.currency, currencyScale: value.currencyScale, companySnapshot: { displayName: '' }, clientSnapshot: { displayName: '' }, ...totals, paidTotalMinor: 0, balanceMinor: totals.grandTotalMinor, notes: value.notes || undefined, terms: value.terms || undefined, createdAt: now, updatedAt: now }; await this.repository.saveDraft(invoice, lines); return this.repository.get(id); }
+  async updateDraft(id: string, input: DraftInvoiceInput) { const current = await this.repository.get(id); if (!current) throw new Error('Facture introuvable'); if (current.invoice.status !== 'BROUILLON') throw new Error('Une facture émise ou annulée est immuable'); const value = DraftInvoiceInputSchema.parse(input); const now = this.clock.now().toISOString(); const lines = this.buildLines(id, value, now).map((line) => ({ ...line, createdAt: current.lines.find((item) => item.id === line.id)?.createdAt ?? now })); const totals = calculateInvoiceTotals(lines); const invoice: InvoiceRecord = { ...current.invoice, clientProfileId: value.clientProfileId, issueDate: value.issueDate || undefined, dueDate: value.dueDate || undefined, currency: value.currency, currencyScale: value.currencyScale, ...totals, balanceMinor: totals.grandTotalMinor, notes: value.notes || undefined, terms: value.terms || undefined, updatedAt: now }; await this.repository.saveDraft(invoice, lines); return this.repository.get(id); }
+  issue(id: string) { return this.repository.issue(id, this.clock.now().toISOString()); }
+  cancel(id: string, reason: string) { return this.repository.cancel(id, reason, this.clock.now().toISOString()); }
+}

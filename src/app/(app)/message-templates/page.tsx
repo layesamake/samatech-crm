@@ -1,0 +1,2 @@
+import MessageTemplatesManager from '@/modules/messages/presentation/MessageTemplatesManager';
+export default function MessageTemplatesPage() { return <main className="mx-auto max-w-5xl space-y-6 p-4 md:p-8"><div><h1 className="text-2xl font-bold">Modèles de messages</h1><p className="text-muted-foreground">Préparez des messages WhatsApp réutilisables. Aucun message n’est envoyé automatiquement.</p></div><MessageTemplatesManager /></main>; }

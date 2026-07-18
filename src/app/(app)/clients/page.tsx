@@ -1,0 +1,22 @@
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
+import { ManageClientsUseCase } from '@/modules/clients/application/manage-clients';
+import { ClientAggregate } from '@/modules/clients/domain/client';
+
+const manage = new ManageClientsUseCase();
+export default function ClientsPage() {
+  const [clients, setClients] = useState<ClientAggregate[]>([]); const [loading, setLoading] = useState(true); const [error, setError] = useState('');
+  const [locationClients, setLocationClients] = useState<ClientAggregate[]>([]);
+  const [query, setQuery] = useState(''); const [locationId, setLocationId] = useState(''); const [from, setFrom] = useState(''); const [to, setTo] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
+  useEffect(() => { void manage.list({ showArchived: true }).then(setLocationClients).catch(() => undefined); }, []);
+  useEffect(() => { void manage.list({ query, locationId: locationId || undefined, convertedFrom: from ? new Date(`${from}T00:00:00`).toISOString() : undefined, convertedTo: to ? new Date(`${to}T23:59:59`).toISOString() : undefined, showArchived }).then((result) => { setClients(result); setError(''); }).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')).finally(() => setLoading(false)); }, [query, locationId, from, to, showArchived]);
+  const locations = useMemo(() => [...new Map(locationClients.filter((client) => client.contact.locationId && client.locationName).map((client) => [client.contact.locationId!, client.locationName!])).entries()], [locationClients]);
+  return <main className="mx-auto max-w-5xl space-y-5 p-4 md:p-8"><header><h1 className="text-2xl font-bold">Clients</h1><p className="text-slate-600">Les contacts convertis conservent tout leur historique de prospection.</p></header>
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4"><input aria-label="Rechercher un client" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Nom, téléphone, entreprise" className="h-11 rounded-md border px-3"/><select aria-label="Filtrer par localité" value={locationId} onChange={(e) => setLocationId(e.target.value)} className="h-11 rounded-md border px-3"><option value="">Toutes localités</option>{locations.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select><label className="text-xs">Converti depuis<input aria-label="Conversion depuis" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-1 h-9 w-full rounded-md border px-3"/></label><label className="text-xs">Converti avant<input aria-label="Conversion avant" type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-1 h-9 w-full rounded-md border px-3"/></label></div>
+    <div className="flex flex-wrap items-center justify-between gap-3 text-sm"><label className="flex min-h-11 items-center gap-2"><input type="checkbox" checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)}/>Afficher les archives</label><div className="flex items-center gap-3"><span role="status">{clients.length} client{clients.length > 1 ? 's' : ''}</span><button type="button" className="rounded-md border px-3 py-2" onClick={() => { setQuery(''); setLocationId(''); setFrom(''); setTo(''); setShowArchived(false); }}>Réinitialiser</button></div></div>
+    {error ? <p role="alert" className="rounded-md bg-red-50 p-4 text-red-700">{error}</p> : loading ? <p role="status">Chargement des clients...</p> : clients.length === 0 ? <p className="rounded-xl border border-dashed p-8 text-center">Aucun client ne correspond aux critères.</p> : <div className="grid gap-3 md:grid-cols-2">{clients.map((client) => <Link key={client.profile.id} href={`/clients/${client.profile.id}`} className="rounded-xl border bg-white p-4"><div className="flex justify-between gap-3"><h2 className="font-semibold">{client.contact.displayName} {client.contact.archivedAt && <span className="text-xs text-amber-700">(Archivé)</span>}</h2><span className="text-xs">Depuis le {new Date(client.profile.convertedAt).toLocaleDateString('fr-FR')}</span></div><p className="mt-2 text-sm">{client.locationName || 'Localité non renseignée'} · {client.productNames.join(', ') || 'Aucun produit demandé'}</p><p className="mt-2 text-xs text-slate-500">{client.followUps.filter((item) => !item.archivedAt).length} relance(s) · Facturation disponible au Sprint 5</p></Link>)}</div>}
+  </main>;
+}
