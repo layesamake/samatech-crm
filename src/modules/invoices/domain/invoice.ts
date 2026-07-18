@@ -9,7 +9,7 @@ export const DISCOUNT_TYPES = ['NONE', 'PERCENT', 'AMOUNT'] as const;
 export type InvoiceStatus = typeof INVOICE_STATUSES[number];
 export type DiscountType = typeof DISCOUNT_TYPES[number];
 
-export interface PartySnapshot { displayName: string; address?: string; phone?: string; email?: string; taxId?: string; logoDataRef?: string; }
+export interface PartySnapshot { displayName: string; address?: string; phone?: string; email?: string; taxId?: string; logoDataRef?: string; logoDataUri?: string; managerName?: string; managerSignatureDataUri?: string; }
 export interface InvoiceRecord {
   id: string; clientProfileId: string; number?: string; status: InvoiceStatus; issueDate?: string; dueDate?: string;
   currency: string; currencyScale: number; companySnapshot: PartySnapshot; clientSnapshot: PartySnapshot;

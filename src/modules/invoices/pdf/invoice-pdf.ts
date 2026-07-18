@@ -11,9 +11,36 @@ function wrap(text: string, font: PDFFont, size: number, width: number): string[
 export async function generateInvoicePdf(value: InvoiceAggregate): Promise<Uint8Array> {
   const document = await PDFDocument.create(); const regular = await document.embedFont(StandardFonts.Helvetica); const bold = await document.embedFont(StandardFonts.HelveticaBold); document.setTitle(safeText(value.invoice.number || 'Facture brouillon')); document.setSubject(safeText(`SAMTECH CRM - ${value.invoice.status} - ${value.invoice.companySnapshot.displayName} - ${value.invoice.clientSnapshot.displayName || value.clientName} - ${value.invoice.currency}`)); document.setCreator('SAMTECH CRM'); document.setCreationDate(new Date(value.invoice.issuedAt || value.invoice.createdAt));
   let page!: PDFPage; let y = 0; const pages: PDFPage[] = [];
-  const addPage = () => { page = document.addPage(A4); pages.push(page); y = A4[1] - MARGIN; page.drawText(safeText(value.invoice.companySnapshot.displayName || 'Entreprise'), { x: MARGIN, y, size: 16, font: bold, color: rgb(0.08, 0.16, 0.28) }); page.drawText(safeText(value.invoice.status === 'BROUILLON' ? 'FACTURE - BROUILLON' : `FACTURE ${value.invoice.number || ''}`), { x: 330, y, size: 12, font: bold }); y -= 24; page.drawLine({ start: { x: MARGIN, y }, end: { x: A4[0] - MARGIN, y }, thickness: 1, color: rgb(0.75, 0.78, 0.82) }); y -= 18; };
+  
+  const embedImage = async (dataUri: string) => {
+    try {
+      const parts = dataUri.split(',');
+      if (parts.length !== 2) return null;
+      const isPng = dataUri.includes('image/png');
+      const bytes = Uint8Array.from(atob(parts[1]), c => c.charCodeAt(0));
+      return isPng ? await document.embedPng(bytes) : await document.embedJpg(bytes);
+    } catch { return null; }
+  };
+  
+  const logoImage = value.invoice.companySnapshot.logoDataUri ? await embedImage(value.invoice.companySnapshot.logoDataUri) : null;
+  const signatureImage = value.invoice.companySnapshot.managerSignatureDataUri ? await embedImage(value.invoice.companySnapshot.managerSignatureDataUri) : null;
+
+  const addPage = () => { 
+    page = document.addPage(A4); pages.push(page); y = A4[1] - MARGIN; 
+    
+    if (logoImage) {
+      const dims = logoImage.scaleToFit(100, 50);
+      page.drawImage(logoImage, { x: MARGIN, y: y - dims.height + 14, width: dims.width, height: dims.height });
+      y -= dims.height + 4;
+    }
+    
+    page.drawText(safeText(value.invoice.companySnapshot.displayName || 'Entreprise'), { x: MARGIN, y, size: 16, font: bold, color: rgb(0.08, 0.16, 0.28) }); 
+    page.drawText(safeText(value.invoice.status === 'BROUILLON' ? 'FACTURE - BROUILLON' : `FACTURE ${value.invoice.number || ''}`), { x: 330, y, size: 12, font: bold }); 
+    y -= 24; page.drawLine({ start: { x: MARGIN, y }, end: { x: A4[0] - MARGIN, y }, thickness: 1, color: rgb(0.75, 0.78, 0.82) }); y -= 18; 
+  };
+  
   const ensure = (height: number) => { if (y - height < BOTTOM) addPage(); };
-  const text = (content: string, options: { size?: number; font?: PDFFont; x?: number; width?: number; gap?: number; color?: ReturnType<typeof rgb> } = {}) => { const size = options.size ?? 10; const font = options.font ?? regular; const x = options.x ?? MARGIN; const width = options.width ?? A4[0] - MARGIN * 2; const lines = wrap(content, font, size, width); ensure(lines.length * (size + 3) + (options.gap ?? 0)); for (const line of lines) { page.drawText(line, { x, y, size, font, color: options.color }); y -= size + 3; } y -= options.gap ?? 0; };
+  const text = (content: string, options: { size?: number; font?: PDFFont; x?: number; width?: number; gap?: number; color?: ReturnType<typeof rgb>; align?: 'left' | 'right' } = {}) => { const size = options.size ?? 10; const font = options.font ?? regular; const x = options.x ?? MARGIN; const width = options.width ?? A4[0] - MARGIN * 2; const lines = wrap(content, font, size, width); ensure(lines.length * (size + 3) + (options.gap ?? 0)); for (const line of lines) { const textWidth = font.widthOfTextAtSize(line, size); const finalX = options.align === 'right' ? x + width - textWidth : x; page.drawText(line, { x: finalX, y, size, font, color: options.color }); y -= size + 3; } y -= options.gap ?? 0; };
   addPage();
   if (value.invoice.status === 'ANNULEE') { text('ANNULÉE', { size: 24, font: bold, color: rgb(0.75, 0.05, 0.05), gap: 8 }); }
   text(`Statut : ${value.invoice.status}`, { font: bold }); text(`Date d'émission : ${value.invoice.issueDate || 'Non émise'}`); text(`Échéance : ${value.invoice.dueDate || 'Non renseignée'}`, { gap: 10 });
@@ -23,6 +50,20 @@ export async function generateInvoicePdf(value: InvoiceAggregate): Promise<Uint8
   for (const line of value.lines) { ensure(72); text(`${line.position + 1}. ${line.designationSnapshot}`, { font: bold, size: 10 }); if (line.descriptionSnapshot) text(line.descriptionSnapshot, { size: 9 }); text(`Quantité : ${formatQuantity(line.quantityScaled, line.quantityScale)} ${line.unitLabelSnapshot || ''} | Prix : ${formatMinor(line.unitPriceMinor, value.invoice.currency, value.invoice.currencyScale)} | Total : ${formatMinor(line.lineTotalMinor, value.invoice.currency, value.invoice.currencyScale)}`, { size: 9 }); if (line.discountMinor || line.taxMinor) text(`Remise : ${formatMinor(line.discountMinor, value.invoice.currency, value.invoice.currencyScale)} | Taxe : ${formatMinor(line.taxMinor, value.invoice.currency, value.invoice.currencyScale)}`, { size: 8 }); page.drawLine({ start: { x: MARGIN, y }, end: { x: A4[0] - MARGIN, y }, thickness: 0.5, color: rgb(0.85, 0.87, 0.9) }); y -= 8; }
   ensure(120); text(`Sous-total : ${formatMinor(value.invoice.subtotalMinor, value.invoice.currency, value.invoice.currencyScale)}`, { x: 300, width: 250 }); text(`Remises : ${formatMinor(value.invoice.discountTotalMinor, value.invoice.currency, value.invoice.currencyScale)}`, { x: 300, width: 250 }); text(`Taxes : ${formatMinor(value.invoice.taxTotalMinor, value.invoice.currency, value.invoice.currencyScale)}`, { x: 300, width: 250 }); const [totalLabel, paidLabel, balanceLabel] = invoiceFinancialSummary(value); text(totalLabel, { x: 300, width: 250, size: 13, font: bold }); text(paidLabel, { x: 300, width: 250 }); text(balanceLabel, { x: 300, width: 250, font: bold, gap: 10 });
   const section = (title: string, content: string, gap = 0) => { const firstBodyLines = Math.min(wrap(content, regular, 10, A4[0] - MARGIN * 2).length, 2); ensure(14 + firstBodyLines * 13 + gap); text(title, { font: bold }); text(content, { gap }); };
+  
+  if (value.invoice.companySnapshot.managerName || signatureImage) {
+    ensure(100);
+    y -= 10;
+    text("Pour l'entreprise :", { x: 300, width: 250, size: 10, font: bold, align: 'right', gap: 5 });
+    if (signatureImage) {
+      const dims = signatureImage.scaleToFit(120, 60);
+      page.drawImage(signatureImage, { x: 550 - MARGIN - dims.width, y: y - dims.height, width: dims.width, height: dims.height });
+      y -= dims.height + 5;
+    }
+    if (value.invoice.companySnapshot.managerName) {
+      text(value.invoice.companySnapshot.managerName, { x: 300, width: 250, size: 11, font: bold, align: 'right', gap: 10 });
+    }
+  }
   if (value.invoice.notes) section('NOTES', value.invoice.notes, 8); if (value.invoice.terms) section('CONDITIONS', value.invoice.terms); if (value.invoice.status === 'ANNULEE') { text(`Motif d'annulation : ${value.invoice.cancellationReason || ''}`, { font: bold, color: rgb(0.65, 0.05, 0.05) }); }
   pages.forEach((item, index) => item.drawText(`Page ${index + 1} / ${pages.length}`, { x: A4[0] / 2 - 20, y: 22, size: 8, font: regular, color: rgb(0.4, 0.43, 0.48) }));
   return document.save({ useObjectStreams: false });

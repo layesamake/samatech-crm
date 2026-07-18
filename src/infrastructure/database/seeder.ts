@@ -3,7 +3,9 @@ import { db } from './db';
 import { ContactRecord, ProspectProfileRecord, NoteRecord, ProspectStatus, InterestLevel } from '../../modules/prospects/domain/prospect';
 import { LocationRecord } from '../../modules/locations/domain/location';
 import { CategoryRecord, ProductRecord } from '../../modules/catalog/domain/catalog';
-
+import { ClientProfileRecord } from '@/modules/clients/domain/client';
+import { InvoiceRecord, InvoiceLineRecord } from '@/modules/invoices/domain/invoice';
+import { PaymentRecord } from '@/modules/payments/domain/payment';
 export async function seedDatabase() {
   const now = new Date().toISOString();
 
@@ -85,10 +87,10 @@ export async function seedDatabase() {
   // ---------------------------------------------------------
   // Clients, Factures et Paiements
   // ---------------------------------------------------------
-  const clientProfiles: unknown[] = [];
-  const invoices: unknown[] = [];
-  const invoiceLines: unknown[] = [];
-  const payments: unknown[] = [];
+  const clientProfiles: ClientProfileRecord[] = [];
+  const invoices: InvoiceRecord[] = [];
+  const invoiceLines: InvoiceLineRecord[] = [];
+  const payments: PaymentRecord[] = [];
 
   // Also force some extra ones just to have data
   const clientContacts = [contacts[4], contacts[1]]; // Ousmane Sow, Fatou Diop
@@ -119,7 +121,8 @@ export async function seedDatabase() {
       currency: 'XOF',
       currencyScale: 0,
       subtotalMinor: inv1Total,
-      taxesMinor: 0,
+      discountTotalMinor: 0,
+      taxTotalMinor: 0,
       grandTotalMinor: inv1Total,
       paidTotalMinor: inv1Total,
       balanceMinor: 0,
@@ -137,8 +140,15 @@ export async function seedDatabase() {
       quantityScaled: 1,
       quantityScale: 0,
       unitPriceMinor: inv1Total,
-      totalMinor: inv1Total,
-      description: 'Consultation SI',
+      grossMinor: inv1Total,
+      discountMinor: 0,
+      taxMinor: 0,
+      lineTotalMinor: inv1Total,
+      designationSnapshot: 'Consultation SI',
+      descriptionSnapshot: 'Consultation SI',
+      discountType: 'NONE',
+      discountValue: 0,
+      taxRateBasisPoints: 0,
       createdAt: now,
       updatedAt: now,
     });
@@ -147,12 +157,13 @@ export async function seedDatabase() {
       invoiceId: inv1Id,
       clientProfileId: clientProfileId,
       paymentDate: '2026-07-10',
-      method: 'VIREMENT',
-      status: 'VALIDE',
+      method: 'BANK_TRANSFER',
+      status: 'ACTIVE',
       amountMinor: inv1Total,
       currency: 'XOF',
       currencyScale: 0,
       createdAt: now,
+      updatedAt: now,
     });
 
     // 2. Facture en retard (Créance en retard)
@@ -168,7 +179,8 @@ export async function seedDatabase() {
       currency: 'XOF',
       currencyScale: 0,
       subtotalMinor: inv2Total,
-      taxesMinor: 0,
+      discountTotalMinor: 0,
+      taxTotalMinor: 0,
       grandTotalMinor: inv2Total,
       paidTotalMinor: 0,
       balanceMinor: inv2Total,
@@ -186,8 +198,15 @@ export async function seedDatabase() {
       quantityScaled: 1,
       quantityScale: 0,
       unitPriceMinor: inv2Total,
-      totalMinor: inv2Total,
-      description: 'Développement Web',
+      grossMinor: inv2Total,
+      discountMinor: 0,
+      taxMinor: 0,
+      lineTotalMinor: inv2Total,
+      designationSnapshot: 'Développement Web',
+      descriptionSnapshot: 'Développement Web',
+      discountType: 'NONE',
+      discountValue: 0,
+      taxRateBasisPoints: 0,
       createdAt: now,
       updatedAt: now,
     });
@@ -205,7 +224,8 @@ export async function seedDatabase() {
       currency: 'XOF',
       currencyScale: 0,
       subtotalMinor: inv3Total,
-      taxesMinor: 0,
+      discountTotalMinor: 0,
+      taxTotalMinor: 0,
       grandTotalMinor: inv3Total,
       paidTotalMinor: 0,
       balanceMinor: inv3Total,
@@ -223,8 +243,15 @@ export async function seedDatabase() {
       quantityScaled: 1,
       quantityScale: 0,
       unitPriceMinor: inv3Total,
-      totalMinor: inv3Total,
-      description: 'Licence Windows',
+      grossMinor: inv3Total,
+      discountMinor: 0,
+      taxMinor: 0,
+      lineTotalMinor: inv3Total,
+      designationSnapshot: 'Licence Windows',
+      descriptionSnapshot: 'Licence Windows',
+      discountType: 'NONE',
+      discountValue: 0,
+      taxRateBasisPoints: 0,
       createdAt: now,
       updatedAt: now,
     });

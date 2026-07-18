@@ -11,11 +11,9 @@ export function Topbar() {
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b bg-background px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
       {/* Mobile menu trigger */}
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="-m-2.5 p-2.5 text-muted-foreground lg:hidden">
-            <span className="sr-only">Ouvrir le menu</span>
-            <Menu className="h-6 w-6" aria-hidden="true" />
-          </Button>
+        <SheetTrigger className="-m-2.5 p-2.5 text-muted-foreground lg:hidden">
+          <span className="sr-only">Ouvrir le menu</span>
+          <Menu className="h-6 w-6" aria-hidden="true" />
         </SheetTrigger>
         <SheetContent side="left" className="w-72 p-0">
           <SheetTitle className="sr-only">Menu de navigation</SheetTitle>

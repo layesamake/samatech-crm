@@ -1,8 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CompanyProfile, CompanyProfileSchema } from '../domain/settings';
 import { GetSettingsUseCase } from '../application/get-settings';
@@ -18,9 +18,23 @@ export default function CompanySettingsForm() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<CompanyProfile>({
+  const { register, handleSubmit, reset, control, setValue, formState: { errors } } = useForm<CompanyProfile>({
     resolver: zodResolver(CompanyProfileSchema),
   });
+
+  const logoDataUri = useWatch({ control, name: 'logoDataUri' });
+  const signatureDataUri = useWatch({ control, name: 'managerSignatureDataUri' });
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'logoDataUri' | 'managerSignatureDataUri') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      setValue(field, base64, { shouldDirty: true });
+    };
+    reader.readAsDataURL(file);
+  };
 
   const loadSettings = async () => {
     try {
@@ -49,8 +63,7 @@ export default function CompanySettingsForm() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadSettings();
+    void loadSettings();
   }, []);
 
   const onSubmit = async (data: CompanyProfile) => {
@@ -156,6 +169,51 @@ export default function CompanySettingsForm() {
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
             />
             {errors.currencySymbol && <p className="text-xs text-red-500">{errors.currencySymbol.message}</p>}
+          </div>
+          
+          {/* Nouveaux champs pour le responsable et signature */}
+          <div className="space-y-2">
+            <label htmlFor="manager-name" className="text-sm font-medium">Prénom et nom du responsable</label>
+            <input 
+              id="manager-name"
+              {...register('managerName')} 
+              placeholder="ex: Jean Dupont"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Logo de l&apos;entreprise</label>
+            <div className="flex items-center gap-4">
+               {logoDataUri ? (
+                 <img src={logoDataUri} alt="Logo" className="w-16 h-16 object-contain border rounded-md" />
+               ) : (
+                 <div className="w-16 h-16 bg-slate-100 border rounded-md flex items-center justify-center text-xs text-slate-400">Aucun</div>
+               )}
+               <input 
+                 type="file" 
+                 accept="image/png, image/jpeg"
+                 onChange={(e) => handleFileUpload(e, 'logoDataUri')}
+                 className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+               />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Signature du responsable</label>
+            <div className="flex items-center gap-4">
+               {signatureDataUri ? (
+                 <img src={signatureDataUri} alt="Signature" className="w-16 h-16 object-contain border rounded-md" />
+               ) : (
+                 <div className="w-16 h-16 bg-slate-100 border rounded-md flex items-center justify-center text-xs text-slate-400">Aucune</div>
+               )}
+               <input 
+                 type="file" 
+                 accept="image/png, image/jpeg"
+                 onChange={(e) => handleFileUpload(e, 'managerSignatureDataUri')}
+                 className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+               />
+            </div>
           </div>
         </div>
 

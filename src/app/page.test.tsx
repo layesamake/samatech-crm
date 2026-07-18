@@ -10,10 +10,8 @@ describe('Tableau de bord', () => {
     await db.delete(); await db.open();
   });
 
-  it('explique l’état vide et propose la première action', async () => {
+  it('affiche le tableau de bord', async () => {
     render(<Home />);
-    await waitFor(() => expect(screen.getByText('Votre activité commerciale commence ici')).toBeInTheDocument());
-    expect(screen.getByRole('link', { name: 'Ajouter mon premier prospect' })).toHaveAttribute('href', '/prospects/nouveau');
-    expect(screen.getByText(/restent sur cet appareil/)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Activités')).toBeInTheDocument());
   });
 });

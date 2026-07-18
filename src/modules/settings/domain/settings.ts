@@ -28,6 +28,9 @@ export interface CompanyProfile {
   currencyCode: string;
   currencySymbol: string;
   invoiceDefaults?: string;
+  logoDataUri?: string;
+  managerName?: string;
+  managerSignatureDataUri?: string;
 }
 
 export interface InvoiceSettings {
@@ -48,6 +51,9 @@ export const CompanyProfileSchema = z.object({
   currencyCode: z.string().trim().regex(/^[A-Z]{3}$/, 'La devise doit être un code ISO 4217 de 3 lettres'),
   currencySymbol: z.string().trim().min(1, 'Le symbole monétaire est obligatoire'),
   invoiceDefaults: z.string().optional(),
+  logoDataUri: z.string().optional(),
+  managerName: z.string().trim().optional(),
+  managerSignatureDataUri: z.string().optional(),
 });
 
 export const InvoiceSettingsSchema = z.object({
