@@ -11,6 +11,9 @@ export default function InvoiceForm({ invoiceId }: { invoiceId?: string }) {
   const router = useRouter(); const search = useSearchParams(); const [options, setOptions] = useState<InvoiceFormOptions>(); const [clientId, setClientId] = useState(search.get('clientId') ?? ''); const [lines, setLines] = useState<EditableLine[]>([]); const [selectedProduct, setSelectedProduct] = useState(''); const [issueDate, setIssueDate] = useState(new Date().toISOString().slice(0, 10)); const [dueDate, setDueDate] = useState(''); const [notes, setNotes] = useState(''); const [terms, setTerms] = useState(''); const [error, setError] = useState(''); const [pending, setPending] = useState(false);
   const [productMode, setProductMode] = useState<'SELECT' | 'NEW'>('SELECT');
   const [newProductName, setNewProductName] = useState('');
+  const [clientMode, setClientMode] = useState<'SELECT' | 'NEW'>('SELECT');
+  const [newClientName, setNewClientName] = useState('');
+  const [newClientPhone, setNewClientPhone] = useState('');
   useEffect(() => { void Promise.all([manage.formOptions(), invoiceId ? manage.get(invoiceId) : Promise.resolve(null)]).then(([formOptions, current]) => { setOptions(formOptions); setClientId((value) => value || formOptions.clients[0]?.profile.id || ''); if (current) { if (current.invoice.status !== 'BROUILLON') throw new Error('Cette facture n’est plus modifiable'); setClientId(current.invoice.clientProfileId); setIssueDate(current.invoice.issueDate ?? ''); setDueDate(current.invoice.dueDate ?? ''); setNotes(current.invoice.notes ?? ''); setTerms(current.invoice.terms ?? ''); setLines(current.lines.map((line) => ({ id: line.id, productId: line.productId, position: line.position, designation: line.designationSnapshot, description: line.descriptionSnapshot, unitLabel: line.unitLabelSnapshot, quantityText: formatQuantity(line.quantityScaled, line.quantityScale), unitPriceMinor: line.unitPriceMinor, discountType: line.discountType, discountValue: line.discountValue, taxRateBasisPoints: line.taxRateBasisPoints }))); } }).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')); }, [invoiceId]);
   const taxesEnabled = options?.settings?.enableTaxes ?? false; const currency = options?.settings?.currencyCode ?? options?.company?.currencyCode ?? 'XOF'; const scale = currencyScaleFor(currency);
   const calculated = useMemo(() => { try { const values = lines.map((line, position) => { const quantity = parseScaledDecimal(line.quantityText); return calculateInvoiceLine({ ...line, position, quantityScaled: quantity.scaled, quantityScale: quantity.scale }, taxesEnabled); }); return { lines: values, totals: calculateInvoiceTotals(values), error: '' }; } catch (caught) { return { lines: [], totals: calculateInvoiceTotals([]), error: caught instanceof Error ? caught.message : 'Calcul invalide' }; } }, [lines, taxesEnabled]);
@@ -40,10 +43,77 @@ export default function InvoiceForm({ invoiceId }: { invoiceId?: string }) {
       setError(err instanceof Error ? err.message : "Erreur création produit");
     }
   };
+  const handleCreateClient = async () => {
+    if (!newClientName.trim() || !newClientPhone.trim()) {
+      setError("Le nom et le numéro WhatsApp sont obligatoires pour créer un client.");
+      return;
+    }
+    try {
+      const { DexieProspectRepository } = await import('@/modules/prospects/infrastructure/dexie-prospect-repository');
+      const { CreateProspectUseCase } = await import('@/modules/prospects/application/create-prospect');
+      const { ConvertProspectToClientUseCase } = await import('@/modules/clients/application/convert-prospect-to-client');
+      
+      const createProspect = new CreateProspectUseCase(new DexieProspectRepository());
+      const convertProspect = new ConvertProspectToClientUseCase();
+
+      const prospectResult = await createProspect.execute({
+        displayName: newClientName.trim(),
+        whatsappPhone: newClientPhone.trim(),
+        status: 'INTERESSE',
+        interestLevel: 'TIEDE'
+      }, true);
+
+      if (prospectResult.error) throw new Error(prospectResult.error);
+      if (!prospectResult.prospect) throw new Error("Erreur lors de la création du prospect");
+
+      const newClient = await convertProspect.execute(prospectResult.prospect.contact.id, {
+        convertedAt: new Date().toISOString()
+      });
+
+      const formOptions = await manage.formOptions();
+      setOptions(formOptions);
+      setClientId(newClient.profile.id);
+      setClientMode('SELECT');
+      setNewClientName('');
+      setNewClientPhone('');
+      setError('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur création client");
+    }
+  };
   const save = async () => { if (!options?.settings) { setError('Configurez les paramètres de facturation'); return; } if (calculated.error) { setError(calculated.error); return; } setPending(true); setError(''); try { const input: DraftInvoiceInput = { clientProfileId: clientId, currency, currencyScale: scale, issueDate, dueDate, notes, terms, taxesEnabled, lines: lines.map((line, position) => { const quantity = parseScaledDecimal(line.quantityText); return { ...line, position, quantityScaled: quantity.scaled, quantityScale: quantity.scale }; }) }; const result = invoiceId ? await manage.updateDraft(invoiceId, input) : await manage.createDraft(input); if (!result) throw new Error('Enregistrement impossible'); router.push(`/invoices/${result.invoice.id}`); } catch (caught) { setError(caught instanceof Error ? caught.message : 'Enregistrement impossible'); setPending(false); } };
   if (!options && !error) return <p className="p-4">Chargement...</p>;
   return <main className="mx-auto max-w-4xl space-y-5 p-4 md:p-8"><header><h1 className="text-2xl font-bold">{invoiceId ? 'Modifier le brouillon' : 'Nouvelle facture'}</h1><p className="text-sm text-muted-foreground">Le numéro définitif sera attribué uniquement à l’émission.</p></header>{error && <p role="alert" className="rounded-md bg-red-500/10 p-3 text-red-800 dark:text-red-200">{error}</p>}
-    <section className="grid gap-3 rounded-xl border bg-card text-card-foreground p-4 sm:grid-cols-3"><label className="text-sm">Client<select aria-label="Client" className="mt-1 h-11 w-full rounded-md border px-3" value={clientId} onChange={(event) => setClientId(event.target.value)}>{options?.clients.map((client) => <option key={client.profile.id} value={client.profile.id}>{client.contact.displayName}</option>)}</select></label><label className="text-sm">Date d’émission<input aria-label="Date d’émission" type="date" className="mt-1 h-11 w-full rounded-md border px-3" value={issueDate} onChange={(event) => setIssueDate(event.target.value)}/></label><label className="text-sm">Échéance<input aria-label="Date d’échéance" type="date" className="mt-1 h-11 w-full rounded-md border px-3" value={dueDate} onChange={(event) => setDueDate(event.target.value)}/></label></section>
+    <section className="grid gap-3 rounded-xl border bg-card text-card-foreground p-4 sm:grid-cols-3">
+      <div className="flex flex-col gap-1">
+        <label className="text-sm">Client</label>
+        {clientMode === 'SELECT' ? (
+          <select aria-label="Client" className="h-11 w-full rounded-md border px-3" value={clientId} onChange={(event) => {
+            if (event.target.value === 'NEW') {
+              setClientMode('NEW');
+              setClientId('');
+            } else {
+              setClientId(event.target.value);
+            }
+          }}>
+            <option value="">Sélectionnez un client...</option>
+            {options?.clients.map((client) => <option key={client.profile.id} value={client.profile.id}>{client.contact.displayName}</option>)}
+            <option value="NEW">+ Nouveau client...</option>
+          </select>
+        ) : (
+          <div className="flex flex-col gap-2 rounded-md border p-2 bg-muted/30">
+            <input aria-label="Nom du nouveau client" autoFocus placeholder="Nom / Entreprise" className="h-9 w-full rounded-md border px-2 text-sm" value={newClientName} onChange={e => setNewClientName(e.target.value)} />
+            <input aria-label="Numéro WhatsApp" placeholder="Numéro WhatsApp" className="h-9 w-full rounded-md border px-2 text-sm" value={newClientPhone} onChange={e => setNewClientPhone(e.target.value)} />
+            <div className="flex gap-2">
+              <button type="button" className="rounded-md border px-2 py-1 text-sm bg-secondary text-secondary-foreground" onClick={handleCreateClient}>Créer</button>
+              <button type="button" className="rounded-md border px-2 py-1 text-sm" onClick={() => { setClientMode('SELECT'); setNewClientName(''); setNewClientPhone(''); }}>Annuler</button>
+            </div>
+          </div>
+        )}
+      </div>
+      <label className="text-sm">Date d’émission<input aria-label="Date d’émission" type="date" className="mt-1 h-11 w-full rounded-md border px-3" value={issueDate} onChange={(event) => setIssueDate(event.target.value)}/></label>
+      <label className="text-sm">Échéance<input aria-label="Date d’échéance" type="date" className="mt-1 h-11 w-full rounded-md border px-3" value={dueDate} onChange={(event) => setDueDate(event.target.value)}/></label>
+    </section>
     <section className="space-y-3"><div className="flex flex-wrap gap-2">
       {productMode === 'SELECT' ? (
         <select aria-label="Produit à ajouter" className="h-11 flex-1 rounded-md border px-3" value={selectedProduct} onChange={(event) => {
