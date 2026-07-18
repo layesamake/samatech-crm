@@ -4,10 +4,11 @@ import { useState } from 'react';
 import CompanySettingsForm from '@/modules/settings/presentation/CompanySettingsForm';
 import InvoiceSettingsForm from '@/modules/settings/presentation/InvoiceSettingsForm';
 import LocationsManager from '@/modules/locations/presentation/LocationsManager';
+import AppearanceSettingsForm from '@/modules/settings/presentation/AppearanceSettingsForm';
 import Link from 'next/link';
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'COMPANY' | 'INVOICE' | 'LOCATIONS'>('COMPANY');
+  const [activeTab, setActiveTab] = useState<'COMPANY' | 'INVOICE' | 'LOCATIONS' | 'APPEARANCE'>('COMPANY');
 
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6">
@@ -42,12 +43,19 @@ export default function SettingsPage() {
         >
           Localités
         </button>
+        <button
+          onClick={() => setActiveTab('APPEARANCE')}
+          className={`px-4 py-2 font-medium text-sm ${activeTab === 'APPEARANCE' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+        >
+          Apparence
+        </button>
       </div>
 
       <div className="pt-4">
         {activeTab === 'COMPANY' && <CompanySettingsForm />}
         {activeTab === 'INVOICE' && <InvoiceSettingsForm />}
         {activeTab === 'LOCATIONS' && <LocationsManager />}
+        {activeTab === 'APPEARANCE' && <AppearanceSettingsForm />}
       </div>
     </div>
   );
