@@ -30,7 +30,10 @@ export default function ProductsManager() {
   const [statusFilter, setStatusFilter] = useState<'ACTIVE' | 'INACTIVE' | 'ARCHIVED' | ''>('');
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateProductInput>({
+  const [categoryMode, setCategoryMode] = useState<'SELECT' | 'NEW'>('SELECT');
+  const [newCategoryName, setNewCategoryName] = useState('');
+
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<CreateProductInput>({
     resolver: zodResolver(CreateProductSchema),
     defaultValues: {
       type: 'PRODUCT',
@@ -65,6 +68,24 @@ export default function ProductsManager() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
   }, [statusFilter]);
+
+  const handleCreateCategory = async () => {
+    if (!newCategoryName.trim()) return;
+    try {
+      const newCategory = await manageCatalogUseCase.createCategory({
+        name: newCategoryName.trim(),
+        description: ''
+      });
+      setCategories(prev => [...prev, newCategory]);
+      setValue('categoryId', newCategory.id);
+      setCategoryMode('SELECT');
+      setNewCategoryName('');
+      setMessage('Catégorie ajoutée avec succès.');
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Erreur création catégorie");
+    }
+  };
 
   const onSubmit = async (data: CreateProductInput) => {
     setSaving(true);
@@ -151,16 +172,33 @@ export default function ProductsManager() {
 
               <div className="space-y-2">
                 <label htmlFor="catalog-category" className="text-sm font-medium">Catégorie</label>
-                <select 
-                  id="catalog-category"
-                  {...register('categoryId')} 
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="">Aucune</option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
+                {categoryMode === 'SELECT' ? (
+                  <select 
+                    id="catalog-category"
+                    {...register('categoryId')} 
+                    onChange={(e) => {
+                      if (e.target.value === 'NEW') {
+                        setCategoryMode('NEW');
+                        setValue('categoryId', undefined);
+                      } else {
+                        setValue('categoryId', e.target.value || undefined);
+                      }
+                    }}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">Aucune</option>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                    <option value="NEW">+ Nouvelle catégorie...</option>
+                  </select>
+                ) : (
+                  <div className="flex gap-2 rounded-md border p-2 bg-muted/30">
+                    <input autoFocus placeholder="Nom catégorie" className="h-9 flex-1 rounded-md border px-2 text-sm" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} />
+                    <button type="button" className="rounded-md border px-2 py-1 text-sm bg-secondary text-secondary-foreground" onClick={handleCreateCategory}>Créer</button>
+                    <button type="button" className="rounded-md border px-2 py-1 text-sm" onClick={() => { setCategoryMode('SELECT'); setNewCategoryName(''); }}>Annuler</button>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
