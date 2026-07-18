@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { formatMinor } from '@/modules/invoices/domain/invoice';
 import { ManagePaymentsUseCase } from '@/modules/payments/application/manage-payments';
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS, PAYMENT_STATUSES, PaymentAggregate, PaymentIndicators, PaymentMethod, PaymentStatus, ReceivableRecord, sumActivePayments } from '@/modules/payments/domain/payment';
+import { Download } from 'lucide-react';
 
 const manage = new ManagePaymentsUseCase();
 const EMPTY_INDICATORS: PaymentIndicators = { activeCollectedMinor: 0, remainingMinor: 0, partiallyPaidCount: 0, paidCount: 0, overdueReceivablesCount: 0 };
@@ -38,8 +39,41 @@ export default function PaymentsPage() {
   const scale = allItems[0]?.payment.currencyScale ?? receivables[0]?.invoice.currencyScale ?? 0;
   const filteredActive = sumActivePayments(items.map((item) => item.payment));
 
+  const exportToCsv = () => {
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+    if (view === 'PAYMENTS') {
+      csvContent += "Date;Facture;Client;Statut;Montant;Mode;Reference\n";
+      items.forEach(({ payment, invoiceNumber, clientName }) => {
+        const amount = payment.amountMinor / (10 ** payment.currencyScale);
+        csvContent += `${payment.paymentDate};${invoiceNumber};"${clientName}";${payment.status};${amount};${PAYMENT_METHOD_LABELS[payment.method]};"${payment.reference || ''}"\n`;
+      });
+    } else {
+      csvContent += "Date Emission;Echeance;Facture;Client;Statut;Retard (Jours);Total;Paye;Solde\n";
+      receivables.forEach(({ invoice, clientName, daysOverdue }) => {
+        const scale = 10 ** invoice.currencyScale;
+        csvContent += `${invoice.issueDate || ''};${invoice.dueDate || ''};${invoice.number};"${clientName}";${invoice.status};${daysOverdue};${invoice.grandTotalMinor / scale};${invoice.paidTotalMinor / scale};${invoice.balanceMinor / scale}\n`;
+      });
+    }
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `export_${view.toLowerCase()}_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return <main className="mx-auto max-w-6xl space-y-5 p-4 md:p-8">
-    <header><h1 className="text-2xl font-bold">Paiements et créances</h1><p className="text-muted-foreground">Encaissements manuels, soldes et factures à recouvrer — disponibles hors ligne.</p></header>
+    <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+      <div>
+        <h1 className="text-2xl font-bold">Paiements et créances</h1>
+        <p className="text-muted-foreground">Encaissements manuels, soldes et factures à recouvrer — disponibles hors ligne.</p>
+      </div>
+      <button onClick={exportToCsv} className="flex items-center gap-2 h-11 rounded-md border bg-card px-4 hover:bg-muted">
+        <Download className="w-4 h-4" />
+        Exporter CSV
+      </button>
+    </header>
     <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5" aria-label="Indicateurs d’encaissement">
       <article className="rounded-xl border bg-card text-card-foreground p-4"><p className="text-xs text-muted-foreground">Total encaissé actif</p><strong>{formatMinor(indicators.activeCollectedMinor, currency, scale)}</strong></article>
       <article className="rounded-xl border bg-card text-card-foreground p-4"><p className="text-xs text-muted-foreground">Restant à encaisser</p><strong>{formatMinor(indicators.remainingMinor, currency, scale)}</strong></article>
