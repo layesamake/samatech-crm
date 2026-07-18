@@ -20,9 +20,9 @@ export default function AppearanceSettingsForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Thème de l'application</CardTitle>
+        <CardTitle>Thème de l&apos;application</CardTitle>
         <CardDescription>
-          Personnalisez l'apparence visuelle. Le thème sombre est inspiré de "Salytics", et le thème clair est inspiré de "Pipeliner".
+          Personnalisez l&apos;apparence visuelle. Le thème sombre est inspiré de &quot;Salytics&quot;, et le thème clair est inspiré de &quot;Pipeliner&quot;.
         </CardDescription>
       </CardHeader>
       <CardContent>
