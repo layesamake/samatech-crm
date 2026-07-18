@@ -28,6 +28,9 @@ export default function NouveauProspectPage() {
   const [forceDuplicate, setForceDuplicate] = useState(false);
   const [locations, setLocations] = useState<{id: string, name: string}[]>([]);
   const [products, setProducts] = useState<{id: string, name: string}[]>([]);
+  
+  const [locationMode, setLocationMode] = useState<'SELECT' | 'NEW'>('SELECT');
+  const [newLocationName, setNewLocationName] = useState('');
 
   useEffect(() => {
     const locRepo = new DexieLocationRepository();
@@ -42,6 +45,8 @@ export default function NouveauProspectPage() {
     register,
     control,
     handleSubmit,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<CreateProspectFormInput, unknown, CreateProspectInput>({
     resolver: zodResolver(CreateProspectSchema),
@@ -51,9 +56,46 @@ export default function NouveauProspectPage() {
     },
   });
 
+  const handleCreateProduct = async (name: string) => {
+    const catRepo = new DexieCatalogRepository();
+    const { ManageCatalogUseCase } = await import("@/modules/catalog/application/manage-catalog");
+    const manageCat = new ManageCatalogUseCase(catRepo);
+    try {
+      const newProduct = await manageCat.createProduct({
+        name,
+        type: 'SERVICE',
+        currency: 'XOF',
+        currencyScale: 0,
+        unitPriceMinor: 0,
+        defaultTaxRateBasisPoints: 0,
+      });
+      setProducts(prev => [...prev, { id: newProduct.id, name: newProduct.name }]);
+      const current = getValues('productIds') || [];
+      setValue('productIds', [...current, newProduct.id], { shouldDirty: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur création produit");
+    }
+  };
+
   const onSubmit = async (data: CreateProspectInput) => {
     setError(null);
-    const result = await createUseCase.execute(data, forceDuplicate);
+    
+    let locationId = data.locationId;
+    if (locationMode === 'NEW' && newLocationName.trim()) {
+      const locRepo = new DexieLocationRepository();
+      const { ManageLocationsUseCase } = await import("@/modules/locations/application/manage-locations");
+      const manageLoc = new ManageLocationsUseCase(locRepo);
+      try {
+        const loc = await manageLoc.createLocation({ name: newLocationName.trim(), level: 'CITY' });
+        locationId = loc.id;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erreur lors de la création de la localité");
+        return;
+      }
+    }
+
+    const payload = { ...data, locationId };
+    const result = await createUseCase.execute(payload, forceDuplicate);
 
     if (result.error) {
       setError(result.error);
@@ -138,15 +180,38 @@ export default function NouveauProspectPage() {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="locationId">Localité</Label>
-            <select id="locationId" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" {...register("locationId")}>
-              <option value="">Sélectionnez...</option>
-              {locations.map(loc => <option key={loc.id} value={loc.id}>{loc.name}</option>)}
-            </select>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="locationId">Localité</Label>
+              <button 
+                type="button" 
+                onClick={() => setLocationMode(m => m === 'SELECT' ? 'NEW' : 'SELECT')} 
+                className="text-xs text-primary hover:underline font-medium"
+              >
+                {locationMode === 'SELECT' ? '+ Nouvelle localité' : 'Choisir existante'}
+              </button>
+            </div>
+            {locationMode === 'SELECT' ? (
+              <select id="locationId" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" {...register("locationId")}>
+                <option value="">Sélectionnez...</option>
+                {locations.map(loc => <option key={loc.id} value={loc.id}>{loc.name}</option>)}
+              </select>
+            ) : (
+              <Input 
+                placeholder="Nom de la nouvelle localité..." 
+                value={newLocationName} 
+                onChange={e => setNewLocationName(e.target.value)} 
+                className="h-9"
+              />
+            )}
           </div>
 
           <Controller name="productIds" control={control} defaultValue={[]} render={({ field }) => (
-            <ProductInterestSelector products={products} selectedIds={field.value ?? []} onChange={field.onChange} />
+            <ProductInterestSelector 
+              products={products} 
+              selectedIds={field.value ?? []} 
+              onChange={field.onChange} 
+              onCreateProduct={handleCreateProduct}
+            />
           )} />
 
           <div className="space-y-1">

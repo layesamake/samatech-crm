@@ -12,9 +12,10 @@ interface ProductInterestSelectorProps {
   products: ProductInterestOption[];
   selectedIds: string[];
   onChange: (ids: string[]) => void;
+  onCreateProduct?: (name: string) => void;
 }
 
-export function ProductInterestSelector({ products, selectedIds, onChange }: ProductInterestSelectorProps) {
+export function ProductInterestSelector({ products, selectedIds, onChange, onCreateProduct }: ProductInterestSelectorProps) {
   const [query, setQuery] = useState('');
   const visibleProducts = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase('fr');
@@ -25,6 +26,8 @@ export function ProductInterestSelector({ products, selectedIds, onChange }: Pro
     onChange(checked ? [...new Set([...selectedIds, id])] : selectedIds.filter((selectedId) => selectedId !== id));
   };
 
+  const exactMatch = products.some((p) => p.name.trim().toLocaleLowerCase('fr') === query.trim().toLocaleLowerCase('fr'));
+
   return (
     <fieldset className="space-y-3 rounded-lg border p-3">
       <legend className="px-1 text-sm font-medium">Produits / Services d&apos;intérêt</legend>
@@ -33,7 +36,7 @@ export function ProductInterestSelector({ products, selectedIds, onChange }: Pro
         aria-label="Rechercher un produit à associer"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
-        placeholder="Rechercher un produit..."
+        placeholder="Rechercher ou ajouter un produit..."
         className="h-11 w-full rounded-md border bg-background px-3 text-base"
       />
       <p aria-live="polite" className="text-xs text-muted-foreground">
@@ -57,7 +60,19 @@ export function ProductInterestSelector({ products, selectedIds, onChange }: Pro
             </label>
           );
         })}
-        {visibleProducts.length === 0 && <p className="py-3 text-sm text-muted-foreground">Aucun produit disponible.</p>}
+        {visibleProducts.length === 0 && !query.trim() && <p className="py-3 text-sm text-muted-foreground">Aucun produit disponible.</p>}
+        {query.trim() && !exactMatch && onCreateProduct && (
+          <button
+            type="button"
+            onClick={() => {
+              onCreateProduct(query.trim());
+              setQuery('');
+            }}
+            className="flex w-full items-center gap-2 rounded-md border border-dashed border-primary px-3 py-3 text-sm text-primary hover:bg-primary/10"
+          >
+            + Créer &quot;{query.trim()}&quot;
+          </button>
+        )}
       </div>
     </fieldset>
   );
