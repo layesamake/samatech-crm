@@ -11,7 +11,7 @@ export type DiscountType = typeof DISCOUNT_TYPES[number];
 
 export interface PartySnapshot { displayName: string; address?: string; phone?: string; email?: string; taxId?: string; logoDataRef?: string; logoDataUri?: string; managerName?: string; managerSignatureDataUri?: string; }
 export interface InvoiceRecord {
-  id: string; clientProfileId: string; number?: string; status: InvoiceStatus; issueDate?: string; dueDate?: string;
+  id: string; type?: 'INVOICE' | 'ESTIMATE'; clientProfileId: string; number?: string; status: InvoiceStatus; issueDate?: string; dueDate?: string;
   currency: string; currencyScale: number; companySnapshot: PartySnapshot; clientSnapshot: PartySnapshot;
   subtotalMinor: number; discountTotalMinor: number; taxTotalMinor: number; grandTotalMinor: number;
   paidTotalMinor: number; balanceMinor: number; notes?: string; terms?: string; issuedAt?: string;
@@ -43,6 +43,7 @@ export const DraftLineInputSchema = z.object({
 export type DraftLineInput = z.infer<typeof DraftLineInputSchema>;
 
 export const DraftInvoiceInputSchema = z.object({
+  type: z.enum(['INVOICE', 'ESTIMATE']).optional().default('INVOICE'),
   clientProfileId: z.string().uuid('Client invalide'), currency: z.string().regex(/^[A-Z]{3}$/, 'Devise invalide'),
   currencyScale: z.number().int().min(0).max(3), issueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')),
   dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')), notes: z.string().trim().max(5000).optional(),

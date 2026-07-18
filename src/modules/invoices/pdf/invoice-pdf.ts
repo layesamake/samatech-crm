@@ -3,7 +3,7 @@ import { formatMinor, formatQuantity, InvoiceAggregate } from '../domain/invoice
 
 const A4: [number, number] = [595.28, 841.89]; const MARGIN = 44; const BOTTOM = 48;
 export const PDF_MIME_TYPE = 'application/pdf';
-export function safePdfFilename(number?: string, status?: string) { const base = number || (status === 'BROUILLON' ? 'brouillon' : 'facture'); return `facture-${base.toLocaleLowerCase('fr').replace(/[^a-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'document'}.pdf`; }
+export function safePdfFilename(number?: string, status?: string, type?: string) { const base = number || (status === 'BROUILLON' ? 'brouillon' : (type === 'ESTIMATE' ? 'devis' : 'facture')); return `${type === 'ESTIMATE' ? 'devis' : 'facture'}-${base.toLocaleLowerCase('fr').replace(/[^a-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'document'}.pdf`; }
 export function invoiceFinancialSummary(value: InvoiceAggregate): string[] { return [`TOTAL : ${formatMinor(value.invoice.grandTotalMinor, value.invoice.currency, value.invoice.currencyScale)}`, `Payé : ${formatMinor(value.invoice.paidTotalMinor, value.invoice.currency, value.invoice.currencyScale)}`, `Solde : ${formatMinor(value.invoice.balanceMinor, value.invoice.currency, value.invoice.currencyScale)}`]; }
 function safeText(value: unknown): string { return String(value ?? '').replace(/[\u00A0\u202F]/g, ' ').replace(/[‐‑‒–—―]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/[^\x20-\x7E\xA0-\xFF\u0152\u0153\u20AC\n]/g, '?'); }
 function wrap(text: string, font: PDFFont, size: number, width: number): string[] { const paragraphs = safeText(text).split('\n'); const result: string[] = []; for (const paragraph of paragraphs) { const words = paragraph.split(/\s+/).filter(Boolean); if (!words.length) { result.push(''); continue; } let line = ''; for (const word of words) { const candidate = line ? `${line} ${word}` : word; if (font.widthOfTextAtSize(candidate, size) <= width) line = candidate; else { if (line) result.push(line); let chunk = ''; for (const char of word) { const next = chunk + char; if (font.widthOfTextAtSize(next, size) > width && chunk) { result.push(chunk); chunk = char; } else chunk = next; } line = chunk; } } if (line) result.push(line); } return result; }
@@ -13,7 +13,7 @@ export async function generateInvoicePdf(value: InvoiceAggregate): Promise<Uint8
   const regular = await document.embedFont(StandardFonts.Helvetica);
   const bold = await document.embedFont(StandardFonts.HelveticaBold);
   document.setTitle(safeText(value.invoice.number || 'Facture brouillon'));
-  document.setSubject(safeText(`SAMTECH CRM - ${value.invoice.status} - ${value.invoice.companySnapshot.displayName} - ${value.invoice.clientSnapshot.displayName || value.clientName} - ${value.invoice.currency}`));
+  document.setSubject(safeText(`SAMTECH CRM - ${value.invoice.type === 'ESTIMATE' ? 'DEVIS' : 'FACTURE'} ${value.invoice.status} - ${value.invoice.companySnapshot.displayName} - ${value.invoice.clientSnapshot.displayName || value.clientName} - ${value.invoice.currency}`));
   document.setCreator('SAMTECH CRM');
   document.setCreationDate(new Date(value.invoice.issuedAt || value.invoice.createdAt));
   
@@ -59,7 +59,7 @@ export async function generateInvoicePdf(value: InvoiceAggregate): Promise<Uint8
     leftY -= 20;
 
     let rightY = y;
-    writeTextRight('Facture', rightY - 10, 32, regular, primaryBlue);
+    writeTextRight(value.invoice.type === 'ESTIMATE' ? 'Devis / Proforma' : 'Facture', rightY - 10, 32, regular, primaryBlue);
     rightY -= 35;
     writeTextRight(safeText(value.invoice.status === 'BROUILLON' ? 'BROUILLON' : `# ${value.invoice.number || ''}`), rightY, 11, bold, textDark);
     rightY -= 30;

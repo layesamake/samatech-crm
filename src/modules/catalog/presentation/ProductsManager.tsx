@@ -98,7 +98,7 @@ export default function ProductsManager() {
       else await manageCatalogUseCase.createProduct(data);
       setMessage(`Produit/Service ${editingId ? 'modifié' : 'ajouté'} avec succès !`);
       setEditingId(null);
-      reset({ ...data, name: '', description: '', sku: '' });
+      reset({ ...data, name: '', description: '', sku: '', barcode: '' });
       await loadData();
     } catch (error: unknown) {
       setMessage(error instanceof Error ? error.message : "Erreur lors de l'ajout");
@@ -206,6 +206,16 @@ export default function ProductsManager() {
                 <input 
                   id="catalog-sku"
                   {...register('sku')} 
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label htmlFor="catalog-barcode" className="text-sm font-medium">Code-barres</label>
+                <input 
+                  id="catalog-barcode"
+                  {...register('barcode')} 
+                  placeholder="EAN, UPC, QR..."
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
                 />
               </div>

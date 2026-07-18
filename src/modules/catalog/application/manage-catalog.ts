@@ -89,6 +89,7 @@ export class ManageCatalogUseCase {
       type: validated.type,
       categoryId: validated.categoryId,
       sku: validated.sku,
+      barcode: validated.barcode,
       description: validated.description,
       unitLabel: validated.unitLabel,
       unitPriceMinor: validated.unitPriceMinor,
@@ -133,6 +134,7 @@ export class ManageCatalogUseCase {
     product.type = validated.type;
     product.categoryId = validated.categoryId;
     product.sku = validated.sku;
+    product.barcode = validated.barcode;
     product.description = validated.description;
     product.unitLabel = validated.unitLabel;
     product.unitPriceMinor = validated.unitPriceMinor;

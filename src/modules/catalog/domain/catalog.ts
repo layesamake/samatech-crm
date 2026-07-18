@@ -26,6 +26,7 @@ export interface ProductRecord extends AuditFields {
   type: 'PRODUCT' | 'SERVICE';
   categoryId?: UUID;
   sku?: string;
+  barcode?: string;
   description?: string;
   unitLabel?: string;
   unitPriceMinor: MinorAmount;
@@ -49,6 +50,7 @@ export const CreateProductSchema = z.object({
   type: z.enum(['PRODUCT', 'SERVICE']),
   categoryId: z.string().uuid().optional().or(z.literal('')),
   sku: z.string().trim().optional(),
+  barcode: z.string().trim().optional(),
   description: z.string().trim().optional(),
   unitLabel: z.string().trim().optional(),
   unitPriceMinor: z.number().int().min(0, 'Le prix ne peut pas être négatif'),

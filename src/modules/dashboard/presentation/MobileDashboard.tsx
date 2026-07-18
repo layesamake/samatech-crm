@@ -247,6 +247,38 @@ export function MobileDashboard() {
           </div>
         )}
       </section>
+
+      {/* Top Products */}
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border">
+         <div className="flex justify-between items-center mb-4">
+          <h2 className="font-semibold text-foreground">Produits populaires</h2>
+          <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">Ce mois</span>
+        </div>
+        
+        {report.soldProducts.length > 0 ? (
+           <div className="space-y-4">
+             {report.soldProducts.slice(0, 4).map(product => {
+                const maxQty = Math.max(...report.soldProducts.map(p => Number(p.quantityScaled)), 1);
+                const pct = (Number(product.quantityScaled) / maxQty) * 100;
+                return (
+                  <div key={product.id}>
+                     <div className="flex justify-between text-sm mb-1">
+                        <span className="font-medium truncate pr-4">{product.label}</span>
+                        <span className="font-semibold">{Number(product.quantityScaled) / (10 ** product.quantityScale)}</span>
+                     </div>
+                     <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.max(pct, 2)}%` }}></div>
+                     </div>
+                  </div>
+                )
+             })}
+           </div>
+        ) : (
+          <div className="text-center py-4 text-sm text-muted-foreground">
+             Aucun produit vendu.
+          </div>
+        )}
+      </section>
     </div>
   );
 }
