@@ -39,7 +39,7 @@ export default function ProspectsPage() {
   return (
     <div className="flex flex-col h-full bg-slate-50 min-h-screen">
       {/* Header Mobile-First */}
-      <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex flex-col gap-3 shadow-sm">
+      <header className="sticky top-0 z-10 bg-card text-card-foreground border-b px-4 py-3 flex flex-col gap-3 shadow-sm">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-slate-800">Prospects</h1>
         </div>
@@ -51,7 +51,7 @@ export default function ProspectsPage() {
               aria-label="Rechercher un prospect par nom ou numéro"
               type="text"
               placeholder="Rechercher par nom, numéro..."
-              className="w-full bg-slate-100 border-transparent focus:bg-white focus:border-blue-500 rounded-lg pl-9 pr-4 py-2 text-sm outline-none transition-all"
+              className="w-full bg-slate-100 border-transparent focus:bg-card text-card-foreground focus:border-blue-500 rounded-lg pl-9 pr-4 py-2 text-sm outline-none transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -88,7 +88,7 @@ export default function ProspectsPage() {
         {!prospects ? (
           <div className="flex justify-center p-8 text-slate-400">Chargement...</div>
         ) : prospects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-8 text-center bg-white rounded-xl border border-dashed border-slate-300">
+          <div className="flex flex-col items-center justify-center p-8 text-center bg-card text-card-foreground rounded-xl border border-dashed border-slate-300">
             <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-3">
               <Plus className="h-6 w-6 text-blue-500" />
             </div>
@@ -104,7 +104,7 @@ export default function ProspectsPage() {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {prospects.map((p: Prospect) => (
               <Link key={p.contact.id} href={`/prospects/${p.contact.id}`}>
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 active:scale-[0.98] transition-transform">
+                <div className="bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-slate-100 active:scale-[0.98] transition-transform">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-semibold text-slate-800 line-clamp-1">{p.contact.displayName}</h3>
                     <span className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-700">

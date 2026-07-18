@@ -33,7 +33,7 @@ export default function FollowUpForm({ initial, contactId }: { initial?: FollowU
       router.push(`/follow-ups/${result.followUp?.id}`);
     } catch (caught: unknown) { setError(caught instanceof Error ? caught.message : 'Relance invalide'); }
   };
-  return <form onSubmit={submit} className="mx-auto max-w-xl space-y-4 rounded-xl border bg-white p-4">
+  return <form onSubmit={submit} className="mx-auto max-w-xl space-y-4 rounded-xl border bg-card text-card-foreground p-4">
     {error && <p role="alert" className="text-red-700">{error}</p>}
     {warning && <div className="rounded-md border border-amber-300 bg-amber-50 p-3"><p>{warning === 'PAST_DUE' ? 'Cette échéance est passée. Confirmez l’enregistrement historique.' : 'Une relance proche existe déjà. Confirmez la création.'}</p>{similar && <p className="mt-1 text-sm">Relance similaire : {new Date(similar.dueAt).toLocaleString('fr-FR', { timeZone: similar.timezone })} · {similar.channel} · {similar.reason || 'Sans motif'}</p>}<button type="button" onClick={(event) => void submit(event, true)} className="mt-2 font-medium text-amber-900">Confirmer quand même</button></div>}
     <label className="block">Contact *<select name="contactId" value={form.contactId} disabled={Boolean(initial || contactId)} onChange={(e) => setForm({ ...form, contactId: e.target.value })} className="mt-1 h-11 w-full rounded-md border px-3"><option value="">Sélectionnez...</option>{contacts.map((contact) => <option key={contact.id} value={contact.id}>{contact.name}</option>)}</select></label>

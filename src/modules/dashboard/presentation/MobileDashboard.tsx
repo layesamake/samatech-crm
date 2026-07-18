@@ -55,11 +55,11 @@ export function MobileDashboard() {
       </section>
 
       {/* Quick Actions Card */}
-      <section className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex justify-between items-start gap-2 overflow-x-auto scrollbar-hide">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100 flex justify-between items-start gap-2 overflow-x-auto scrollbar-hide">
         <Link href="/invoices/new" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 shadow-sm relative">
              <FileText className="w-6 h-6" />
-             <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
+             <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
                   <span className="text-[10px] text-white font-bold">+</span>
                 </div>
@@ -70,7 +70,7 @@ export function MobileDashboard() {
         <Link href="/prospects/nouveau" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shadow-sm relative">
              <User className="w-6 h-6" />
-             <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
+             <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
                   <span className="text-[10px] text-white font-bold">+</span>
                 </div>
@@ -81,7 +81,7 @@ export function MobileDashboard() {
         <Link href="/payments" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-red-500 shadow-sm relative">
              <ReceiptText className="w-6 h-6" />
-             <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
+             <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
                   <span className="text-[10px] text-white font-bold">+</span>
                 </div>
@@ -98,7 +98,7 @@ export function MobileDashboard() {
       </section>
 
       {/* Accounts Receivable Card */}
-      <section className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100">
         <div className="flex justify-between items-start mb-4">
           <h2 className="font-semibold text-slate-800 flex items-center gap-2">
             <DollarSign className="w-4 h-4" />
@@ -136,7 +136,7 @@ export function MobileDashboard() {
       </section>
 
       {/* Recent Transactions Card */}
-      <section className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100">
         <div className="flex justify-between items-center mb-4">
           <h2 className="font-semibold text-slate-800 flex items-center gap-2">
             <Clock className="w-4 h-4" />
@@ -175,7 +175,7 @@ export function MobileDashboard() {
       </section>
 
       {/* Sales / Expenses Card (Ventes / Facturé) */}
-      <section className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100">
          <div className="flex justify-between items-center mb-6">
           <h2 className="font-semibold text-slate-800">Facturation & Encaissements</h2>
           <span className="text-xs text-muted-foreground bg-slate-100 px-2 py-1 rounded">Ce mois</span>
@@ -217,7 +217,7 @@ export function MobileDashboard() {
       </section>
 
       {/* Top Debtors */}
-      <section className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-slate-100">
          <div className="flex justify-between items-center mb-4">
           <h2 className="font-semibold text-slate-800">Clients débiteurs</h2>
           <span className="text-xs text-muted-foreground bg-slate-100 px-2 py-1 rounded">Actuel</span>

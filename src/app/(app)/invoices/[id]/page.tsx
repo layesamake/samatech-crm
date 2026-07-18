@@ -15,7 +15,7 @@ export default function InvoiceDetailPage() { const { id } = useParams<{ id: str
       <Link href="/invoices" className="text-blue-700">← Factures</Link>
 
       {/* Barre d'actions */}
-      <header className={`rounded-xl border bg-white p-5 ${invoice.status === 'ANNULEE' ? 'border-red-400' : ''}`}>
+      <header className={`rounded-xl border bg-card text-card-foreground p-5 ${invoice.status === 'ANNULEE' ? 'border-red-400' : ''}`}>
         <div className="flex flex-wrap justify-between gap-3">
           <div>
             <h1 className="text-xl font-bold">Aperçu de la facture</h1>
@@ -36,7 +36,7 @@ export default function InvoiceDetailPage() { const { id } = useParams<{ id: str
       </header>
 
       {/* Aperçu type A4 */}
-      <main className="bg-white shadow-xl w-full min-h-[1056px] mx-auto p-8 sm:p-12 md:p-16 text-sm text-slate-800 font-sans relative">
+      <main className="bg-card text-card-foreground shadow-xl w-full min-h-[1056px] mx-auto p-8 sm:p-12 md:p-16 text-sm text-slate-800 font-sans relative">
         {invoice.status === 'ANNULEE' && (
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-15deg] border-4 border-red-500 text-red-500 text-6xl font-bold p-4 opacity-20 pointer-events-none">
             ANNULÉE
@@ -156,7 +156,7 @@ export default function InvoiceDetailPage() { const { id } = useParams<{ id: str
       <PaymentPanel value={value} onInvoiceChanged={refresh} />
       
       {invoice.status === 'EMISE' && (
-        <section className="rounded-xl border border-red-200 bg-white p-5">
+        <section className="rounded-xl border border-red-200 bg-card text-card-foreground p-5">
           <h2 className="font-semibold text-red-700">Annuler la facture</h2>
           <p className="text-sm text-slate-600 mt-1">Le numéro et les lignes seront conservés. Aucun paiement ne doit exister.</p>
           <textarea aria-label="Motif d’annulation" placeholder="Motif de l'annulation..." className="mt-3 w-full rounded-md border p-3 text-sm" value={cancelReason} onChange={(event) => setCancelReason(event.target.value)} />

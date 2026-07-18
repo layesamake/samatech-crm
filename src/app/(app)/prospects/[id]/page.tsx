@@ -78,7 +78,7 @@ export default function ProspectDetailPage() {
 
   return (
     <div className="flex flex-col h-full bg-slate-50 min-h-screen">
-      <header className="sticky top-0 z-10 bg-white border-b px-4 py-3 flex items-center justify-between shadow-sm">
+      <header className="sticky top-0 z-10 bg-card text-card-foreground border-b px-4 py-3 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <Link href="/prospects" aria-label="Retour aux prospects" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-slate-700 active:bg-slate-100">
             <ArrowLeft className="h-5 w-5" />
@@ -127,7 +127,7 @@ export default function ProspectDetailPage() {
         </div>
 
         {/* Informations */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="bg-card text-card-foreground rounded-xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="p-4 border-b border-slate-50">
             <h2 className="font-semibold text-slate-800 mb-4">Informations</h2>
             
@@ -186,7 +186,7 @@ export default function ProspectDetailPage() {
           </div>
         </div>
 
-        <section className="rounded-xl border bg-white p-4">
+        <section className="rounded-xl border bg-card text-card-foreground p-4">
           <h2 className="font-semibold text-slate-800">Chronologie commerciale</h2>
           {!prospect.events?.length ? <p className="mt-2 text-sm text-slate-700">Aucun événement.</p> : <ol className="mt-3 space-y-3">{prospect.events.map((event) => <li key={event.id} className="border-l-2 border-slate-300 pl-3"><div className="flex flex-wrap justify-between gap-2"><strong className="text-sm">{event.title}</strong><time className="text-xs text-slate-700">{new Date(event.occurredAt).toLocaleString('fr-FR')}</time></div>{event.summary && <p className="text-sm text-slate-700">{event.summary}</p>}<span className="text-xs text-slate-700">{event.type}</span></li>)}</ol>}
         </section>

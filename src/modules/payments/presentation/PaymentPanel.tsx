@@ -62,7 +62,7 @@ export function PaymentPanel({ value, onInvoiceChanged }: { value: InvoiceAggreg
     finally { setPending(false); }
   };
 
-  return <section className="space-y-4 rounded-xl border bg-white p-5" aria-labelledby="payment-history-title">
+  return <section className="space-y-4 rounded-xl border bg-card text-card-foreground p-5" aria-labelledby="payment-history-title">
     <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 id="payment-history-title" className="font-semibold">Paiements</h2><p className="text-sm text-slate-600">Payé {formatMinor(invoice.paidTotalMinor, invoice.currency, invoice.currencyScale)} · Solde {formatMinor(invoice.balanceMinor, invoice.currency, invoice.currencyScale)}</p></div><span className="rounded-full border px-3 py-1 text-sm font-semibold">{invoice.status}</span></div>
     {(invoice.status === 'EMISE' || invoice.status === 'PARTIELLEMENT_PAYEE') && <form onSubmit={submit} className="space-y-3 rounded-lg bg-slate-50 p-4">
       <h3 className="font-medium">Enregistrer un paiement</h3>
@@ -74,7 +74,7 @@ export function PaymentPanel({ value, onInvoiceChanged }: { value: InvoiceAggreg
       </div>
       <label className="block text-sm">Note {method === 'OTHER' ? '(obligatoire pour Autre)' : 'facultative'}<textarea required={method === 'OTHER'} aria-label="Note du paiement" className="mt-1 min-h-20 w-full rounded-md border p-3" value={note} onChange={(event) => setNote(event.target.value)} /></label>
       {invoice.issueDate && paymentDate < invoice.issueDate && <p role="alert" className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">Cette date précède l’émission du {invoice.issueDate}. Une confirmation supplémentaire sera demandée.</p>}
-      <div className="flex flex-wrap gap-2"><button type="button" className="h-11 rounded-md border bg-white px-4" onClick={() => setAmount(minorToPaymentInput(invoice.balanceMinor, invoice.currencyScale))}>Régler le solde</button><button disabled={pending} className="h-11 rounded-md bg-emerald-700 px-4 text-white">{pending ? 'Enregistrement…' : 'Enregistrer le paiement'}</button></div>
+      <div className="flex flex-wrap gap-2"><button type="button" className="h-11 rounded-md border bg-card text-card-foreground px-4" onClick={() => setAmount(minorToPaymentInput(invoice.balanceMinor, invoice.currencyScale))}>Régler le solde</button><button disabled={pending} className="h-11 rounded-md bg-emerald-700 px-4 text-white">{pending ? 'Enregistrement…' : 'Enregistrer le paiement'}</button></div>
     </form>}
     {error && <p role="alert" className="rounded-md bg-red-50 p-3 text-red-800">{error}</p>}{success && <p role="status" className="rounded-md bg-emerald-50 p-3 text-emerald-800">{success}</p>}
     {items.length === 0 ? <p className="text-sm text-slate-600">Aucun paiement enregistré.</p> : <ol className="space-y-3">{items.map((payment) => <li key={payment.id} className={`rounded-lg border p-4 ${payment.status === 'REVERSED' ? 'border-slate-300 bg-slate-100 text-slate-600' : ''}`}>

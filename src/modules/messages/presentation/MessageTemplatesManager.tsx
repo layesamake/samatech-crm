@@ -25,7 +25,7 @@ export default function MessageTemplatesManager() {
     } catch (error: unknown) { setMessage(error instanceof Error ? error.message : 'Erreur du modèle'); }
   };
   return <div className="grid gap-6 lg:grid-cols-[minmax(280px,360px)_1fr]">
-    <form onSubmit={submit} className="space-y-4 rounded-xl border bg-white p-4">
+    <form onSubmit={submit} className="space-y-4 rounded-xl border bg-card text-card-foreground p-4">
       <h2 className="text-lg font-semibold">{editingId ? 'Modifier le modèle' : 'Nouveau modèle'}</h2>
       {message && <p role="status" className={message.includes('succès') ? 'text-green-700' : 'text-red-700'}>{message}</p>}
       <label className="block text-sm font-medium">Nom<input aria-label="Nom du modèle" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="mt-1 h-11 w-full rounded-md border px-3" /></label>
@@ -37,7 +37,7 @@ export default function MessageTemplatesManager() {
     </form>
     <section className="space-y-3"><div className="flex items-center justify-between"><h2 className="text-lg font-semibold">Modèles</h2><label className="flex gap-2 text-sm"><input type="checkbox" checked={showArchived} onChange={(e) => setShowArchived(e.target.checked)} /> Archives</label></div>
       {items.length === 0 && <p className="rounded-xl border border-dashed p-6 text-center">Aucun modèle.</p>}
-      {items.map((item) => <article key={item.id} className="rounded-xl border bg-white p-4"><div className="flex justify-between gap-3"><div><h3 className="font-semibold">{item.name} {item.archivedAt && <span className="text-amber-700">(Archivé)</span>}</h3><p className="text-xs text-muted-foreground">{item.category}</p></div>{!item.archivedAt && <div className="flex flex-wrap gap-2"><button onClick={() => { setEditingId(item.id); setForm({ name: item.name, category: item.category, content: item.content }); }} className="text-blue-700">Modifier</button><button onClick={async () => { await useCase.duplicate(item.id); await load(); }} className="text-blue-700">Dupliquer</button><button onClick={async () => { if (confirm('Archiver ce modèle ?')) { await useCase.archive(item.id); await load(); } }} className="text-red-700">Archiver</button></div>}</div><p className="mt-3 whitespace-pre-wrap text-sm">{item.content}</p></article>)}
+      {items.map((item) => <article key={item.id} className="rounded-xl border bg-card text-card-foreground p-4"><div className="flex justify-between gap-3"><div><h3 className="font-semibold">{item.name} {item.archivedAt && <span className="text-amber-700">(Archivé)</span>}</h3><p className="text-xs text-muted-foreground">{item.category}</p></div>{!item.archivedAt && <div className="flex flex-wrap gap-2"><button onClick={() => { setEditingId(item.id); setForm({ name: item.name, category: item.category, content: item.content }); }} className="text-blue-700">Modifier</button><button onClick={async () => { await useCase.duplicate(item.id); await load(); }} className="text-blue-700">Dupliquer</button><button onClick={async () => { if (confirm('Archiver ce modèle ?')) { await useCase.archive(item.id); await load(); } }} className="text-red-700">Archiver</button></div>}</div><p className="mt-3 whitespace-pre-wrap text-sm">{item.content}</p></article>)}
     </section>
   </div>;
 }
