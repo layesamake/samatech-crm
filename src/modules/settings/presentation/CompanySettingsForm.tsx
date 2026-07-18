@@ -63,6 +63,7 @@ export default function CompanySettingsForm() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     void loadSettings();
   }, []);
 
