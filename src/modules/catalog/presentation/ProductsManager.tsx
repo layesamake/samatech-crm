@@ -102,7 +102,7 @@ export default function ProductsManager() {
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-500/10 text-green-800 dark:text-green-200' : 'bg-red-500/10 text-red-800 dark:text-red-200'}`}>
           {message}
         </div>
       )}
@@ -223,15 +223,15 @@ export default function ProductsManager() {
                   {products.filter((p) => p.normalizedName.includes(query.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')) && (!typeFilter || p.type === typeFilter) && (!categoryFilter || p.categoryId === categoryFilter) && (!statusFilter || (statusFilter === 'ARCHIVED' ? !!p.archivedAt : statusFilter === 'INACTIVE' ? !p.isActive && !p.archivedAt : true))).map(p => (
                     <tr key={p.id} className="hover:bg-muted/50">
                       <td className="px-4 py-3 text-muted-foreground">{p.sku || '-'}</td>
-                      <td className="px-4 py-3 font-medium">{p.name} {p.archivedAt && <span className="text-xs text-amber-700">(Archivé)</span>}{!p.archivedAt && !p.isActive && <span className="text-xs text-amber-700">(Inactif)</span>}</td>
+                      <td className="px-4 py-3 font-medium">{p.name} {p.archivedAt && <span className="text-xs text-amber-800 dark:text-amber-200">(Archivé)</span>}{!p.archivedAt && !p.isActive && <span className="text-xs text-amber-800 dark:text-amber-200">(Inactif)</span>}</td>
                       <td className="px-4 py-3">{p.type === 'PRODUCT' ? 'Produit' : 'Service'}</td>
                       <td className="px-4 py-3 text-right font-medium">
                         {p.unitPriceMinor} {currencySymbol} {p.unitLabel ? `/ ${p.unitLabel}` : ''}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {!p.archivedAt && <><button onClick={() => { setEditingId(p.id); reset({ name: p.name, type: p.type, categoryId: p.categoryId || '', sku: p.sku, description: p.description, unitLabel: p.unitLabel, unitPriceMinor: p.unitPriceMinor, currency: p.currency, currencyScale: p.currencyScale, defaultTaxRateBasisPoints: p.defaultTaxRateBasisPoints }); }} className="mr-2 min-h-11 px-2 text-blue-700 font-medium">Modifier</button><button 
+                        {!p.archivedAt && <><button onClick={() => { setEditingId(p.id); reset({ name: p.name, type: p.type, categoryId: p.categoryId || '', sku: p.sku, description: p.description, unitLabel: p.unitLabel, unitPriceMinor: p.unitPriceMinor, currency: p.currency, currencyScale: p.currencyScale, defaultTaxRateBasisPoints: p.defaultTaxRateBasisPoints }); }} className="mr-2 min-h-11 px-2 text-blue-800 dark:text-blue-200 font-medium">Modifier</button><button 
                           onClick={() => onArchive(p.id)}
-                          className="min-h-11 px-2 text-red-700 hover:text-red-800 font-medium"
+                          className="min-h-11 px-2 text-red-800 dark:text-red-200 hover:text-red-800 dark:text-red-200 font-medium"
                         >
                           Archiver
                         </button></>}

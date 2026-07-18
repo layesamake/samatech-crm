@@ -75,7 +75,7 @@ export default function LocationsManager() {
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-500/10 text-green-800 dark:text-green-200' : 'bg-red-500/10 text-red-800 dark:text-red-200'}`}>
           {message}
         </div>
       )}
@@ -144,12 +144,12 @@ export default function LocationsManager() {
                 <tbody className="divide-y">
                   {locations.filter((loc) => loc.normalizedName.includes(query.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''))).map(loc => (
                     <tr key={loc.id} className="hover:bg-muted/50">
-                      <td className="px-4 py-3">{loc.name} {loc.archivedAt && <span className="text-xs text-amber-700">(Archivée)</span>}</td>
+                      <td className="px-4 py-3">{loc.name} {loc.archivedAt && <span className="text-xs text-amber-800 dark:text-amber-200">(Archivée)</span>}</td>
                       <td className="px-4 py-3">{loc.level}</td>
                       <td className="px-4 py-3 text-right">
                         {!loc.archivedAt && <><button onClick={() => { setEditingId(loc.id); reset({ name: loc.name, level: loc.level, parentId: loc.parentId || '' }); }} className="mr-3 text-blue-600 font-medium">Modifier</button><button 
                           onClick={() => onArchive(loc.id)}
-                          className="text-red-500 hover:text-red-700 font-medium"
+                          className="text-red-500 hover:text-red-800 dark:text-red-200 font-medium"
                         >
                           Archiver
                         </button></>}

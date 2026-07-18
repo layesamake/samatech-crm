@@ -67,7 +67,7 @@ export default function InvoiceSettingsForm() {
   return (
     <div className="space-y-6 max-w-2xl">
       {message && (
-        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-500/10 text-green-800 dark:text-green-200' : 'bg-red-500/10 text-red-800 dark:text-red-200'}`}>
           {message}
         </div>
       )}

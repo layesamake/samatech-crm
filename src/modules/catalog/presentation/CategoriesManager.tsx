@@ -74,7 +74,7 @@ export default function CategoriesManager() {
   return (
     <div className="space-y-6">
       {message && (
-        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-500/10 text-green-800 dark:text-green-200' : 'bg-red-500/10 text-red-800 dark:text-red-200'}`}>
           {message}
         </div>
       )}
@@ -131,13 +131,13 @@ export default function CategoriesManager() {
                   {categories.filter((cat) => cat.normalizedName.includes(query.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ''))).map(cat => (
                     <tr key={cat.id} className="hover:bg-muted/50">
                       <td className="px-4 py-3">
-                        <div className="font-medium">{cat.name} {cat.archivedAt && <span className="text-xs text-amber-700">(Archivée)</span>}</div>
+                        <div className="font-medium">{cat.name} {cat.archivedAt && <span className="text-xs text-amber-800 dark:text-amber-200">(Archivée)</span>}</div>
                         {cat.description && <div className="text-xs text-muted-foreground">{cat.description}</div>}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {!cat.archivedAt && <><button onClick={() => { setEditingId(cat.id); reset({ name: cat.name, description: cat.description }); }} className="mr-2 min-h-11 px-2 text-blue-700 font-medium">Modifier</button><button 
+                        {!cat.archivedAt && <><button onClick={() => { setEditingId(cat.id); reset({ name: cat.name, description: cat.description }); }} className="mr-2 min-h-11 px-2 text-blue-800 dark:text-blue-200 font-medium">Modifier</button><button 
                           onClick={() => onArchive(cat.id)}
-                          className="min-h-11 px-2 text-red-700 hover:text-red-800 font-medium"
+                          className="min-h-11 px-2 text-red-800 dark:text-red-200 hover:text-red-800 dark:text-red-200 font-medium"
                         >
                           Archiver
                         </button></>}

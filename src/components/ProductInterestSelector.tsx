@@ -43,7 +43,7 @@ export function ProductInterestSelector({ products, selectedIds, onChange }: Pro
         {visibleProducts.map((product) => {
           const selected = selectedIds.includes(product.id);
           return (
-            <label key={product.id} className={`flex min-h-11 items-center gap-3 rounded-md border px-3 py-2 ${selected ? 'border-blue-500 bg-blue-50' : ''} ${product.archived ? 'text-muted-foreground' : ''}`}>
+            <label key={product.id} className={`flex min-h-11 items-center gap-3 rounded-md border px-3 py-2 ${selected ? 'border-blue-500 bg-blue-500/10' : ''} ${product.archived ? 'text-muted-foreground' : ''}`}>
               <input
                 type="checkbox"
                 name="productIds"

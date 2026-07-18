@@ -57,7 +57,7 @@ export function MobileDashboard() {
       {/* Quick Actions Card */}
       <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border flex justify-between items-start gap-2 overflow-x-auto scrollbar-hide">
         <Link href="/invoices/new" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
-          <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 shadow-sm relative">
+          <div className="w-14 h-14 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-sm relative">
              <FileText className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
@@ -68,7 +68,7 @@ export function MobileDashboard() {
           <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouvelle<br/>facture</span>
         </Link>
         <Link href="/prospects/nouveau" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
-          <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shadow-sm relative">
+          <div className="w-14 h-14 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 shadow-sm relative">
              <User className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
@@ -79,7 +79,7 @@ export function MobileDashboard() {
           <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouveau<br/>client</span>
         </Link>
         <Link href="/payments" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
-          <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-red-500 shadow-sm relative">
+          <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shadow-sm relative">
              <ReceiptText className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">

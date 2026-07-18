@@ -89,7 +89,7 @@ export default function ProspectsPage() {
           <div className="flex justify-center p-8 text-slate-400">Chargement...</div>
         ) : prospects.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 text-center bg-card text-card-foreground rounded-xl border border-dashed border-border">
-            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mb-3">
+            <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mb-3">
               <Plus className="h-6 w-6 text-blue-500" />
             </div>
             <h3 className="font-semibold text-foreground mb-1">Aucun prospect</h3>
@@ -107,7 +107,7 @@ export default function ProspectsPage() {
                 <div className="bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-border active:scale-[0.98] transition-transform">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-semibold text-foreground line-clamp-1">{p.contact.displayName}</h3>
-                    <span className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-700">
+                    <span className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-800 dark:text-blue-200">
                       {p.profile.status}
                     </span>
                   </div>

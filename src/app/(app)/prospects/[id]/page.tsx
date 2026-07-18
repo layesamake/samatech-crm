@@ -96,15 +96,15 @@ export default function ProspectDetailPage() {
 
       <main className="flex-1 p-4 pb-24 space-y-4 max-w-2xl mx-auto w-full">
         {contact.archivedAt && (
-          <div className="bg-red-50 text-red-700 p-3 rounded-lg border border-red-100 flex items-center gap-2">
+          <div className="bg-red-500/10 text-red-800 dark:text-red-200 p-3 rounded-lg border border-red-500/20 flex items-center gap-2">
             <Archive className="h-5 w-5" />
             <span>Ce prospect est archivé.</span>
           </div>
         )}
 
-        <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm">
-          <span className="font-semibold text-blue-900">Prochaine relance : </span>
-          {nextFollowUp ? <Link href={`/follow-ups/${nextFollowUp.id}`} className="text-blue-800 underline">{new Date(nextFollowUp.dueAt).toLocaleString('fr-FR', { timeZone: nextFollowUp.timezone })}</Link> : <span>Aucune relance planifiée</span>}
+        <div className="rounded-xl border border-blue-500/20 bg-blue-500/10 p-4 text-sm">
+          <span className="font-semibold text-blue-800 dark:text-blue-200">Prochaine relance : </span>
+          {nextFollowUp ? <Link href={`/follow-ups/${nextFollowUp.id}`} className="text-blue-800 dark:text-blue-200 underline">{new Date(nextFollowUp.dueAt).toLocaleString('fr-FR', { timeZone: nextFollowUp.timezone })}</Link> : <span>Aucune relance planifiée</span>}
         </div>
 
         {!contact.archivedAt && (convertedClient ? <Link href={`/clients/${convertedClient.profile.id}`} className="block h-11 rounded-md bg-emerald-700 px-4 py-3 text-center text-white">Ouvrir la fiche client</Link> : <ConvertProspectPanel contactId={contact.id} displayName={contact.displayName} />)}
@@ -134,7 +134,7 @@ export default function ProspectDetailPage() {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Statut</span>
-                <span className="font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded">{profile.status}</span>
+                <span className="font-medium text-blue-800 dark:text-blue-200 bg-blue-500/10 px-2 py-0.5 rounded">{profile.status}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Niveau d&apos;intérêt</span>
@@ -143,7 +143,7 @@ export default function ProspectDetailPage() {
               {locationName && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Localité</span>
-                  <span className="font-medium text-foreground">{locationName} {locationArchived && <span className="text-amber-700">(Archivée)</span>}</span>
+                  <span className="font-medium text-foreground">{locationName} {locationArchived && <span className="text-amber-800 dark:text-amber-200">(Archivée)</span>}</span>
                 </div>
               )}
               {interestNames.length > 0 && (

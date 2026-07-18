@@ -90,7 +90,7 @@ export default function BackupSettings() {
         <h2 className="text-lg font-semibold">Exporter une sauvegarde</h2>
         <p data-testid="last-backup" className="text-sm">Dernière sauvegarde : {lastExportedAt ? new Date(lastExportedAt).toLocaleString('fr-FR') : 'Aucune sauvegarde effectuée'}</p>
         <p className="text-sm text-muted-foreground">Effectuez une sauvegarde au minimum chaque semaine. Les données du navigateur peuvent être effacées.</p>
-        <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950">Cette sauvegarde peut contenir vos contacts, factures, paiements et autres données commerciales. Conservez-la dans un emplacement sûr. Le fichier JSON n’est pas chiffré.</div>
+        <div className="rounded-md border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-950">Cette sauvegarde peut contenir vos contacts, factures, paiements et autres données commerciales. Conservez-la dans un emplacement sûr. Le fichier JSON n’est pas chiffré.</div>
         <button data-testid="export-backup" disabled={busy} onClick={() => void exportBackup()} className="h-10 rounded-md bg-primary px-4 text-primary-foreground disabled:opacity-50">Exporter une sauvegarde</button>
       </section>
       <section className="rounded-xl border p-5 space-y-4">

@@ -110,18 +110,18 @@ export default function ModifierProspectPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto space-y-5 bg-card text-card-foreground p-5 rounded-xl shadow-sm border border-border">
           
           {error && (
-            <div className="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
+            <div className="p-3 bg-red-500/10 text-red-800 dark:text-red-200 text-sm rounded-lg border border-red-500/20">
               {error}
             </div>
           )}
 
           {warning && (
-            <div className="p-3 bg-amber-50 text-amber-800 text-sm rounded-lg border border-amber-200">
+            <div className="p-3 bg-amber-500/10 text-amber-800 dark:text-amber-200 text-sm rounded-lg border border-amber-500/20">
               <p className="mb-2">{warning}</p>
               <Button 
                 type="button" 
                 variant="outline" 
-                className="w-full border-amber-300 text-amber-800 hover:bg-amber-100"
+                className="w-full border-amber-500/20 text-amber-800 dark:text-amber-200 hover:bg-amber-100"
                 onClick={handleSubmit(onSubmit)}
               >
                 Confirmer quand même

@@ -85,7 +85,7 @@ export default function CompanySettingsForm() {
   return (
     <div className="space-y-6 max-w-2xl">
       {message && (
-        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-500/10 text-green-800 dark:text-green-200' : 'bg-red-500/10 text-red-800 dark:text-red-200'}`}>
           {message}
         </div>
       )}
@@ -195,7 +195,7 @@ export default function CompanySettingsForm() {
                  type="file" 
                  accept="image/png, image/jpeg"
                  onChange={(e) => handleFileUpload(e, 'logoDataUri')}
-                 className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                 className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-800 dark:text-blue-200 hover:file:bg-blue-100"
                />
             </div>
           </div>
@@ -212,7 +212,7 @@ export default function CompanySettingsForm() {
                  type="file" 
                  accept="image/png, image/jpeg"
                  onChange={(e) => handleFileUpload(e, 'managerSignatureDataUri')}
-                 className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                 className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-800 dark:text-blue-200 hover:file:bg-blue-100"
                />
             </div>
           </div>
