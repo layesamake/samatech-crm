@@ -4,19 +4,180 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { ManageClientsUseCase } from '@/modules/clients/application/manage-clients';
 import { ClientAggregate } from '@/modules/clients/domain/client';
+import { ManagePaymentsUseCase } from '@/modules/payments/application/manage-payments';
+import { ReceivableRecord } from '@/modules/payments/domain/payment';
+import { formatMinor } from '@/modules/invoices/domain/invoice';
+import { Search, ArrowUpDown, Plus } from 'lucide-react';
 
 const manage = new ManageClientsUseCase();
+const managePayments = new ManagePaymentsUseCase();
+
+const AVATAR_COLORS = [
+  'bg-blue-400', 'bg-emerald-400', 'bg-amber-400', 'bg-rose-400', 'bg-indigo-400', 'bg-cyan-400', 'bg-teal-400'
+];
+
+function getAvatarColor(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+function getInitials(name: string) {
+  const parts = name.trim().split(' ').filter(Boolean);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return (name.slice(0, 2) || '?').toUpperCase();
+}
+
+type TabType = 'ACTIF' | 'IMPAYE' | 'TOUTES';
+
 export default function ClientsPage() {
-  const [clients, setClients] = useState<ClientAggregate[]>([]); const [loading, setLoading] = useState(true); const [error, setError] = useState('');
-  const [locationClients, setLocationClients] = useState<ClientAggregate[]>([]);
-  const [query, setQuery] = useState(''); const [locationId, setLocationId] = useState(''); const [from, setFrom] = useState(''); const [to, setTo] = useState('');
-  const [showArchived, setShowArchived] = useState(false);
-  useEffect(() => { void manage.list({ showArchived: true }).then(setLocationClients).catch(() => undefined); }, []);
-  useEffect(() => { void manage.list({ query, locationId: locationId || undefined, convertedFrom: from ? new Date(`${from}T00:00:00`).toISOString() : undefined, convertedTo: to ? new Date(`${to}T23:59:59`).toISOString() : undefined, showArchived }).then((result) => { setClients(result); setError(''); }).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')).finally(() => setLoading(false)); }, [query, locationId, from, to, showArchived]);
-  const locations = useMemo(() => [...new Map(locationClients.filter((client) => client.contact.locationId && client.locationName).map((client) => [client.contact.locationId!, client.locationName!])).entries()], [locationClients]);
-  return <main className="mx-auto max-w-5xl space-y-5 p-4 md:p-8"><header><h1 className="text-2xl font-bold">Clients</h1><p className="text-muted-foreground">Les contacts convertis conservent tout leur historique de prospection.</p></header>
-    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4"><input aria-label="Rechercher un client" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Nom, téléphone, entreprise" className="h-11 rounded-md border px-3"/><select aria-label="Filtrer par localité" value={locationId} onChange={(e) => setLocationId(e.target.value)} className="h-11 rounded-md border px-3"><option value="">Toutes localités</option>{locations.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select><label className="text-xs">Converti depuis<input aria-label="Conversion depuis" type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="mt-1 h-9 w-full rounded-md border px-3"/></label><label className="text-xs">Converti avant<input aria-label="Conversion avant" type="date" value={to} onChange={(e) => setTo(e.target.value)} className="mt-1 h-9 w-full rounded-md border px-3"/></label></div>
-    <div className="flex flex-wrap items-center justify-between gap-3 text-sm"><label className="flex min-h-11 items-center gap-2"><input type="checkbox" checked={showArchived} onChange={(event) => setShowArchived(event.target.checked)}/>Afficher les archives</label><div className="flex items-center gap-3"><span role="status">{clients.length} client{clients.length > 1 ? 's' : ''}</span><button type="button" className="rounded-md border px-3 py-2" onClick={() => { setQuery(''); setLocationId(''); setFrom(''); setTo(''); setShowArchived(false); }}>Réinitialiser</button></div></div>
-    {error ? <p role="alert" className="rounded-md bg-red-500/10 p-4 text-red-800 dark:text-red-200">{error}</p> : loading ? <p role="status">Chargement des clients...</p> : clients.length === 0 ? <p className="rounded-xl border border-dashed p-8 text-center">Aucun client ne correspond aux critères.</p> : <div className="grid gap-3 md:grid-cols-2">{clients.map((client) => <Link key={client.profile.id} href={`/clients/${client.profile.id}`} className="rounded-xl border bg-card text-card-foreground p-4"><div className="flex justify-between gap-3"><h2 className="font-semibold">{client.contact.displayName} {client.contact.archivedAt && <span className="text-xs text-amber-800 dark:text-amber-200">(Archivé)</span>}</h2><span className="text-xs">Depuis le {new Date(client.profile.convertedAt).toLocaleDateString('fr-FR')}</span></div><p className="mt-2 text-sm">{client.locationName || 'Localité non renseignée'} · {client.productNames.join(', ') || 'Aucun produit demandé'}</p><p className="mt-2 text-xs text-muted-foreground">{client.followUps.filter((item) => !item.archivedAt).length} relance(s) · Facturation disponible au Sprint 5</p></Link>)}</div>}
-  </main>;
+  const [clients, setClients] = useState<ClientAggregate[]>([]);
+  const [receivables, setReceivables] = useState<ReceivableRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<TabType>('ACTIF');
+  const [showSearch, setShowSearch] = useState(false);
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    Promise.all([
+      manage.list({ showArchived: true }),
+      managePayments.receivables()
+    ])
+    .then(([clientsResult, receivablesResult]) => {
+      setClients(clientsResult);
+      setReceivables(receivablesResult);
+      setError('');
+    })
+    .catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible'))
+    .finally(() => setLoading(false));
+  }, []);
+
+  const debtByClient = useMemo(() => {
+    const map = new Map<string, { amount: number, currency: string, scale: number }>();
+    for (const rec of receivables) {
+      const existing = map.get(rec.invoice.clientProfileId) || { amount: 0, currency: rec.invoice.currency, scale: rec.invoice.currencyScale };
+      existing.amount += Number(rec.invoice.balanceMinor);
+      map.set(rec.invoice.clientProfileId, existing);
+    }
+    return map;
+  }, [receivables]);
+
+  const filteredClients = useMemo(() => {
+    let list = clients;
+    if (activeTab === 'ACTIF') {
+      list = list.filter(c => !c.contact.archivedAt);
+    } else if (activeTab === 'IMPAYE') {
+      list = list.filter(c => (debtByClient.get(c.profile.id)?.amount || 0) > 0);
+    }
+    
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      list = list.filter(c => c.contact.displayName.toLowerCase().includes(q));
+    }
+    
+    return list;
+  }, [clients, activeTab, query, debtByClient]);
+
+  return (
+    <main className="mx-auto max-w-5xl bg-background min-h-screen pb-24">
+      <header className="sticky top-0 z-10 bg-background pt-4 px-4 pb-0 border-b">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold">Clients</h1>
+          <div className="flex items-center gap-2">
+            <button className="p-2 rounded-md hover:bg-muted" aria-label="Trier"><ArrowUpDown className="w-5 h-5" /></button>
+            <button className="p-2 rounded-md hover:bg-muted" onClick={() => setShowSearch(!showSearch)} aria-label="Rechercher"><Search className="w-5 h-5" /></button>
+          </div>
+        </div>
+
+        {showSearch && (
+          <div className="mb-4">
+            <input 
+              autoFocus
+              type="text" 
+              placeholder="Rechercher un client..." 
+              value={query} 
+              onChange={e => setQuery(e.target.value)}
+              className="w-full h-11 px-4 rounded-md border bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        )}
+
+        <div className="flex">
+          <button 
+            onClick={() => setActiveTab('ACTIF')}
+            className={`flex-1 pb-3 text-sm font-medium text-center ${activeTab === 'ACTIF' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            Actif
+          </button>
+          <button 
+            onClick={() => setActiveTab('IMPAYE')}
+            className={`flex-1 pb-3 text-sm font-medium text-center ${activeTab === 'IMPAYE' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            Impayé
+          </button>
+          <button 
+            onClick={() => setActiveTab('TOUTES')}
+            className={`flex-1 pb-3 text-sm font-medium text-center ${activeTab === 'TOUTES' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            Toutes
+          </button>
+        </div>
+      </header>
+
+      {error ? (
+        <p role="alert" className="m-4 rounded-md bg-red-500/10 p-4 text-red-800 dark:text-red-200">{error}</p>
+      ) : loading ? (
+        <p role="status" className="p-8 text-center text-muted-foreground">Chargement des clients...</p>
+      ) : filteredClients.length === 0 ? (
+        <p className="p-8 text-center text-muted-foreground">Aucun client trouvé.</p>
+      ) : (
+        <div className="flex flex-col">
+          {filteredClients.map(client => {
+            const debt = debtByClient.get(client.profile.id);
+            const currency = debt?.currency || 'XOF';
+            const debtStr = debt && debt.amount > 0 ? formatMinor(debt.amount, debt.currency, debt.scale, { noCurrency: true }) : '0';
+            const debtFormatted = `${currency}${debtStr.replace(/\s/g, '')}`;
+            const unusedFormatted = `${currency}0`;
+            
+            return (
+              <Link 
+                key={client.profile.id} 
+                href={`/clients/${client.profile.id}`}
+                className="flex items-start gap-4 p-4 border-b hover:bg-muted/30 transition-colors"
+              >
+                <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white font-medium text-lg ${getAvatarColor(client.contact.displayName)}`}>
+                  {getInitials(client.contact.displayName)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h2 className="font-bold text-base truncate">
+                    {client.contact.displayName} {client.contact.archivedAt && <span className="text-xs font-normal text-muted-foreground">(Archivé)</span>}
+                  </h2>
+                  <div className="flex mt-1">
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground mb-0.5">Comptes débiteurs</p>
+                      <p className="font-bold text-sm">{debtFormatted}</p>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground mb-0.5">Crédits inutilisés</p>
+                      <p className="font-bold text-sm">{unusedFormatted}</p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      <Link 
+        href="/prospects/nouveau"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-black dark:bg-white text-white dark:text-black rounded-3xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform z-50"
+      >
+        <Plus className="w-6 h-6" />
+      </Link>
+    </main>
+  );
 }
