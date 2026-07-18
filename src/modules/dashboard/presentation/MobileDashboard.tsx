@@ -22,7 +22,10 @@ export function MobileDashboard() {
 
   // Fetch recent transactions (invoices)
   const recentInvoices = useLiveQuery(
-    () => db.invoices.orderBy('createdAt').reverse().limit(3).toArray()
+    async () => {
+      const all = await db.invoices.toArray();
+      return all.sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 3);
+    }
   );
 
   if (!report) {
