@@ -51,10 +51,10 @@ export function MobileDashboard() {
         <p className="text-sm text-muted-foreground">Voici une vue d&apos;ensemble de votre organisation</p>
       </section>
 
-      {/* Quick Actions (Horizontal scroll) */}
-      <section className="flex gap-4 overflow-x-auto pb-2 snap-x -mx-4 px-4 scrollbar-hide">
-        <Link href="/invoices/new" className="snap-start shrink-0 flex flex-col items-center gap-2 w-20">
-          <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm relative">
+      {/* Quick Actions Card */}
+      <section className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex justify-between items-start gap-2 overflow-x-auto scrollbar-hide">
+        <Link href="/invoices/new" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
+          <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 shadow-sm relative">
              <FileText className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
@@ -62,10 +62,10 @@ export function MobileDashboard() {
                 </div>
              </div>
           </div>
-          <span className="text-xs text-center font-medium leading-tight">Nouvelle<br/>facture</span>
+          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouvelle<br/>facture</span>
         </Link>
-        <Link href="/prospects/nouveau" className="snap-start shrink-0 flex flex-col items-center gap-2 w-20">
-          <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm relative">
+        <Link href="/prospects/nouveau" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
+          <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500 shadow-sm relative">
              <Users className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
@@ -73,10 +73,10 @@ export function MobileDashboard() {
                 </div>
              </div>
           </div>
-          <span className="text-xs text-center font-medium leading-tight">Nouveau<br/>prospect</span>
+          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouveau<br/>prospect</span>
         </Link>
-        <Link href="/payments" className="snap-start shrink-0 flex flex-col items-center gap-2 w-20">
-          <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shadow-sm relative">
+        <Link href="/payments" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
+          <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center text-red-500 shadow-sm relative">
              <DollarSign className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
@@ -84,10 +84,10 @@ export function MobileDashboard() {
                 </div>
              </div>
           </div>
-          <span className="text-xs text-center font-medium leading-tight">Nouveau<br/>paiement</span>
+          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouveau<br/>paiement</span>
         </Link>
-        <Link href="/follow-ups" className="snap-start shrink-0 flex flex-col items-center gap-2 w-20">
-          <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 shadow-sm relative">
+        <Link href="/follow-ups" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
+          <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center text-amber-500 shadow-sm relative">
              <Clock className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm">
                 <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
@@ -95,7 +95,7 @@ export function MobileDashboard() {
                 </div>
              </div>
           </div>
-          <span className="text-xs text-center font-medium leading-tight">Nouvelle<br/>relance</span>
+          <span className="text-xs text-center font-medium leading-tight text-slate-700">Nouvelle<br/>relance</span>
         </Link>
       </section>
 
