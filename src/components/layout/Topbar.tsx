@@ -1,25 +1,10 @@
-import { Menu, Bell } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
-import { Sidebar } from './Sidebar'
-import { useState } from 'react'
 
 export function Topbar() {
-  const [open, setOpen] = useState(false)
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b bg-background px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-      {/* Mobile menu trigger */}
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger className="-m-2.5 p-2.5 text-muted-foreground lg:hidden">
-          <span className="sr-only">Ouvrir le menu</span>
-          <Menu className="h-6 w-6" aria-hidden="true" />
-        </SheetTrigger>
-        <SheetContent side="left" className="w-72 p-0">
-          <SheetTitle className="sr-only">Menu de navigation</SheetTitle>
-          <Sidebar onClose={() => setOpen(false)} />
-        </SheetContent>
-      </Sheet>
+    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b bg-background/80 backdrop-blur-md px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
 
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
         <div className="flex flex-1 items-center">

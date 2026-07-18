@@ -1,8 +1,9 @@
 'use client';
 
-import { ReactNode } from 'react'
-import { Sidebar } from './Sidebar'
-import { Topbar } from './Topbar'
+import { ReactNode } from 'react';
+import { Sidebar } from './Sidebar';
+import { Topbar } from './Topbar';
+import { BottomNav } from './BottomNav';
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -15,10 +16,12 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex-1 flex flex-col lg:pl-72 min-h-screen">
         <Topbar />
         
-        <main id="contenu-principal" tabIndex={-1} className="flex-1 overflow-y-auto">
+        <main id="contenu-principal" tabIndex={-1} className="flex-1 overflow-y-auto pb-20 lg:pb-0">
           {children}
         </main>
       </div>
+
+      <BottomNav />
     </div>
-  )
+  );
 }

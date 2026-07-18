@@ -19,6 +19,7 @@ import PWARegister from '@/components/PWARegister'
 import SecurityGate from '@/modules/security/presentation/SecurityGate';
 import PageTitleSync from '@/components/PageTitleSync';
 import { AppShell } from '@/components/layout/AppShell';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 export default function RootLayout({
   children,
@@ -26,16 +27,18 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fr" className="h-full font-sans">
+    <html lang="fr" className="h-full font-sans" suppressHydrationWarning>
       <body className="h-full antialiased bg-background text-foreground flex flex-col">
-        <PWARegister />
-        <PageTitleSync />
-        <SecurityGate>
-          <a href="#contenu-principal" className="sr-only fixed left-2 top-2 z-[100] rounded-md bg-background px-4 py-3 font-medium shadow focus:not-sr-only">Aller au contenu principal</a>
-          <AppShell>
-            {children}
-          </AppShell>
-        </SecurityGate>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <PWARegister />
+          <PageTitleSync />
+          <SecurityGate>
+            <a href="#contenu-principal" className="sr-only fixed left-2 top-2 z-[100] rounded-md bg-background px-4 py-3 font-medium shadow focus:not-sr-only">Aller au contenu principal</a>
+            <AppShell>
+              {children}
+            </AppShell>
+          </SecurityGate>
+        </ThemeProvider>
       </body>
     </html>
   )
