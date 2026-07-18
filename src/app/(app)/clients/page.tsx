@@ -1,13 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { ManageClientsUseCase } from '@/modules/clients/application/manage-clients';
 import { ClientAggregate } from '@/modules/clients/domain/client';
 import { ManagePaymentsUseCase } from '@/modules/payments/application/manage-payments';
 import { ReceivableRecord } from '@/modules/payments/domain/payment';
 import { formatMinor } from '@/modules/invoices/domain/invoice';
-import { Search, ArrowUpDown, Plus } from 'lucide-react';
+import { Search, ArrowUpDown, Plus, Eye, FileText } from 'lucide-react';
+import { ListSkeleton } from '@/components/ui/loading-skeletons';
+import { SwipeableActionItem } from '@/components/ui/swipeable-action-item';
 
 const manage = new ManageClientsUseCase();
 const managePayments = new ManagePaymentsUseCase();
@@ -33,6 +36,7 @@ function getInitials(name: string) {
 type TabType = 'ACTIF' | 'IMPAYE' | 'TOUTES';
 
 export default function ClientsPage() {
+  const router = useRouter();
   const [clients, setClients] = useState<ClientAggregate[]>([]);
   const [receivables, setReceivables] = useState<ReceivableRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -127,10 +131,10 @@ export default function ClientsPage() {
         </div>
       </header>
 
-      {error ? (
+      {loading ? (
+        <div className="p-4"><ListSkeleton count={4} /></div>
+      ) : error ? (
         <p role="alert" className="m-4 rounded-md bg-red-500/10 p-4 text-red-800 dark:text-red-200">{error}</p>
-      ) : loading ? (
-        <p role="status" className="p-8 text-center text-muted-foreground">Chargement des clients...</p>
       ) : filteredClients.length === 0 ? (
         <p className="p-8 text-center text-muted-foreground">Aucun client trouvé.</p>
       ) : (
@@ -143,30 +147,38 @@ export default function ClientsPage() {
             const unusedFormatted = `${currency}0`;
             
             return (
-              <Link 
-                key={client.profile.id} 
-                href={`/clients/${client.profile.id}`}
-                className="flex items-start gap-4 p-4 border-b hover:bg-muted/30 transition-colors"
-              >
-                <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white font-medium text-lg ${getAvatarColor(client.contact.displayName)}`}>
-                  {getInitials(client.contact.displayName)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h2 className="font-bold text-base truncate">
-                    {client.contact.displayName} {client.contact.archivedAt && <span className="text-xs font-normal text-muted-foreground">(Archivé)</span>}
-                  </h2>
-                  <div className="flex mt-1">
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground mb-0.5">Comptes débiteurs</p>
-                      <p className="font-bold text-sm">{debtFormatted}</p>
+              <div key={client.profile.id} className="border-b last:border-b-0">
+                <SwipeableActionItem 
+                  onSwipeRight={() => router.push(`/invoices/new?clientId=${client.profile.id}`)}
+                  leftIcon={FileText} leftLabel="Facturer" leftBgColor="bg-emerald-600"
+                  onSwipeLeft={() => router.push(`/clients/${client.profile.id}`)}
+                  rightIcon={Eye} rightLabel="Détails" rightBgColor="bg-blue-600"
+                >
+                  <div 
+                    onClick={() => router.push(`/clients/${client.profile.id}`)}
+                    className="flex items-start gap-4 p-4 bg-card text-card-foreground hover:bg-muted/30 transition-colors cursor-pointer"
+                  >
+                    <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white font-medium text-lg ${getAvatarColor(client.contact.displayName)}`}>
+                      {getInitials(client.contact.displayName)}
                     </div>
-                    <div className="flex-1">
-                      <p className="text-xs text-muted-foreground mb-0.5">Crédits inutilisés</p>
-                      <p className="font-bold text-sm">{unusedFormatted}</p>
+                    <div className="flex-1 min-w-0">
+                      <h2 className="font-bold text-base truncate">
+                        {client.contact.displayName} {client.contact.archivedAt && <span className="text-xs font-normal text-muted-foreground">(Archivé)</span>}
+                      </h2>
+                      <div className="flex mt-1">
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground mb-0.5">Comptes débiteurs</p>
+                          <p className="font-bold text-sm">{debtFormatted}</p>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground mb-0.5">Crédits inutilisés</p>
+                          <p className="font-bold text-sm">{unusedFormatted}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </SwipeableActionItem>
+              </div>
             );
           })}
         </div>

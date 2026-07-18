@@ -1,10 +1,35 @@
 'use client';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ManageInvoicesUseCase } from '@/modules/invoices/application/manage-invoices';
 import { formatMinor, InvoiceAggregate, INVOICE_STATUSES } from '@/modules/invoices/domain/invoice';
+import { ListSkeleton } from '@/components/ui/loading-skeletons';
+import { SwipeableActionItem } from '@/components/ui/swipeable-action-item';
+import { CreditCard, Eye } from 'lucide-react';
+
 const manage = new ManageInvoicesUseCase();
-export default function InvoicesPage() { const [items, setItems] = useState<InvoiceAggregate[]>([]); const [query, setQuery] = useState(''); const [status, setStatus] = useState(''); const [from, setFrom] = useState(''); const [to, setTo] = useState(''); const [due, setDue] = useState(''); const [loading, setLoading] = useState(true); const [error, setError] = useState('');
+export default function InvoicesPage() { 
+  const router = useRouter();
+  const [items, setItems] = useState<InvoiceAggregate[]>([]); const [query, setQuery] = useState(''); const [status, setStatus] = useState(''); const [from, setFrom] = useState(''); const [to, setTo] = useState(''); const [due, setDue] = useState(''); const [loading, setLoading] = useState(true); const [error, setError] = useState('');
   useEffect(() => { void manage.list({ query, status: status ? status as InvoiceAggregate['invoice']['status'] : undefined, from: from || undefined, to: to || undefined, due: due ? due as 'OVERDUE' | 'UPCOMING' : undefined }).then((result) => { setItems(result); setError(''); }).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')).finally(() => setLoading(false)); }, [query, status, from, to, due]);
-  return <main className="mx-auto max-w-5xl space-y-5 p-4 md:p-8"><header className="flex flex-wrap items-center justify-between gap-3"><div><h1 className="text-2xl font-bold">Factures</h1><p className="text-muted-foreground">Brouillons et factures émises localement.</p></div><Link href="/invoices/new" className="rounded-md bg-blue-700 px-4 py-3 text-white">Nouvelle facture</Link></header><section className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5"><input aria-label="Rechercher une facture" className="h-11 rounded-md border px-3" placeholder="Numéro ou client" value={query} onChange={(event) => setQuery(event.target.value)}/><select aria-label="Filtrer par statut" className="h-11 rounded-md border px-3" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">Tous statuts</option>{INVOICE_STATUSES.map((value) => <option key={value} value={value}>{value}</option>)}</select><input aria-label="Factures depuis" type="date" className="h-11 rounded-md border px-3" value={from} onChange={(event) => setFrom(event.target.value)}/><input aria-label="Factures avant" type="date" className="h-11 rounded-md border px-3" value={to} onChange={(event) => setTo(event.target.value)}/><select aria-label="Filtrer par échéance" className="h-11 rounded-md border px-3" value={due} onChange={(event) => setDue(event.target.value)}><option value="">Toutes échéances</option><option value="OVERDUE">En retard</option><option value="UPCOMING">À venir</option></select></section><p role="status" className="text-sm">{items.length} facture(s)</p>{error ? <p role="alert" className="text-red-800 dark:text-red-200">{error}</p> : loading ? <p>Chargement...</p> : items.length === 0 ? <p className="rounded-xl border border-dashed p-8 text-center">Aucune facture ne correspond aux critères.</p> : <section className="grid gap-3 md:grid-cols-2">{items.map(({ invoice, clientName }) => <Link key={invoice.id} href={`/invoices/${invoice.id}`} className="rounded-xl border bg-card text-card-foreground p-4"><div className="flex justify-between gap-2"><strong>{invoice.number || 'Brouillon sans numéro'}</strong><span className={invoice.status === 'ANNULEE' ? 'text-red-800 dark:text-red-200' : ''}>{invoice.status}</span></div><p>{clientName}</p><p className="text-sm">Émission : {invoice.issueDate || 'Non émise'} · Échéance : {invoice.dueDate || 'Non renseignée'}</p><p className="mt-2 font-semibold">{formatMinor(invoice.grandTotalMinor, invoice.currency, invoice.currencyScale)}</p></Link>)}</section>}</main>;
+  return <main className="mx-auto max-w-5xl space-y-5 p-4 md:p-8"><header className="flex flex-wrap items-center justify-between gap-3"><div><h1 className="text-2xl font-bold">Factures</h1><p className="text-muted-foreground">Brouillons et factures émises localement.</p></div><Link href="/invoices/new" className="rounded-md bg-blue-700 px-4 py-3 text-white">Nouvelle facture</Link></header><section className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5"><input aria-label="Rechercher une facture" className="h-11 rounded-md border px-3" placeholder="Numéro ou client" value={query} onChange={(event) => setQuery(event.target.value)}/><select aria-label="Filtrer par statut" className="h-11 rounded-md border px-3" value={status} onChange={(event) => setStatus(event.target.value)}><option value="">Tous statuts</option>{INVOICE_STATUSES.map((value) => <option key={value} value={value}>{value}</option>)}</select><input aria-label="Factures depuis" type="date" className="h-11 rounded-md border px-3" value={from} onChange={(event) => setFrom(event.target.value)}/><input aria-label="Factures avant" type="date" className="h-11 rounded-md border px-3" value={to} onChange={(event) => setTo(event.target.value)}/><select aria-label="Filtrer par échéance" className="h-11 rounded-md border px-3" value={due} onChange={(event) => setDue(event.target.value)}><option value="">Toutes échéances</option><option value="OVERDUE">En retard</option><option value="UPCOMING">À venir</option></select></section><p role="status" className="text-sm">{items.length} facture(s)</p>{error ? <p role="alert" className="text-red-800 dark:text-red-200">{error}</p> : loading ? <div className="mt-4"><ListSkeleton count={4} /></div> : items.length === 0 ? <p className="rounded-xl border border-dashed p-8 text-center">Aucune facture ne correspond aux critères.</p> : <section className="grid gap-3 md:grid-cols-2">{items.map(({ invoice, clientName }) => (
+  <SwipeableActionItem 
+    key={invoice.id}
+    onSwipeRight={() => router.push(`/payments?invoiceId=${invoice.id}`)}
+    leftIcon={CreditCard} leftLabel="Payer" leftBgColor="bg-emerald-600"
+    onSwipeLeft={() => router.push(`/invoices/${invoice.id}`)}
+    rightIcon={Eye} rightLabel="Détails" rightBgColor="bg-blue-600"
+  >
+    <div onClick={() => router.push(`/invoices/${invoice.id}`)} className="bg-card text-card-foreground p-4 cursor-pointer">
+      <div className="flex justify-between gap-2">
+        <strong>{invoice.number || 'Brouillon sans numéro'}</strong>
+        <span className={invoice.status === 'ANNULEE' ? 'text-red-800 dark:text-red-200' : ''}>{invoice.status}</span>
+      </div>
+      <p>{clientName}</p>
+      <p className="text-sm text-muted-foreground">Émission : {invoice.issueDate || 'Non émise'} · Échéance : {invoice.dueDate || 'Non renseignée'}</p>
+      <p className="mt-2 font-semibold text-lg">{formatMinor(invoice.grandTotalMinor, invoice.currency, invoice.currencyScale)}</p>
+    </div>
+  </SwipeableActionItem>
+))}</section>}</main>;
 }
