@@ -1,0 +1,293 @@
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/prospects..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="fr" className="h-full fon...">
+                          <body
+                            className="h-full antialiased bg-background text-foreground flex flex-col"
+-                           cz-shortcut-listen="true"
+                          >
+                  ...
+ 
+[browser] Another connection wants to upgrade database 'SamtechCRMDatabase'. Closing db now to resume the upgrade.
+[browser] Dexie SchemaDiff: Schema was extended without increasing the number passed to db.version(). Dexie will add missing parts and increment native version number to workaround this.
+[browser] Another connection wants to upgrade database 'SamtechCRMDatabase'. Closing db now to resume the upgrade.
+[browser] Another connection wants to upgrade database 'SamtechCRMDatabase'. Closing db now to resume the upgrade.
+[browser] Another connection wants to upgrade database 'SamtechCRMDatabase'. Closing db now to resume the upgrade.
+[browser] Another connection wants to upgrade database 'SamtechCRMDatabase'. Closing db now to resume the upgrade.
+[browser] Another connection wants to upgrade database 'SamtechCRMDatabase'. Closing db now to resume the upgrade.
+[browser] Another connection wants to upgrade database 'SamtechCRMDatabase'. Closing db now to resume the upgrade.
+[browser] Another connection wants to upgrade database 'SamtechCRMDatabase'. Closing db now to resume the upgrade.
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="fr" className="h-full fon...">
+                          <body
+                            className="h-full antialiased bg-background text-foreground flex flex-col"
+-                           cz-shortcut-listen="true"
+                          >
+                  ...
+ 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/statistics" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head headCacheNode={{rsc:{...}, ...}}>
+                    <__next_viewport_boundary__>
+                    <MetadataWrapper>
++                     <div hidden={true}>
+-                     {"\n        "}
+                  ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at div (<anonymous>)
+[browser] Uncaught NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117109)
+    at l7 (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:116531)
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117503)
+    at l7 (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:116531)
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117503)
+    at l7 (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:116531)
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117503)
+    at l7 (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:116531)
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117503)
+    at l7 (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:116531)
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117696)
+    at l7 (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:116531)
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117638)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118750)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:123428)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:123428)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:123428)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121987)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:123428)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121630)
+    at c_ (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154382)
+    at <unknown> (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154069)
+    at cy (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154085)
+    at cr (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:137223)
+    at ct (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:135459)
+    at cB (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:160673)
+    at MessagePort.N (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:224252)
+[browser] Uncaught NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117171)
+    at l7 (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:116531)
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117768)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118750)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121184)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121184)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121184)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121184)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121184)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:123428)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:123428)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:123428)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121987)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:123428)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:119002)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118876)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121630)
+    at c_ (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154382)
+    at <unknown> (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154069)
+    at cy (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154085)
+    at cr (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:137223)
+    at ct (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:135459)
+    at cB (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:160673)
+    at MessagePort.N (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:224252)
+[browser] Uncaught NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+    at <unknown> (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1890:55)
+    at lb (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:103375)
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117479)
+    at l7 (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:116531)
+    at se (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:117503)
+    at so (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:118750)
+    at si (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:121630)
+    at c_ (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154382)
+    at <unknown> (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154069)
+    at cy (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154085)
+    at cr (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:137223)
+    at ct (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:135459)
+    at cq (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:160794)
+    at cU (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:159007)
+    at ck (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:156653)
+    at <unknown> (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154079)
+    at cy (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:154085)
+    at cr (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:137223)
+    at ct (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:135459)
+    at cB (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:160673)
+    at MessagePort.N (file://D:/dev/samatech-crm/.next/dev/static/chunks/node_modules_next_dist_compiled_next-devtools_index_090k2jm.js:1841:224252)
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./src/modules/security/presentation/SecurityGate.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/" notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="layout.tsx">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <script>
+                      <script>
+                      <RootLayout>
+                        <html lang="fr" className="h-full fon...">
+                          <body
+                            className="h-full antialiased bg-background text-foreground flex flex-col"
+-                           cz-shortcut-listen="true"
+                          >
+                  ...
+ 

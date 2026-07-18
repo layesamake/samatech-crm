@@ -1,0 +1,369 @@
+SAMTECH
+FACTURE FAC-2026-0001
+Statut : EMISE
+Date d'émission : 2026-07-17
+Échéance : 2026-07-31
+ENTREPRISE
+SAMTECH - Plateau, Dakar - +221 33 000 00 00 - contact@samtech.sn
+CLIENT
+Entreprise Démonstration - Mermoz, Dakar - +221 77 000 00 00
+LIGNES
+1. Prestation locale 1
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 1.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+2. Prestation locale 2
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 2.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+3. Prestation locale 3
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 3.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+4. Prestation locale 4
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 4.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+5. Prestation locale 5
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 5.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+6. Prestation locale 6
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 6.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+7. Prestation locale 7
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 7.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+8. Prestation locale 8
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 8.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+9. Prestation locale 9
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 9.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+Page 1 / 8
+
+SAMTECH
+FACTURE FAC-2026-0001
+10. Prestation locale 10
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 10.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+11. Prestation locale 11
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 11.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+12. Prestation locale 12
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 12.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+13. Prestation locale 13
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 13.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+14. Prestation locale 14
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 14.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+15. Prestation locale 15
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 15.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+16. Prestation locale 16
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 16.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+17. Prestation locale 17
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 17.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+18. Prestation locale 18
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 18.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+19. Prestation locale 19
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 19.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+20. Prestation locale 20
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 20.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+21. Prestation locale 21
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 21.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+Page 2 / 8
+
+SAMTECH
+FACTURE FAC-2026-0001
+22. Prestation locale 22
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 22.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+23. Prestation locale 23
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 23.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+24. Prestation locale 24
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 24.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+25. Prestation locale 25
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 25.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+26. Prestation locale 26
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 26.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+27. Prestation locale 27
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 27.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+28. Prestation locale 28
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 28.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+29. Prestation locale 29
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 29.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+30. Prestation locale 30
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 30.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+31. Prestation locale 31
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 31.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+32. Prestation locale 32
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 32.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+33. Prestation locale 33
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 33.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+Page 3 / 8
+
+SAMTECH
+FACTURE FAC-2026-0001
+34. Prestation locale 34
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 34.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+35. Prestation locale 35
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 35.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+36. Prestation locale 36
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 36.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+37. Prestation locale 37
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 37.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+38. Prestation locale 38
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 38.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+39. Prestation locale 39
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 39.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+40. Prestation locale 40
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 40.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+41. Prestation locale 41
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 41.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+42. Prestation locale 42
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 42.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+43. Prestation locale 43
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 43.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+44. Prestation locale 44
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 44.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+45. Prestation locale 45
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 45.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+Page 4 / 8
+
+SAMTECH
+FACTURE FAC-2026-0001
+46. Prestation locale 46
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 46.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+47. Prestation locale 47
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 47.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+48. Prestation locale 48
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 48.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+49. Prestation locale 49
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 49.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+50. Prestation locale 50
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 50.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+51. Prestation locale 51
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 51.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+52. Prestation locale 52
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 52.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+53. Prestation locale 53
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 53.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+54. Prestation locale 54
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 54.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+55. Prestation locale 55
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 55.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+56. Prestation locale 56
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 56.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+57. Prestation locale 57
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 57.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+Page 5 / 8
+
+SAMTECH
+FACTURE FAC-2026-0001
+58. Prestation locale 58
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 58.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+59. Prestation locale 59
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 59.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+60. Prestation locale 60
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 60.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+61. Prestation locale 61
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 61.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+62. Prestation locale 62
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 62.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+63. Prestation locale 63
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 63.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+64. Prestation locale 64
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 64.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+65. Prestation locale 65
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 65.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+66. Prestation locale 66
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 66.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+67. Prestation locale 67
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 67.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+68. Prestation locale 68
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 68.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+69. Prestation locale 69
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 69.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+Page 6 / 8
+
+SAMTECH
+FACTURE FAC-2026-0001
+70. Prestation locale 70
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 70.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+71. Prestation locale 71
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 71.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+72. Prestation locale 72
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 72.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+73. Prestation locale 73
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 73.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+74. Prestation locale 74
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 74.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+75. Prestation locale 75
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 75.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+76. Prestation locale 76
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 76.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+77. Prestation locale 77
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 77.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+78. Prestation locale 78
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 78.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+79. Prestation locale 79
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 79.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+80. Prestation locale 80
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 80.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+Page 7 / 8
+
+SAMTECH
+FACTURE FAC-2026-0001
+Sous-total : 1 200 000 XOF
+Remises : 120 000 XOF
+Taxes : 0 XOF
+TOTAL : 1 080 000 XOF
+Payé : 0 XOF
+Solde : 1 080 000 XOF
+NOTES
+Document généré hors ligne depuis les instantanés de la facture.
+CONDITIONS
+Paiement à réception.
+Page 8 / 8

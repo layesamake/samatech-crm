@@ -1,0 +1,29 @@
+Œuvre & Études
+FACTURE FAC-2026-0001
+Statut : EMISE
+Date d'émission : 2026-07-17
+Échéance : 2026-07-31
+ENTREPRISE
+Œuvre & Études - Plateau, Dakar - +221 33 000 00 00 - contact@samtech.sn
+CLIENT
+Société Démonstration - Mermoz, Dakar - +221 77 000 00 00
+LIGNES
+1. Prestation locale 1
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 1.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+2. Prestation locale 2
+Description suffisamment longue pour vérifier la mise en page et le retour à la ligne 2.
+Quantité : 1,5 jour | Prix : 10 000 XOF | Total : 13 500 XOF
+Remise : 1 500 XOF | Taxe : 0 XOF
+Sous-total : 30 000 XOF
+Remises : 3 000 XOF
+Taxes : 0 XOF
+TOTAL : 27 000 XOF
+Payé : 0 XOF
+Solde : 27 000 XOF
+NOTES
+Accents contrôlés : à, â, ç, é, è, ê, ë, î, ï, ô, ù, û, ü, ÿ, œ et €.
+CONDITIONS
+Paiement à réception.
+Page 1 / 1

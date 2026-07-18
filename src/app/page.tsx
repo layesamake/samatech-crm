@@ -1,3 +1,3 @@
-import { StatisticsDashboard } from '@/modules/statistics/presentation/StatisticsDashboard';
+import { MobileDashboard } from '@/modules/dashboard/presentation/MobileDashboard';
 
-export default function Home() { return <StatisticsDashboard />; }
+export default function Home() { return <MobileDashboard />; }
