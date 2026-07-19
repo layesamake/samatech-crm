@@ -6,6 +6,7 @@ import type { InvoiceLineRecord, InvoiceRecord } from '@/modules/invoices/domain
 import type { LocationRecord } from '@/modules/locations/domain/location';
 import type { PaymentRecord } from '@/modules/payments/domain/payment';
 import type { ContactRecord, ProspectInterestRecord, ProspectProfileRecord } from '@/modules/prospects/domain/prospect';
+import type { ExpenseRecord } from '@/modules/expenses/domain/expense';
 
 export const STATISTICS_TIMEZONE = 'Africa/Dakar';
 export const PERIOD_PRESETS = ['TODAY', 'LAST_7_DAYS', 'CURRENT_MONTH', 'PREVIOUS_MONTH', 'CURRENT_YEAR', 'CUSTOM'] as const;
@@ -16,16 +17,16 @@ export interface StatisticsData {
   contacts: ContactRecord[]; prospectProfiles: ProspectProfileRecord[]; clientProfiles: ClientProfileRecord[];
   locations: LocationRecord[]; products: ProductRecord[]; prospectInterests: ProspectInterestRecord[];
   followUps: FollowUpRecord[]; invoices: InvoiceRecord[]; invoiceLines: InvoiceLineRecord[]; payments: PaymentRecord[];
-  campaigns: CampaignRecord[]; campaignRecipients: CampaignRecipientRecord[];
+  campaigns: CampaignRecord[]; campaignRecipients: CampaignRecipientRecord[]; expenses: ExpenseRecord[];
 }
 export interface StatisticsOptions {
   period: StatisticsPeriod; today: string; primaryCurrency: string; primaryCurrencyScale: number; includeArchivedProducts?: boolean;
 }
-export interface MoneyGroup { currency: string; currencyScale: number; billedMinor: string; collectedMinor: string; receivableMinor: string; overdueMinor: string; upcomingMinor: string; }
+export interface MoneyGroup { currency: string; currencyScale: number; billedMinor: string; collectedMinor: string; receivableMinor: string; overdueMinor: string; upcomingMinor: string; expensesMinor: string; }
 export interface RankedCount { id: string; label: string; count: number; archived: boolean; }
 export interface SoldProduct extends RankedCount { quantityScaled: string; quantityScale: number; invoiceCount: number; clientCount: number; freeLineCount: number; amounts: Array<{ currency: string; currencyScale: number; minor: string }>; }
 export interface SegmentStatistics { id: string; label: string; prospects: number; clients: number; conversions: number; eligibleCohort: number; convertedCohort: number; invoiceCount: number; billed: Array<{ currency: string; currencyScale: number; minor: string }>; collected: Array<{ currency: string; currencyScale: number; minor: string }>; receivable: Array<{ currency: string; currencyScale: number; minor: string }>; archived?: boolean; }
-export interface TimeSeriesPoint { key: string; label: string; newProspects: number; conversions: number; billedMinor: string; collectedMinor: string; }
+export interface TimeSeriesPoint { key: string; label: string; newProspects: number; conversions: number; billedMinor: string; collectedMinor: string; expensesMinor: string; }
 export type IntegrityCode = 'UNSAFE_AMOUNT' | 'INVOICE_AGGREGATE_MISMATCH' | 'NEGATIVE_BALANCE' | 'PAYMENT_ON_CANCELLED_INVOICE' | 'MISSING_REFERENCE' | 'INCOHERENT_STATUS';
 export interface StatisticsReport {
   period: StatisticsPeriod;
@@ -40,7 +41,7 @@ export interface StatisticsReport {
   localities: SegmentStatistics[]; sources: SegmentStatistics[]; statuses: RankedCount[]; interestLevels: RankedCount[];
   campaigns: { total: number; draft: number; ready: number; inProgress: number; completed: number; cancelled: number; recipients: number; remaining: number; confirmed: number; resumableCampaignId: string | null; };
   seriesGranularity: 'DAY' | 'MONTH'; series: TimeSeriesPoint[];
-  comparison: { period: StatisticsPeriod; newProspects: number; conversions: number; billedMinor: string; collectedMinor: string; };
+  comparison: { period: StatisticsPeriod; newProspects: number; conversions: number; billedMinor: string; collectedMinor: string; expensesMinor: string; };
   integrity: { hasIssues: boolean; count: number; byCode: Partial<Record<IntegrityCode, number>>; };
   isEmpty: boolean;
 }
@@ -103,13 +104,13 @@ function increment(map: Map<string, number>, key: string, count = 1): void { map
 function issue(byCode: Partial<Record<IntegrityCode, number>>, code: IntegrityCode): void { byCode[code] = (byCode[code] ?? 0) + 1; }
 function bigintOrNull(value: number): bigint | null { return safeInteger(value) ? BigInt(value) : null; }
 
-interface FinancialAccumulator { billed: Map<string, bigint>; collected: Map<string, bigint>; receivable: Map<string, bigint>; overdue: Map<string, bigint>; upcoming: Map<string, bigint>; }
-function newFinancialAccumulator(): FinancialAccumulator { return { billed: new Map(), collected: new Map(), receivable: new Map(), overdue: new Map(), upcoming: new Map() }; }
+interface FinancialAccumulator { billed: Map<string, bigint>; collected: Map<string, bigint>; receivable: Map<string, bigint>; overdue: Map<string, bigint>; upcoming: Map<string, bigint>; expenses: Map<string, bigint>; }
+function newFinancialAccumulator(): FinancialAccumulator { return { billed: new Map(), collected: new Map(), receivable: new Map(), overdue: new Map(), upcoming: new Map(), expenses: new Map() }; }
 function financialGroups(acc: FinancialAccumulator): MoneyGroup[] {
-  const keys = new Set([...acc.billed.keys(), ...acc.collected.keys(), ...acc.receivable.keys(), ...acc.overdue.keys(), ...acc.upcoming.keys()]);
-  return [...keys].map((key) => { const [currency, scale] = key.split('|'); return { currency, currencyScale: Number(scale), billedMinor: (acc.billed.get(key) ?? BigInt(0)).toString(), collectedMinor: (acc.collected.get(key) ?? BigInt(0)).toString(), receivableMinor: (acc.receivable.get(key) ?? BigInt(0)).toString(), overdueMinor: (acc.overdue.get(key) ?? BigInt(0)).toString(), upcomingMinor: (acc.upcoming.get(key) ?? BigInt(0)).toString() }; }).sort((a, b) => a.currency.localeCompare(b.currency) || a.currencyScale - b.currencyScale);
+  const keys = new Set([...acc.billed.keys(), ...acc.collected.keys(), ...acc.receivable.keys(), ...acc.overdue.keys(), ...acc.upcoming.keys(), ...acc.expenses.keys()]);
+  return [...keys].map((key) => { const [currency, scale] = key.split('|'); return { currency, currencyScale: Number(scale), billedMinor: (acc.billed.get(key) ?? BigInt(0)).toString(), collectedMinor: (acc.collected.get(key) ?? BigInt(0)).toString(), receivableMinor: (acc.receivable.get(key) ?? BigInt(0)).toString(), overdueMinor: (acc.overdue.get(key) ?? BigInt(0)).toString(), upcomingMinor: (acc.upcoming.get(key) ?? BigInt(0)).toString(), expensesMinor: (acc.expenses.get(key) ?? BigInt(0)).toString() }; }).sort((a, b) => a.currency.localeCompare(b.currency) || a.currencyScale - b.currencyScale);
 }
-function primaryGroup(groups: MoneyGroup[], currency: string, scale: number): MoneyGroup { return groups.find((item) => item.currency === currency && item.currencyScale === scale) ?? { currency, currencyScale: scale, billedMinor: '0', collectedMinor: '0', receivableMinor: '0', overdueMinor: '0', upcomingMinor: '0' }; }
+function primaryGroup(groups: MoneyGroup[], currency: string, scale: number): MoneyGroup { return groups.find((item) => item.currency === currency && item.currencyScale === scale) ?? { currency, currencyScale: scale, billedMinor: '0', collectedMinor: '0', receivableMinor: '0', overdueMinor: '0', upcomingMinor: '0', expensesMinor: '0' }; }
 
 function segmentRow(id: string, label: string, data: { prospects: number; clients: number; conversions: number; eligibleCohort: number; convertedCohort: number; invoiceCount: number; billed: Map<string, bigint>; collected: Map<string, bigint>; receivable: Map<string, bigint>; archived?: boolean }): SegmentStatistics {
   return { id, label, prospects: data.prospects, clients: data.clients, conversions: data.conversions, eligibleCohort: data.eligibleCohort, convertedCohort: data.convertedCohort, invoiceCount: data.invoiceCount, billed: moneyRows(data.billed), collected: moneyRows(data.collected), receivable: moneyRows(data.receivable), archived: data.archived };
@@ -209,6 +210,11 @@ export function calculateStatistics(data: StatisticsData, options: StatisticsOpt
     if (!safeInteger(payment.amountMinor) || payment.amountMinor <= 0 || payment.currency !== invoice.currency || payment.currencyScale !== invoice.currencyScale) continue;
     if (inPeriod(recordDate(payment.paymentDate, period.timezone), period)) addMoney(financial.collected, payment.currency, payment.currencyScale, payment.amountMinor);
   }
+  for (const expense of data.expenses) {
+    if (expense.archivedAt || expense.status !== 'ACTIVE') continue;
+    if (!safeInteger(expense.amountMinor) || expense.amountMinor <= 0) continue;
+    if (inPeriod(recordDate(expense.expenseDate, period.timezone), period)) addMoney(financial.expenses, expense.currency, expense.currencyScale, expense.amountMinor);
+  }
 
   interface SoldAcc { id: string; label: string; count: number; archived: boolean; quantities: Array<{ value: number; scale: number }>; invoiceIds: Set<string>; clientIds: Set<string>; freeLineCount: number; amounts: Map<string, bigint>; }
   const sold = new Map<string, SoldAcc>(); let freeInvoiceLineCount = 0;
@@ -263,19 +269,21 @@ export function calculateStatistics(data: StatisticsData, options: StatisticsOpt
   const seriesKeys: string[] = [];
   if (seriesGranularity === 'DAY') for (let key = period.from; key <= period.to; key = addDays(key, 1)) seriesKeys.push(key);
   else { for (let key = monthStart(period.from); key <= monthStart(period.to); ) { seriesKeys.push(key.slice(0, 7)); const [year, month] = key.split('-').map(Number); key = keyFromDate(new Date(Date.UTC(year, month, 1))); } }
-  const pointByKey = new Map(seriesKeys.map((key) => [key, { key, label: seriesGranularity === 'DAY' ? key.slice(5) : key, newProspects: 0, conversions: 0, billedMinor: BigInt(0), collectedMinor: BigInt(0) }]));
+  const pointByKey = new Map(seriesKeys.map((key) => [key, { key, label: seriesGranularity === 'DAY' ? key.slice(5) : key, newProspects: 0, conversions: 0, billedMinor: BigInt(0), collectedMinor: BigInt(0), expensesMinor: BigInt(0) }]));
   const bucket = (key: string): string => seriesGranularity === 'DAY' ? key : key.slice(0, 7);
   for (const profile of data.prospectProfiles) { const created = recordDate(profile.createdAt, period.timezone); const converted = recordDate(profile.convertedAt, period.timezone); if (inPeriod(created, period)) pointByKey.get(bucket(created!))!.newProspects += 1; if (inPeriod(converted, period)) pointByKey.get(bucket(converted!))!.conversions += 1; }
   for (const invoice of data.invoices) { const date = recordDate(invoice.issueDate, period.timezone); if (!invoice.archivedAt && ELIGIBLE_INVOICE_STATUSES.has(invoice.status) && invoice.currency === primaryCurrency && invoice.currencyScale === primaryCurrencyScale && safeInteger(invoice.grandTotalMinor) && inPeriod(date, period)) pointByKey.get(bucket(date!))!.billedMinor += BigInt(invoice.grandTotalMinor); }
   for (const payment of data.payments) { const date = recordDate(payment.paymentDate, period.timezone); const invoice = invoiceById.get(payment.invoiceId); if (!payment.archivedAt && payment.status === 'ACTIVE' && invoice && invoice.status !== 'ANNULEE' && payment.currency === primaryCurrency && payment.currencyScale === primaryCurrencyScale && safeInteger(payment.amountMinor) && inPeriod(date, period)) pointByKey.get(bucket(date!))!.collectedMinor += BigInt(payment.amountMinor); }
-  const series: TimeSeriesPoint[] = [...pointByKey.values()].map((item) => ({ ...item, billedMinor: item.billedMinor.toString(), collectedMinor: item.collectedMinor.toString() }));
+  for (const expense of data.expenses) { const date = recordDate(expense.expenseDate, period.timezone); if (!expense.archivedAt && expense.status === 'ACTIVE' && expense.currency === primaryCurrency && expense.currencyScale === primaryCurrencyScale && safeInteger(expense.amountMinor) && inPeriod(date, period)) pointByKey.get(bucket(date!))!.expensesMinor += BigInt(expense.amountMinor); }
+  const series: TimeSeriesPoint[] = [...pointByKey.values()].map((item) => ({ ...item, billedMinor: item.billedMinor.toString(), collectedMinor: item.collectedMinor.toString(), expensesMinor: item.expensesMinor.toString() }));
 
   const comparisonPeriod = previousEquivalentPeriod(period);
   const previousNew = data.prospectProfiles.filter((item) => inPeriod(recordDate(item.createdAt, period.timezone), comparisonPeriod)).length;
   const previousConversions = data.prospectProfiles.filter((item) => inPeriod(recordDate(item.convertedAt, period.timezone), comparisonPeriod)).length;
-  let previousBilled = BigInt(0); let previousCollected = BigInt(0);
+  let previousBilled = BigInt(0); let previousCollected = BigInt(0); let previousExpenses = BigInt(0);
   for (const invoice of data.invoices) if (!invoice.archivedAt && ELIGIBLE_INVOICE_STATUSES.has(invoice.status) && invoice.currency === primaryCurrency && invoice.currencyScale === primaryCurrencyScale && safeInteger(invoice.grandTotalMinor) && inPeriod(recordDate(invoice.issueDate, period.timezone), comparisonPeriod)) previousBilled += BigInt(invoice.grandTotalMinor);
   for (const payment of data.payments) { const invoice = invoiceById.get(payment.invoiceId); if (!payment.archivedAt && payment.status === 'ACTIVE' && invoice && invoice.status !== 'ANNULEE' && payment.currency === primaryCurrency && payment.currencyScale === primaryCurrencyScale && safeInteger(payment.amountMinor) && inPeriod(recordDate(payment.paymentDate, period.timezone), comparisonPeriod)) previousCollected += BigInt(payment.amountMinor); }
+  for (const expense of data.expenses) if (!expense.archivedAt && expense.status === 'ACTIVE' && expense.currency === primaryCurrency && expense.currencyScale === primaryCurrencyScale && safeInteger(expense.amountMinor) && inPeriod(recordDate(expense.expenseDate, period.timezone), comparisonPeriod)) previousExpenses += BigInt(expense.amountMinor);
 
   const groups = financialGroups(financial); const integrityCount = Object.values(byCode).reduce((sum, value) => sum + (value ?? 0), 0);
   return {
@@ -285,9 +293,9 @@ export function calculateStatistics(data: StatisticsData, options: StatisticsOpt
     followUps, demandedProducts, soldProducts, freeInvoiceLineCount, financial: groups, primaryFinancial: primaryGroup(groups, primaryCurrency, primaryCurrencyScale), hasOtherCurrencies: groups.some((item) => item.currency !== primaryCurrency || item.currencyScale !== primaryCurrencyScale),
     receivables: { invoices: receivableInvoiceIds.size, debtorClients: debtorClients.size, overdueInvoices: overdueInvoiceIds.size, upcomingInvoices: receivableInvoiceIds.size - overdueInvoiceIds.size, partiallyPaidInvoices: data.invoices.filter((item) => !item.archivedAt && item.status === 'PARTIELLEMENT_PAYEE').length, aging, topDebtors: [...debtorAmounts.entries()].map(([clientProfileId, amounts]) => { const profile = clientById.get(clientProfileId); const contact = profile ? contactById.get(profile.contactId) : undefined; return { clientProfileId, label: contact?.displayName ?? 'Client indisponible', amounts: moneyRows(amounts) }; }).sort((a, b) => { const amountA = a.amounts.find((item) => item.currency === primaryCurrency && item.currencyScale === primaryCurrencyScale)?.minor ?? '0'; const amountB = b.amounts.find((item) => item.currency === primaryCurrency && item.currencyScale === primaryCurrencyScale)?.minor ?? '0'; return BigInt(amountA) === BigInt(amountB) ? a.label.localeCompare(b.label) : BigInt(amountA) > BigInt(amountB) ? -1 : 1; }).slice(0, 5) },
     localities, sources, statuses: rankedTokens(statusCount), interestLevels: rankedTokens(interestCount), campaigns,
-    seriesGranularity, series, comparison: { period: comparisonPeriod, newProspects: previousNew, conversions: previousConversions, billedMinor: previousBilled.toString(), collectedMinor: previousCollected.toString() },
+    seriesGranularity, series, comparison: { period: comparisonPeriod, newProspects: previousNew, conversions: previousConversions, billedMinor: previousBilled.toString(), collectedMinor: previousCollected.toString(), expensesMinor: previousExpenses.toString() },
     integrity: { hasIssues: integrityCount > 0, count: integrityCount, byCode },
-    isEmpty: data.contacts.length === 0 && data.invoices.length === 0 && data.payments.length === 0 && data.followUps.length === 0 && data.campaigns.length === 0,
+    isEmpty: data.contacts.length === 0 && data.invoices.length === 0 && data.payments.length === 0 && data.followUps.length === 0 && data.campaigns.length === 0 && data.expenses.length === 0,
   };
 }
 

@@ -15,16 +15,16 @@ export interface StatisticsReadRepository {
 
 export class DexieStatisticsReadRepository implements StatisticsReadRepository {
   async loadSnapshot(): Promise<StatisticsSnapshot> {
-    const [contacts, prospectProfiles, clientProfiles, locations, products, prospectInterests, followUps, invoices, invoiceLines, payments, campaigns, campaignRecipients, companyRecord, invoiceSettingsRecord] = await Promise.all([
+    const [contacts, prospectProfiles, clientProfiles, locations, products, prospectInterests, followUps, invoices, invoiceLines, payments, campaigns, campaignRecipients, expenses, companyRecord, invoiceSettingsRecord] = await Promise.all([
       db.contacts.toArray(), db.prospectProfiles.toArray(), db.clientProfiles.toArray(), db.locations.toArray(), db.products.toArray(),
       db.prospectInterests.toArray(), db.followUps.toArray(), db.invoices.toArray(), db.invoiceLines.toArray(), db.payments.toArray(),
-      db.campaigns.toArray(), db.campaignRecipients.toArray(), db.settings.get('company.profile'), db.settings.get('invoice.settings'),
+      db.campaigns.toArray(), db.campaignRecipients.toArray(), db.expenses.toArray(), db.settings.get('company.profile'), db.settings.get('invoice.settings'),
     ]);
     const company = companyRecord?.value as CompanyProfile | undefined;
     const invoiceSettings = invoiceSettingsRecord?.value as InvoiceSettings | undefined;
     const primaryCurrency = company?.currencyCode || invoiceSettings?.currencyCode || 'XOF';
     return {
-      data: { contacts, prospectProfiles, clientProfiles, locations, products, prospectInterests, followUps, invoices, invoiceLines, payments, campaigns, campaignRecipients },
+      data: { contacts, prospectProfiles, clientProfiles, locations, products, prospectInterests, followUps, invoices, invoiceLines, payments, campaigns, campaignRecipients, expenses },
       primaryCurrency,
       primaryCurrencyScale: currencyScaleFor(primaryCurrency),
     };

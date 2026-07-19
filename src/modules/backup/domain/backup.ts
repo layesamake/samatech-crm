@@ -1,6 +1,6 @@
 export const BACKUP_PRODUCT = 'samtech-crm';
 export const BACKUP_FORMAT_VERSION = 1;
-export const CURRENT_SCHEMA_VERSION = 10;
+export const CURRENT_SCHEMA_VERSION = 11;
 export const MAX_BACKUP_BYTES = 25 * 1024 * 1024;
 export const MAX_BACKUP_RECORDS = 250_000;
 
@@ -25,6 +25,7 @@ export const BUSINESS_COLLECTIONS = [
   'payments',
   'campaigns',
   'campaignRecipients',
+  'expenses',
 ] as const;
 
 export type BusinessCollectionName = (typeof BUSINESS_COLLECTIONS)[number];

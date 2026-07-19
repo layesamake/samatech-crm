@@ -14,7 +14,9 @@ import {
   Settings,
   Menu,
   Moon,
-  Sun
+  Sun,
+  Receipt,
+  MessageSquare
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
@@ -54,7 +56,9 @@ export function BottomNav() {
   const moreLinks = [
     { href: '/prospects', label: 'Prospects', icon: Users },
     { href: '/payments', label: 'Paiements', icon: CreditCard },
+    { href: '/expenses', label: 'Dépenses', icon: Receipt },
     { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
+    { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },
     { href: '/statistics', label: 'Statistiques', icon: BarChart },
     { href: '/follow-ups', label: 'Relances', icon: Repeat },
     { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
@@ -98,6 +102,9 @@ export function BottomNav() {
                </Link>
                <Link href="/payments" onClick={() => setFabOpen(false)} className="flex items-center p-3 rounded-xl hover:bg-muted font-medium text-sm transition-colors">
                   <div className="bg-green-500/10 p-2 rounded-lg mr-3"><CreditCard className="h-4 w-4 text-green-500" /></div> Paiement
+               </Link>
+               <Link href="/expenses/new" onClick={() => setFabOpen(false)} className="flex items-center p-3 rounded-xl hover:bg-muted font-medium text-sm transition-colors">
+                  <div className="bg-red-500/10 p-2 rounded-lg mr-3"><Receipt className="h-4 w-4 text-red-500" /></div> Dépense
                </Link>
             </div>
           </div>

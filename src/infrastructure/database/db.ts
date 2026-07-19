@@ -11,6 +11,7 @@ import { InvoiceLineRecord, InvoiceRecord } from '../../modules/invoices/domain/
 import { PaymentRecord } from '../../modules/payments/domain/payment';
 import { CampaignRecord, CampaignRecipientRecord } from '../../modules/campaigns/domain/campaign';
 import { SecuritySettingsRecord } from '../../modules/security/domain/security';
+import { ExpenseRecord } from '../../modules/expenses/domain/expense';
 
 export class SamtechCRMDatabase extends Dexie {
   contacts!: Dexie.Table<ContactRecord, string>;
@@ -36,6 +37,7 @@ export class SamtechCRMDatabase extends Dexie {
   campaigns!: Dexie.Table<CampaignRecord, string>;
   campaignRecipients!: Dexie.Table<CampaignRecipientRecord, string>;
   securitySettings!: Dexie.Table<SecuritySettingsRecord, string>;
+  expenses!: Dexie.Table<ExpenseRecord, string>;
 
   constructor(name = 'SamtechCRMDatabase') {
     super(name);
@@ -89,6 +91,10 @@ export class SamtechCRMDatabase extends Dexie {
 
     this.version(10).stores({
       securitySettings: '&id, updatedAt',
+    });
+
+    this.version(11).stores({
+      expenses: 'id, expenseDate, status, category, [status+expenseDate]',
     });
   }
 }

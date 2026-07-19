@@ -174,10 +174,10 @@ export function MobileDashboard() {
         </Link>
       </section>
 
-      {/* Sales / Expenses Card (Ventes / Facturé) */}
+      {/* Sales / Expenses Card (Ventes / Facturé / Dépenses) */}
       <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border">
          <div className="flex justify-between items-center mb-6">
-          <h2 className="font-semibold text-foreground">Facturation & Encaissements</h2>
+          <h2 className="font-semibold text-foreground">Trésorerie & Activité</h2>
           <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">Ce mois</span>
         </div>
 
@@ -190,9 +190,9 @@ export function MobileDashboard() {
               
               return (
                 <div key={i} className="flex flex-col items-center gap-1 flex-1">
-                  <div className="flex items-end justify-center gap-1 h-32 w-full">
-                    <div className="w-full max-w-[8px] bg-blue-500 rounded-t-sm" style={{ height: `${Math.max(billedPct, 2)}%` }}></div>
-                    <div className="w-full max-w-[8px] bg-emerald-400 rounded-t-sm" style={{ height: `${Math.max(collectedPct, 2)}%` }}></div>
+                  <div className="flex items-end justify-center gap-0.5 h-32 w-full">
+                    <div className="w-full max-w-[6px] bg-blue-500 rounded-t-sm" style={{ height: `${Math.max(billedPct, 2)}%` }}></div>
+                    <div className="w-full max-w-[6px] bg-emerald-400 rounded-t-sm" style={{ height: `${Math.max(collectedPct, 2)}%` }}></div>
                   </div>
                   <span className="text-[9px] text-muted-foreground mt-1">{item.label.substring(0, 3)}</span>
                 </div>
@@ -200,19 +200,29 @@ export function MobileDashboard() {
            })}
         </div>
 
-        <div className="flex justify-between text-sm">
+        <div className="grid grid-cols-2 gap-4 text-sm mb-4">
           <div>
             <p className="font-semibold">{formatMinorExact(money.billedMinor, primary.currency, primary.scale)}</p>
             <p className="text-blue-500 text-xs font-medium">Facturé</p>
           </div>
-          <div className="text-center">
-            <p className="font-semibold">{formatMinorExact(money.collectedMinor, primary.currency, primary.scale)}</p>
-            <p className="text-emerald-500 text-xs font-medium">Encaissé</p>
-          </div>
-          <div className="text-right">
+          <div>
              <p className="font-semibold">{formatMinorExact(money.receivableMinor, primary.currency, primary.scale)}</p>
              <p className="text-amber-500 text-xs font-medium">Créances</p>
           </div>
+          <div>
+            <p className="font-semibold">{formatMinorExact(money.collectedMinor, primary.currency, primary.scale)}</p>
+            <p className="text-emerald-500 text-xs font-medium">Encaissé</p>
+          </div>
+          <div>
+            <p className="font-semibold">{formatMinorExact(money.expensesMinor || '0', primary.currency, primary.scale)}</p>
+            <p className="text-red-500 text-xs font-medium">Dépensé</p>
+          </div>
+        </div>
+        <div className="pt-3 border-t border-border flex justify-between items-center text-sm">
+          <p className="font-medium text-muted-foreground">Mouvement Net</p>
+          <p className={`font-bold ${Number(money.collectedMinor) - Number(money.expensesMinor || 0) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+             {formatMinorExact((Number(money.collectedMinor) - Number(money.expensesMinor || 0)).toString(), primary.currency, primary.scale)}
+          </p>
         </div>
       </section>
 

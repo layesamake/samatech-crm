@@ -9,7 +9,8 @@ import {
   Repeat,
   FolderOpen,
   Settings,
-  X
+  Receipt,
+  MessageSquare
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -27,7 +28,9 @@ export function Sidebar({ onClose }: SidebarProps) {
     { href: '/clients', label: 'Clients', icon: Users },
     { href: '/invoices', label: 'Factures', icon: FileText },
     { href: '/payments', label: 'Paiements', icon: CreditCard },
+    { href: '/expenses', label: 'Dépenses', icon: Receipt },
     { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
+    { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },
     { href: '/statistics', label: 'Statistiques', icon: BarChart },
     { href: '/follow-ups', label: 'Relances', icon: Repeat },
     { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
