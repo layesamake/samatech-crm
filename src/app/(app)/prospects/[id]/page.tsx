@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Edit, MessageCircle, Phone, Calendar, Archive } from "lucide-react";
+import { ArrowLeft, Edit, Phone, Calendar, Archive } from "lucide-react";
 
 import { DexieProspectRepository } from "@/modules/prospects/infrastructure/dexie-prospect-repository";
 import { DexieLocationRepository } from "@/modules/locations/infrastructure/dexie-location-repository";
@@ -14,6 +14,7 @@ import { ArchiveProspectUseCase } from "@/modules/prospects/application/archive-
 import { ManageFollowUpsUseCase } from "@/modules/follow-ups/application/manage-follow-ups";
 import { ManageClientsUseCase } from "@/modules/clients/application/manage-clients";
 import ConvertProspectPanel from "@/modules/clients/presentation/ConvertProspectPanel";
+import { WhatsAppMessagePanel } from "@/modules/messages/presentation/WhatsAppMessagePanel";
 
 const repository = new DexieProspectRepository();
 const locRepo = new DexieLocationRepository();
@@ -74,8 +75,6 @@ export default function ProspectDetailPage() {
     }
   };
 
-  const whatsappLink = `https://wa.me/${contact.normalizedWhatsappPhone.replace('+', '')}`;
-
   return (
     <div className="flex flex-col h-full bg-muted/50 min-h-screen">
       <header className="sticky top-0 z-10 bg-card text-card-foreground border-b px-4 py-3 flex items-center justify-between shadow-sm">
@@ -111,12 +110,6 @@ export default function ProspectDetailPage() {
 
         {/* Actions rapides */}
         <div className="flex gap-3">
-          <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex-1">
-            <Button className="w-full bg-[#0B6B2D] hover:bg-[#085725] text-white flex gap-2">
-              <MessageCircle className="h-5 w-5" />
-              WhatsApp
-            </Button>
-          </a>
           <a href={`tel:${contact.whatsappPhone}`} className="flex-1">
             <Button variant="outline" className="w-full flex gap-2">
               <Phone className="h-5 w-5" />
@@ -125,6 +118,12 @@ export default function ProspectDetailPage() {
           </a>
           <Link href={`/follow-ups/new?contactId=${contact.id}`} className="flex-1"><Button variant="outline" className="w-full">Relancer</Button></Link>
         </div>
+
+        <WhatsAppMessagePanel
+          contactId={contact.id}
+          normalizedPhone={contact.normalizedWhatsappPhone}
+          displayName={contact.displayName}
+        />
 
         {/* Informations */}
         <div className="bg-card text-card-foreground rounded-xl shadow-sm border border-border overflow-hidden">

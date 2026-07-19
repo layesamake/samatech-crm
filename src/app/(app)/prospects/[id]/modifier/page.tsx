@@ -28,7 +28,6 @@ export default function ModifierProspectPage() {
   
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
-  const [forceDuplicate, setForceDuplicate] = useState(false);
   const [locations, setLocations] = useState<{id: string, name: string, archived: boolean}[]>([]);
   const [products, setProducts] = useState<ProductInterestOption[]>([]);
 
@@ -70,7 +69,7 @@ export default function ModifierProspectPage() {
     }
   }, [prospect, reset]);
 
-  const onSubmit = async (data: UpdateProspectInput) => {
+  const onSubmit = async (data: UpdateProspectInput, forceDuplicate = false) => {
     setError(null);
     const result = await updateUseCase.execute(id, data, forceDuplicate);
 
@@ -79,9 +78,8 @@ export default function ModifierProspectPage() {
       return;
     }
 
-    if (result.warning && !forceDuplicate) {
+    if (result.warning) {
       setWarning(result.warning);
-      setForceDuplicate(true);
       return;
     }
 
@@ -107,7 +105,7 @@ export default function ModifierProspectPage() {
       </header>
 
       <main className="flex-1 p-4 pb-12">
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto space-y-5 bg-card text-card-foreground p-5 rounded-xl shadow-sm border border-border">
+        <form onSubmit={handleSubmit((data) => onSubmit(data))} className="max-w-md mx-auto space-y-5 bg-card text-card-foreground p-5 rounded-xl shadow-sm border border-border">
           
           {error && (
             <div className="p-3 bg-red-500/10 text-red-800 dark:text-red-200 text-sm rounded-lg border border-red-500/20">
@@ -122,7 +120,7 @@ export default function ModifierProspectPage() {
                 type="button" 
                 variant="outline" 
                 className="w-full border-amber-500/20 text-amber-800 dark:text-amber-200 hover:bg-amber-100"
-                onClick={handleSubmit(onSubmit)}
+                onClick={handleSubmit((data) => onSubmit(data, true))}
               >
                 Confirmer quand même
               </Button>

@@ -31,6 +31,22 @@ export const ConversionInputSchema = z.object({
 });
 export type ConversionInput = z.infer<typeof ConversionInputSchema>;
 
+export const UpdateClientSchema = z.object({
+  displayName: z.string().trim().min(1, 'Le nom est obligatoire'),
+  firstName: z.string().trim().optional(),
+  lastName: z.string().trim().optional(),
+  companyName: z.string().trim().optional(),
+  jobTitle: z.string().trim().optional(),
+  whatsappPhone: z.string().trim().min(1, 'Le numéro WhatsApp est obligatoire'),
+  secondaryPhone: z.string().trim().optional(),
+  email: z.string().email('Email invalide').optional().or(z.literal('')),
+  locationId: z.string().uuid().optional().or(z.literal('')),
+  address: z.string().trim().optional(),
+  productIds: z.array(z.string().uuid()).optional(),
+});
+export type UpdateClientInput = z.infer<typeof UpdateClientSchema>;
+export type UpdateClientFormInput = z.input<typeof UpdateClientSchema>;
+
 export interface ClientSearchCriteria {
   query?: string;
   locationId?: string;
