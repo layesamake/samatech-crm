@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ManageInvoicesUseCase } from '../application/manage-invoices';
 import { calculateInvoiceLine, calculateInvoiceTotals, currencyScaleFor, DraftInvoiceInput, DraftLineInput, formatMinor, formatQuantity, InvoiceFormOptions, parseScaledDecimal, percentageToBasisPoints } from '../domain/invoice';
-import BarcodeScannerComponent from "react-qr-barcode-scanner";
+import dynamic from 'next/dynamic';
+const BarcodeScannerComponent = dynamic(() => import('react-qr-barcode-scanner'), { ssr: false });
 import { ScanBarcode, X } from 'lucide-react';
 
 const manage = new ManageInvoicesUseCase();

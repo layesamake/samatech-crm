@@ -1,7 +1,7 @@
 const CACHE_NAME = 'samtech-crm-cache-v1-{{HASH}}';
 const PRECACHE_URLS = [
   '/',
-  '/dev-diagnostic',
+  '/offline',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
@@ -16,7 +16,13 @@ self.addEventListener('install', (event) => {
       return cache.addAll(PRECACHE_URLS);
     })
   );
-  self.skipWaiting();
+  // Le skipWaiting automatique est retiré pour éviter de recharger pendant une saisie
+});
+
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('activate', (event) => {
@@ -35,38 +41,39 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Ignorer les requêtes non-GET, API externes, et le rechargement de webpack
   if (event.request.method !== 'GET') return;
-  
   const url = new URL(event.request.url);
   if (!url.protocol.startsWith('http')) return;
   if (url.pathname.includes('/_next/webpack-hmr')) return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      // Stratégie Cache-First pour tout
+      // Stratégie Cache-First
       if (cachedResponse) {
         return cachedResponse;
       }
       
       return fetch(event.request).then((response) => {
-        // En mode hors ligne, les fetch aux API pourraient échouer
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
         }
 
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          // Ne pas cacher les appels dynamiques API ou les pages dynamiques non pré-cachées par précaution
-          // Sauf si nécessaire, mais dans le Sprint 0, on met tout en cache
+          // On cache les nouvelles requêtes (lazy-loaded chunks, pages visitées)
           cache.put(event.request, responseClone);
         });
 
         return response;
       }).catch(() => {
-        // Si hors ligne et requête de navigation (ex: actualisation d'une route non cachée)
+        // En cas d'échec (hors ligne), si c'est une navigation, on affiche la page hors ligne
         if (event.request.mode === 'navigate') {
-          return caches.match('/');
+          return caches.match('/offline').then((res) => {
+            return res || new Response('<html><body>Vous êtes hors ligne</body></html>', { 
+              status: 200, 
+              headers: { 'Content-Type': 'text/html;charset=utf-8' } 
+            });
+          });
         }
       });
     })

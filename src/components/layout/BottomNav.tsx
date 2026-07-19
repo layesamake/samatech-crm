@@ -83,6 +83,8 @@ export function BottomNav() {
           {/* FAB (Floating Action Button) */}
           <div className="relative fab-container flex items-center justify-center">
             <button 
+              aria-label={fabOpen ? "Fermer les actions rapides" : "Ouvrir les actions rapides"}
+              aria-expanded={fabOpen}
               onClick={() => setFabOpen(!fabOpen)}
               className={cn(
                 "flex items-center justify-center -mt-8 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg shadow-primary/30 transition-all focus:outline-none", 

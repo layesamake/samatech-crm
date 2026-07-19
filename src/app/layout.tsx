@@ -20,6 +20,7 @@ import SecurityGate from '@/modules/security/presentation/SecurityGate';
 import PageTitleSync from '@/components/PageTitleSync';
 import { AppShell } from '@/components/layout/AppShell';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { NetworkIndicator } from '@/components/layout/NetworkIndicator';
 
 export default function RootLayout({
   children,
@@ -30,6 +31,7 @@ export default function RootLayout({
     <html lang="fr" className="h-full font-sans" suppressHydrationWarning>
       <body className="h-full antialiased bg-background text-foreground flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <NetworkIndicator />
           <PWARegister />
           <PageTitleSync />
           <SecurityGate>

@@ -184,7 +184,7 @@ export default function CompanySettingsForm() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Logo de l&apos;entreprise</label>
+            <label htmlFor="logo-upload" className="text-sm font-medium">Logo de l&apos;entreprise</label>
             <div className="flex items-center gap-4">
                {logoDataUri ? (
                  <img src={logoDataUri} alt="Logo" className="w-16 h-16 object-contain border rounded-md" />
@@ -192,6 +192,7 @@ export default function CompanySettingsForm() {
                  <div className="w-16 h-16 bg-muted border rounded-md flex items-center justify-center text-xs text-slate-400">Aucun</div>
                )}
                <input 
+                 id="logo-upload"
                  type="file" 
                  accept="image/png, image/jpeg"
                  onChange={(e) => handleFileUpload(e, 'logoDataUri')}
@@ -201,7 +202,7 @@ export default function CompanySettingsForm() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Signature du responsable</label>
+            <label htmlFor="signature-upload" className="text-sm font-medium">Signature du responsable</label>
             <div className="flex items-center gap-4">
                {signatureDataUri ? (
                  <img src={signatureDataUri} alt="Signature" className="w-16 h-16 object-contain border rounded-md" />
@@ -209,6 +210,7 @@ export default function CompanySettingsForm() {
                  <div className="w-16 h-16 bg-muted border rounded-md flex items-center justify-center text-xs text-slate-400">Aucune</div>
                )}
                <input 
+                 id="signature-upload"
                  type="file" 
                  accept="image/png, image/jpeg"
                  onChange={(e) => handleFileUpload(e, 'managerSignatureDataUri')}
