@@ -12,6 +12,12 @@ import { PaymentRecord } from '../../modules/payments/domain/payment';
 import { CampaignRecord, CampaignRecipientRecord } from '../../modules/campaigns/domain/campaign';
 import { SecuritySettingsRecord } from '../../modules/security/domain/security';
 import { ExpenseRecord } from '../../modules/expenses/domain/expense';
+import { TreasuryAccountRecord, TreasuryAllocationRecord, TreasuryOperationRecord } from '../../modules/treasury/domain/treasury';
+import { ExpenseBudgetRecord } from '../../modules/treasury/domain/budget';
+import { TreasuryForecastItemRecord } from '../../modules/treasury/domain/forecast';
+import { CommercialDocumentRecord, CommercialDocumentLineRecord, CommercialDocumentLinkRecord } from '../../modules/commercial-documents/domain/commercial-document';
+
+export const CURRENT_SCHEMA_VERSION = 13;
 
 export class SamtechCRMDatabase extends Dexie {
   contacts!: Dexie.Table<ContactRecord, string>;
@@ -38,6 +44,14 @@ export class SamtechCRMDatabase extends Dexie {
   campaignRecipients!: Dexie.Table<CampaignRecipientRecord, string>;
   securitySettings!: Dexie.Table<SecuritySettingsRecord, string>;
   expenses!: Dexie.Table<ExpenseRecord, string>;
+  treasuryAccounts!: Dexie.Table<TreasuryAccountRecord, string>;
+  treasuryAllocations!: Dexie.Table<TreasuryAllocationRecord, string>;
+  treasuryOperations!: Dexie.Table<TreasuryOperationRecord, string>;
+  expenseBudgets!: Dexie.Table<ExpenseBudgetRecord, string>;
+  treasuryForecastItems!: Dexie.Table<TreasuryForecastItemRecord, string>;
+  commercialDocuments!: Dexie.Table<CommercialDocumentRecord, string>;
+  commercialDocumentLines!: Dexie.Table<CommercialDocumentLineRecord, string>;
+  commercialDocumentLinks!: Dexie.Table<CommercialDocumentLinkRecord, string>;
 
   constructor(name = 'SamtechCRMDatabase') {
     super(name);
@@ -95,6 +109,56 @@ export class SamtechCRMDatabase extends Dexie {
 
     this.version(11).stores({
       expenses: 'id, expenseDate, status, category, [status+expenseDate]',
+    });
+
+    this.version(12).stores({
+      treasuryAccounts: 'id, type, normalizedName, archivedAt',
+      treasuryAllocations: 'id, accountId, sourceType, sourceId, status, cancelledAt, [accountId+status], [sourceType+sourceId]',
+      treasuryOperations: 'id, accountId, kind, status, operationDate, sourceAccountId, destinationAccountId, cancelledAt, [accountId+status+operationDate], [status+operationDate]',
+      expenseBudgets: 'id, status, startDate, endDate, [status+startDate]',
+      treasuryForecastItems: 'id, type, expectedDate, status, [status+expectedDate]'
+    });
+
+    this.version(13).stores({
+      commercialDocuments: 'id, type, status, &number, clientProfileId, issueDate, validUntil, deliveryDate, legacyInvoiceId, [type+status], [clientProfileId+issueDate]',
+      commercialDocumentLines: 'id, documentId, position, productId, sourceLineId, [documentId+position], [sourceEntityType+sourceLineId]',
+      commercialDocumentLinks: 'id, relation, sourceId, targetId, [sourceType+sourceId], [targetType+targetId]'
+    }).upgrade(async (tx) => {
+      const invoices = await tx.table('invoices').toArray();
+      const estimates = invoices.filter((inv) => (inv as Record<string, unknown>).type === 'ESTIMATE');
+      
+      const docPromises = estimates.map(async (estimate) => {
+        const id = estimate.id;
+        
+        const document = {
+          ...estimate,
+          type: 'LEGACY_ESTIMATE',
+          legacyInvoiceId: id,
+          legacyNumber: estimate.number,
+        };
+        delete document.type;
+        document.type = 'LEGACY_ESTIMATE';
+        
+        const lines = await tx.table('invoiceLines').where('invoiceId').equals(id).toArray();
+        const docLines = lines.map((line: Record<string, unknown>) => {
+          const docLine = { ...line, documentId: document.id };
+          delete docLine.invoiceId;
+          return docLine;
+        });
+        
+        await tx.table('commercialDocuments').put(document);
+        await tx.table('commercialDocumentLines').bulkPut(docLines);
+      });
+      
+      await Promise.all(docPromises);
+      
+      const estimateIds = estimates.map((e) => e.id);
+      if (estimateIds.length > 0) {
+        await tx.table('invoices').bulkDelete(estimateIds);
+        const allLines = await tx.table('invoiceLines').toArray();
+        const linesToDelete = allLines.filter((l: Record<string, unknown>) => estimateIds.includes(l.invoiceId as string)).map((l: Record<string, unknown>) => l.id);
+        await tx.table('invoiceLines').bulkDelete(linesToDelete);
+      }
     });
   }
 }

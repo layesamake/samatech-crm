@@ -41,7 +41,7 @@ describe('Paiements partiels, surpaiement et contrepassation', () => {
     ]);
     invoices = new ManageInvoicesUseCase(undefined, clock);
     payments = new ManagePaymentsUseCase(undefined, clock);
-    const draft = await invoices.createDraft({ clientProfileId: clientId, currency: 'XOF', currencyScale: 0, issueDate: '2026-07-17', dueDate: '2026-07-17', taxesEnabled: false, lines: [{ position: 0, designation: 'Prestation', quantityScaled: 1, quantityScale: 0, unitPriceMinor: 100_000, discountType: 'NONE', discountValue: 0, taxRateBasisPoints: 0 }] });
+    const draft = await invoices.createDraft({ type: 'INVOICE', clientProfileId: clientId, currency: 'XOF', currencyScale: 0, issueDate: '2026-07-17', dueDate: '2026-07-17', taxesEnabled: false, lines: [{ position: 0, designation: 'Prestation', quantityScaled: 1, quantityScale: 0, unitPriceMinor: 100_000, discountType: 'NONE', discountValue: 0, taxRateBasisPoints: 0 }] });
     invoiceId = draft!.invoice.id;
     await invoices.issue(invoiceId);
   });
@@ -165,7 +165,7 @@ describe('Paiements partiels, surpaiement et contrepassation', () => {
     expect(await payments.list({ status: 'REVERSED' })).toHaveLength(1);
     expect(await payments.list({ clientProfileId: clientId, invoiceId, from: '2026-07-18', to: '2026-07-18' })).toHaveLength(2);
     expect(await payments.list({ from: '2026-07-19' })).toHaveLength(0);
-    const secondDraft = await invoices.createDraft({ clientProfileId: clientId, currency: 'XOF', currencyScale: 0, issueDate: '2026-07-16', dueDate: '2026-07-16', taxesEnabled: false, lines: [{ position: 0, designation: 'Petite prestation', quantityScaled: 1, quantityScale: 0, unitPriceMinor: 40_000, discountType: 'NONE', discountValue: 0, taxRateBasisPoints: 0 }] });
+    const secondDraft = await invoices.createDraft({ type: 'INVOICE', clientProfileId: clientId, currency: 'XOF', currencyScale: 0, issueDate: '2026-07-16', dueDate: '2026-07-16', taxesEnabled: false, lines: [{ position: 0, designation: 'Petite prestation', quantityScaled: 1, quantityScale: 0, unitPriceMinor: 40_000, discountType: 'NONE', discountValue: 0, taxRateBasisPoints: 0 }] });
     const secondInvoiceId = secondDraft!.invoice.id;
     await invoices.issue(secondInvoiceId);
     const indicators = await payments.indicators();

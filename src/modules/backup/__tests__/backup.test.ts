@@ -34,6 +34,15 @@ async function seedRepresentativeData() {
     payments: { id: 'payment1', invoiceId: 'invoice1', clientProfileId: 'client1', paymentDate: '2026-07-18', amountMinor: 30000, currency: 'XOF', currencyScale: 0, method: 'WAVE', status: 'ACTIVE', createdAt: now, updatedAt: now },
     campaigns: { id: 'campaign1', name: 'Relance', status: 'EN_COURS', audienceType: 'CLIENTS', createdAt: now, updatedAt: now },
     campaignRecipients: { id: 'recipient1', campaignId: 'campaign1', contactId: 'contact1', status: 'A_TRAITER', position: 0, normalizedPhoneSnapshot: '+221776481782', createdAt: now, updatedAt: now },
+    expenses: { id: 'expense1', description: 'Transport', amountMinor: 5000, currency: 'XOF', currencyScale: 0, expenseDate: '2026-07-18', status: 'ACTIVE', category: 'TRANSPORT', createdAt: now, updatedAt: now },
+    treasuryAccounts: { id: 'acc1', type: 'CASH', name: 'Caisse', normalizedName: 'caisse', currency: 'XOF', currencyScale: 0, openingBalanceMinor: 0, openingDate: '2026-07-01', createdAt: now, updatedAt: now },
+    treasuryAllocations: { id: 'alloc1', accountId: 'acc1', sourceType: 'PAYMENT', sourceId: 'payment1', status: 'ACTIVE', createdAt: now, updatedAt: now },
+    treasuryOperations: { id: 'op1', accountId: 'acc1', kind: 'ADJUSTMENT', adjustmentDirection: 'IN', amountMinor: 1000, operationDate: '2026-07-18', currency: 'XOF', currencyScale: 0, label: 'Test', status: 'ACTIVE', createdAt: now, updatedAt: now },
+    expenseBudgets: { id: 'bud1', name: 'Test', amountMinor: 5000, currency: 'XOF', currencyScale: 0, startDate: '2026-07-01', endDate: '2026-07-31', status: 'ACTIVE', createdAt: now, updatedAt: now },
+    treasuryForecastItems: { id: 'fore1', type: 'INFLOW', expectedDate: '2026-07-20', amountMinor: 2000, currency: 'XOF', currencyScale: 0, label: 'Test', status: 'ACTIVE', createdAt: now, updatedAt: now },
+    commercialDocuments: { id: 'doc1', type: 'QUOTE', status: 'DRAFT', clientProfileId: 'client1', companySnapshot: { displayName: 'C' }, clientSnapshot: { displayName: 'C' }, createdAt: now, updatedAt: now },
+    commercialDocumentLines: { id: 'docline1', documentId: 'doc1', position: 1, designationSnapshot: 'L1', quantityScaled: 1, quantityScale: 0, createdAt: now, updatedAt: now },
+    commercialDocumentLinks: { id: 'link1', relation: 'QUOTE_TO_PROFORMA', sourceType: 'COMMERCIAL_DOCUMENT', sourceId: 'doc1', targetType: 'COMMERCIAL_DOCUMENT', targetId: 'doc2', createdAt: now },
   };
   for (const [table, record] of Object.entries(records)) await db.table(table).add(record);
 }
@@ -86,7 +95,7 @@ describe('Sauvegarde et restauration', () => {
     await expect(validateBackupText('{')).rejects.toThrow('JSON');
     await seedRepresentativeData();
     const prepared = await useCase.prepareExport();
-    const future = structuredClone(prepared.envelope); future.formatVersion = 99 as 1;
+    const future = structuredClone(prepared.envelope); future.sourceSchemaVersion = 99;
     await expect(validateBackupText(JSON.stringify(future))).rejects.toThrow('incompatible');
     const corrupt = structuredClone(prepared.envelope); corrupt.appVersion = 'altérée';
     await expect(validateBackupText(JSON.stringify(corrupt))).rejects.toThrow('intégrité');

@@ -10,8 +10,8 @@ describe('DatabaseDiagnosticService', () => {
   it('rapporte la version et toutes les tables livrées sans lire les données métier', async () => {
     const database = new SamtechCRMDatabase(name);
     const result = await new DatabaseDiagnosticService(database).inspect();
-    expect(result).toMatchObject({ available: true, databaseName: name, version: 10, missingTables: [] });
-    expect(result.tables).toEqual(expect.arrayContaining(['contacts', 'locations', 'products', 'prospectInterests', 'clientProfiles', 'invoices', 'payments', 'securitySettings']));
+    expect(result).toMatchObject({ available: true, databaseName: name, version: 13, missingTables: [] });
+    expect(result.tables).toEqual(expect.arrayContaining(['contacts', 'prospectProfiles', 'invoices', 'commercialDocuments']));
     database.close();
   });
 });

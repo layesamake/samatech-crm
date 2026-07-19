@@ -6,8 +6,13 @@ import { ExpenseRecord, ExpenseInput, EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABEL
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/infrastructure/database/db';
 import { CompanyProfile, InvoiceSettings } from '@/modules/settings/domain/settings';
+import { ManageTreasuryAccountsUseCase, TreasuryAccountWithBalance } from '@/modules/treasury/application/manage-treasury-accounts';
+import { AllocateTreasurySourcesUseCase } from '@/modules/treasury/application/allocate-treasury-sources';
+import { treasuryRepository } from '@/modules/treasury/infrastructure/dexie-treasury-repository';
 
 const manage = new ManageExpensesUseCase();
+const accountUseCase = new ManageTreasuryAccountsUseCase(treasuryRepository);
+const allocateUseCase = new AllocateTreasurySourcesUseCase(treasuryRepository);
 
 export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
   const router = useRouter();
@@ -40,6 +45,13 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
 
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
+
+  const [accountId, setAccountId] = useState('');
+  const [accounts, setAccounts] = useState<TreasuryAccountWithBalance[]>([]);
+
+  useEffect(() => {
+    accountUseCase.listAccountsWithBalance().then(setAccounts).catch(console.error);
+  }, []);
 
   useEffect(() => {
     if (!expenseId) return;
@@ -80,8 +92,10 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
 
       if (expenseId) {
         await manage.update(expenseId, input);
+        if (accountId) await allocateUseCase.allocate('EXPENSE', expenseId, accountId);
       } else {
-        await manage.create(input);
+        const created = await manage.create(input);
+        if (accountId) await allocateUseCase.allocate('EXPENSE', created.id, accountId);
       }
       router.push('/expenses');
     } catch (caught) {
@@ -164,8 +178,17 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
           )}
         </div>
 
+        <label className="text-sm font-medium">Compte de trésorerie (Optionnel)
+          <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={accountId} onChange={e => setAccountId(e.target.value)}>
+            <option value="">Aucun compte affecté</option>
+            {accounts.map(acc => (
+              <option key={acc.id} value={acc.id}>{acc.name}</option>
+            ))}
+          </select>
+        </label>
+
         <label className="text-sm font-medium text-muted-foreground">Fournisseur / Bénéficiaire (Optionnel)
-          <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={supplier} onChange={e => setSupplier(e.target.value)} />
+          <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={supplier} onChange={e => setSupplier(e.target.value)} placeholder="Nom de l'entreprise..." />
         </label>
 
         <label className="text-sm font-medium text-muted-foreground">Référence (Optionnel)
@@ -186,7 +209,7 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
           {expenseId && (
             <div className="mt-8 p-4 border border-red-500/20 rounded-xl bg-red-500/5">
               <h3 className="text-red-700 font-bold mb-2">Annuler cette dépense</h3>
-              <p className="text-sm text-red-700/80 mb-3">Si cette dépense est une erreur, vous pouvez l'annuler. Elle sera conservée dans l'historique mais ne sera plus comptabilisée.</p>
+              <p className="text-sm text-red-700/80 mb-3">Si cette dépense est une erreur, vous pouvez l&apos;annuler. Elle sera conservée dans l&apos;historique mais ne sera plus comptabilisée.</p>
               <input 
                 className="h-11 w-full rounded-md border border-red-500/30 px-3 mb-3 bg-white" 
                 placeholder="Motif de l'annulation obligatoire" 

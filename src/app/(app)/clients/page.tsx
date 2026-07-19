@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useDeferredValue, memo } from 'react';
 import { ManageClientsUseCase } from '@/modules/clients/application/manage-clients';
 import { ClientAggregate } from '@/modules/clients/domain/client';
 import { ManagePaymentsUseCase } from '@/modules/payments/application/manage-payments';
 import { ReceivableRecord } from '@/modules/payments/domain/payment';
 import { formatMinor } from '@/modules/invoices/domain/invoice';
+import { formatMinorExact } from '@/modules/statistics/domain/statistics';
 import { Search, ArrowUpDown, Plus, Eye, FileText } from 'lucide-react';
 import { ListSkeleton } from '@/components/ui/loading-skeletons';
 import { SwipeableActionItem } from '@/components/ui/swipeable-action-item';
@@ -35,6 +36,50 @@ function getInitials(name: string) {
 
 type TabType = 'ACTIF' | 'IMPAYE' | 'TOUTES';
 
+const ClientRow = memo(({ client, debtByClient, router }: { client: ClientAggregate, debtByClient: Map<string, {amount: bigint, currency: string, scale: number}>, router: any }) => {
+  const debt = debtByClient.get(client.profile.id);
+  const currency = debt?.currency || 'XOF';
+  const debtStr = debt && debt.amount > BigInt(0) ? formatMinorExact(debt.amount.toString(), debt.currency, debt.scale).replace(debt.currency, '').trim() : '0';
+  const debtFormatted = `${currency}${debtStr.replace(/\s/g, '')}`;
+  const unusedFormatted = `${currency}0`;
+  
+  return (
+    <div className="border-b last:border-b-0">
+      <SwipeableActionItem 
+        onSwipeRight={() => router.push(`/invoices/new?clientId=${client.profile.id}`)}
+        leftIcon={FileText} leftLabel="Facturer" leftBgColor="bg-emerald-600"
+        onSwipeLeft={() => router.push(`/clients/${client.profile.id}`)}
+        rightIcon={Eye} rightLabel="Détails" rightBgColor="bg-blue-600"
+      >
+        <div 
+          onClick={() => router.push(`/clients/${client.profile.id}`)}
+          className="flex items-start gap-4 p-4 bg-card text-card-foreground hover:bg-muted/30 transition-colors cursor-pointer"
+        >
+          <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white font-medium text-lg ${getAvatarColor(client.contact.displayName)}`}>
+            {getInitials(client.contact.displayName)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-bold text-base truncate">
+              {client.contact.displayName} {client.contact.archivedAt && <span className="text-xs font-normal text-muted-foreground">(Archivé)</span>}
+            </h2>
+            <div className="flex mt-1">
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground mb-0.5">Comptes débiteurs</p>
+                <p className="font-bold text-sm">{debtFormatted}</p>
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground mb-0.5">Crédits inutilisés</p>
+                <p className="font-bold text-sm">{unusedFormatted}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SwipeableActionItem>
+    </div>
+  );
+});
+ClientRow.displayName = 'ClientRow';
+
 export default function ClientsPage() {
   const router = useRouter();
   const [clients, setClients] = useState<ClientAggregate[]>([]);
@@ -44,6 +89,8 @@ export default function ClientsPage() {
   const [activeTab, setActiveTab] = useState<TabType>('ACTIF');
   const [showSearch, setShowSearch] = useState(false);
   const [query, setQuery] = useState('');
+  const deferredQuery = useDeferredValue(query);
+  const [limit, setLimit] = useState(50);
 
   useEffect(() => {
     Promise.all([
@@ -60,10 +107,10 @@ export default function ClientsPage() {
   }, []);
 
   const debtByClient = useMemo(() => {
-    const map = new Map<string, { amount: number, currency: string, scale: number }>();
+    const map = new Map<string, { amount: bigint, currency: string, scale: number }>();
     for (const rec of receivables) {
-      const existing = map.get(rec.invoice.clientProfileId) || { amount: 0, currency: rec.invoice.currency, scale: rec.invoice.currencyScale };
-      existing.amount += Number(rec.invoice.balanceMinor);
+      const existing = map.get(rec.invoice.clientProfileId) || { amount: BigInt(0), currency: rec.invoice.currency, scale: rec.invoice.currencyScale };
+      existing.amount += BigInt(rec.invoice.balanceMinor);
       map.set(rec.invoice.clientProfileId, existing);
     }
     return map;
@@ -77,13 +124,15 @@ export default function ClientsPage() {
       list = list.filter(c => (debtByClient.get(c.profile.id)?.amount || 0) > 0);
     }
     
-    if (query.trim()) {
-      const q = query.toLowerCase();
+    if (deferredQuery.trim()) {
+      const q = deferredQuery.toLowerCase();
       list = list.filter(c => c.contact.displayName.toLowerCase().includes(q));
     }
     
     return list;
-  }, [clients, activeTab, query, debtByClient]);
+  }, [clients, activeTab, deferredQuery, debtByClient]);
+
+  const paginatedClients = useMemo(() => filteredClients.slice(0, limit), [filteredClients, limit]);
 
   return (
     <main className="mx-auto max-w-5xl bg-background min-h-screen pb-24">
@@ -139,48 +188,19 @@ export default function ClientsPage() {
         <p className="p-8 text-center text-muted-foreground">Aucun client trouvé.</p>
       ) : (
         <div className="flex flex-col">
-          {filteredClients.map(client => {
-            const debt = debtByClient.get(client.profile.id);
-            const currency = debt?.currency || 'XOF';
-            const debtStr = debt && debt.amount > 0 ? formatMinor(debt.amount, debt.currency, debt.scale, { noCurrency: true }) : '0';
-            const debtFormatted = `${currency}${debtStr.replace(/\s/g, '')}`;
-            const unusedFormatted = `${currency}0`;
-            
-            return (
-              <div key={client.profile.id} className="border-b last:border-b-0">
-                <SwipeableActionItem 
-                  onSwipeRight={() => router.push(`/invoices/new?clientId=${client.profile.id}`)}
-                  leftIcon={FileText} leftLabel="Facturer" leftBgColor="bg-emerald-600"
-                  onSwipeLeft={() => router.push(`/clients/${client.profile.id}`)}
-                  rightIcon={Eye} rightLabel="Détails" rightBgColor="bg-blue-600"
-                >
-                  <div 
-                    onClick={() => router.push(`/clients/${client.profile.id}`)}
-                    className="flex items-start gap-4 p-4 bg-card text-card-foreground hover:bg-muted/30 transition-colors cursor-pointer"
-                  >
-                    <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white font-medium text-lg ${getAvatarColor(client.contact.displayName)}`}>
-                      {getInitials(client.contact.displayName)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h2 className="font-bold text-base truncate">
-                        {client.contact.displayName} {client.contact.archivedAt && <span className="text-xs font-normal text-muted-foreground">(Archivé)</span>}
-                      </h2>
-                      <div className="flex mt-1">
-                        <div className="flex-1">
-                          <p className="text-xs text-muted-foreground mb-0.5">Comptes débiteurs</p>
-                          <p className="font-bold text-sm">{debtFormatted}</p>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-xs text-muted-foreground mb-0.5">Crédits inutilisés</p>
-                          <p className="font-bold text-sm">{unusedFormatted}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </SwipeableActionItem>
-              </div>
-            );
-          })}
+          {paginatedClients.map(client => (
+            <ClientRow key={client.profile.id} client={client} debtByClient={debtByClient} router={router} />
+          ))}
+          {filteredClients.length > limit && (
+            <div className="p-6 flex justify-center">
+              <button 
+                className="px-6 py-2 bg-muted text-muted-foreground hover:bg-muted/80 rounded-lg text-sm font-medium transition-colors"
+                onClick={() => setLimit(l => l + 50)}
+              >
+                Charger plus
+              </button>
+            </div>
+          )}
         </div>
       )}
 

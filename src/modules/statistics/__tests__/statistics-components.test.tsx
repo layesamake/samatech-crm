@@ -30,9 +30,9 @@ describe('composants statistiques accessibles', () => {
   });
 
   it('rend les cartes, raccourcis, multi-devise et avertissement d’intégrité', () => {
-    const report = calculateStatistics({ contacts: [], prospectProfiles: [], clientProfiles: [], locations: [], products: [], prospectInterests: [], followUps: [], invoices: [], invoiceLines: [], payments: [], campaigns: [], campaignRecipients: [] }, { period: resolveStatisticsPeriod('CURRENT_MONTH', '2026-07-18'), today: '2026-07-18', primaryCurrency: 'XOF', primaryCurrencyScale: 0 });
+    const report = calculateStatistics({ contacts: [], prospectProfiles: [], clientProfiles: [], locations: [], products: [], prospectInterests: [], followUps: [], invoices: [], invoiceLines: [], payments: [], campaigns: [], campaignRecipients: [], expenses: [] }, { period: resolveStatisticsPeriod('CURRENT_MONTH', '2026-07-18'), today: '2026-07-18', primaryCurrency: 'XOF', primaryCurrencyScale: 0 });
     report.isEmpty = false; report.hasOtherCurrencies = true; report.integrity = { hasIssues: true, count: 2, byCode: { MISSING_REFERENCE: 2 } };
-    report.financial.push(report.primaryFinancial, { currency: 'USD', currencyScale: 2, billedMinor: '100', collectedMinor: '0', receivableMinor: '100', overdueMinor: '0', upcomingMinor: '100' });
+    report.financial.push(report.primaryFinancial, { currency: 'USD', currencyScale: 2, billedMinor: '100', collectedMinor: '0', receivableMinor: '100', overdueMinor: '0', upcomingMinor: '100', expensesMinor: '0' });
     render(<StatisticsView report={report} detailed />);
     expect(screen.getByText('Prospects totaux')).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent('2 incohérence(s)');

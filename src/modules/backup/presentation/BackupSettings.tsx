@@ -7,6 +7,12 @@ import { DexieBackupRepository } from '../infrastructure/dexie-backup-repository
 import { ManageSecurityUseCase } from '@/modules/security/application/manage-security';
 import { DexieSecurityRepository } from '@/modules/security/infrastructure/dexie-security-repository';
 import { useSecuritySession } from '@/modules/security/presentation/SecurityGate';
+import { PageHeader } from '@/components/ui/page-header';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
 const backupUseCase = new ManageBackupsUseCase(
   new DexieBackupRepository(),
@@ -14,12 +20,12 @@ const backupUseCase = new ManageBackupsUseCase(
 );
 const REPLACE_PHRASE = 'REMPLACER MES DONNÉES';
 
-function triggerDownload(prepared: PreparedBackup): void {
-  const blob = new Blob([prepared.text], { type: 'application/json;charset=utf-8' });
+function triggerDownload(text: string, filename: string): void {
+  const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.download = prepared.filename;
+  anchor.download = filename;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
@@ -35,37 +41,82 @@ export default function BackupSettings() {
   const [pin, setPin] = useState('');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  
+  const [exportPassword, setExportPassword] = useState('');
+  const [showExportPassword, setShowExportPassword] = useState(false);
+  
+  const [fileText, setFileText] = useState<string>('');
+  const [isEncryptedFile, setIsEncryptedFile] = useState(false);
+  const [importPassword, setImportPassword] = useState('');
+  const [showImportPassword, setShowImportPassword] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   useEffect(() => { void backupUseCase.getLastExportedAt().then(setLastExportedAt); }, []);
 
-  const exportBackup = async () => {
+  const exportEncryptedBackup = async () => {
+    if (exportPassword.length < 12) {
+      setMessage('Le mot de passe doit contenir au moins 12 caractères.');
+      return;
+    }
+    setBusy(true); setMessage('');
+    try {
+      const prepared = await backupUseCase.prepareEncryptedExport(exportPassword);
+      triggerDownload(prepared.text, prepared.filename);
+      await backupUseCase.confirmExported(prepared as unknown as PreparedBackup); // using envelope structure
+      setLastExportedAt(prepared.envelope.exportedAt);
+      setMessage('Sauvegarde chiffrée créée et téléchargée avec succès.');
+      setExportPassword(''); // clear state
+    } catch {
+      setMessage('Erreur lors de la création de la sauvegarde chiffrée.');
+    } finally { setBusy(false); }
+  };
+
+  const exportClearBackup = async () => {
     setBusy(true); setMessage('');
     try {
       const prepared = await backupUseCase.prepareExport();
-      triggerDownload(prepared);
+      triggerDownload(prepared.text, prepared.filename);
       await backupUseCase.confirmExported(prepared);
       setLastExportedAt(prepared.envelope.exportedAt);
-      setMessage('Sauvegarde créée et proposée au téléchargement. Vérifiez sa présence dans vos téléchargements.');
+      setMessage('Sauvegarde JSON en clair créée.');
     } catch {
-      setMessage('La sauvegarde n’a pas pu être créée. Aucune date de succès n’a été enregistrée.');
+      setMessage('Erreur lors de la création de la sauvegarde en clair.');
     } finally { setBusy(false); }
   };
 
   const selectFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    setEnvelope(null); setPreview(null); setConfirmation(''); setPin(''); setMessage('');
+    setEnvelope(null); setPreview(null); setConfirmation(''); setPin(''); setMessage(''); setFileText(''); setIsEncryptedFile(false); setImportPassword('');
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!file.name.toLowerCase().endsWith('.json')) { setMessage('Sélectionnez un fichier .json de sauvegarde SAMTECH CRM.'); return; }
+    
     if (file.size === 0) { setMessage('Le fichier est vide.'); return; }
-    if (file.size > MAX_BACKUP_BYTES) { setMessage('Le fichier dépasse 25 Mo.'); return; }
-    if (file.type && !['application/json', 'text/json', 'text/plain'].includes(file.type)) { setMessage('Le type du fichier n’est pas accepté.'); return; }
+    if (file.size > MAX_BACKUP_BYTES) { setMessage('Le fichier dépasse la limite autorisée.'); return; }
+    
     setBusy(true);
     try {
-      const result = await backupUseCase.inspect(await file.text());
-      setEnvelope(result.envelope); setPreview(result.preview);
-      setMessage('Sauvegarde valide. Vérifiez le résumé avant de continuer.');
+      const text = await file.text();
+      setFileText(text);
+      if (file.name.endsWith('.samtech-backup') || text.includes('"encrypted":true')) {
+        setIsEncryptedFile(true);
+        setMessage('Fichier chiffré détecté. Veuillez saisir le mot de passe de sauvegarde.');
+      } else {
+        const result = await backupUseCase.inspect(text);
+        setEnvelope(result.envelope); setPreview(result.preview);
+        setMessage('Sauvegarde en clair valide. Vérifiez le résumé avant de continuer.');
+      }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Sauvegarde invalide.');
+      setMessage(error instanceof Error ? error.message : 'Fichier non lisible.');
+    } finally { setBusy(false); }
+  };
+
+  const inspectEncrypted = async () => {
+    setBusy(true); setMessage('');
+    try {
+      const result = await backupUseCase.inspectEncrypted(fileText, importPassword);
+      setEnvelope(result.envelope); setPreview(result.preview);
+      setMessage('Mot de passe correct. Sauvegarde déchiffrée et valide.');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Mot de passe incorrect ou fichier altéré.');
     } finally { setBusy(false); }
   };
 
@@ -83,42 +134,128 @@ export default function BackupSettings() {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6">
-      <div><h1 className="text-2xl font-bold">Sauvegarde et restauration</h1><p className="text-muted-foreground">Toutes les opérations sont locales et restent disponibles hors connexion.</p></div>
-      {message && <p data-testid="backup-message" role="status" className="rounded-md border p-3 text-sm">{message}</p>}
-      <section className="rounded-xl border p-5 space-y-4">
-        <h2 className="text-lg font-semibold">Exporter une sauvegarde</h2>
-        <p data-testid="last-backup" className="text-sm">Dernière sauvegarde : {lastExportedAt ? new Date(lastExportedAt).toLocaleString('fr-FR') : 'Aucune sauvegarde effectuée'}</p>
-        <p className="text-sm text-muted-foreground">Effectuez une sauvegarde au minimum chaque semaine. Les données du navigateur peuvent être effacées.</p>
-        <div className="rounded-md border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-950">Cette sauvegarde peut contenir vos contacts, factures, paiements et autres données commerciales. Conservez-la dans un emplacement sûr. Le fichier JSON n’est pas chiffré.</div>
-        <button data-testid="export-backup" disabled={busy} onClick={() => void exportBackup()} className="h-10 rounded-md bg-primary px-4 text-primary-foreground disabled:opacity-50">Exporter une sauvegarde</button>
-      </section>
-      <section className="rounded-xl border p-5 space-y-4">
-        <h2 className="text-lg font-semibold">Restaurer une sauvegarde</h2>
-        <p className="text-sm font-medium">La restauration remplacera toutes les données métier actuellement présentes sur cet appareil. Cette opération ne fusionne pas les bases.</p>
-        <button type="button" onClick={() => void exportBackup()} className="h-10 rounded-md border px-4">Sauvegarder les données actuelles avant de continuer</button>
-        <label className="block text-sm font-medium">Fichier JSON<input data-testid="backup-file" type="file" accept=".json,application/json" onChange={(event) => void selectFile(event)} className="mt-2 block w-full text-sm" /></label>
-        {preview && (
-          <div data-testid="backup-preview" className="rounded-lg bg-muted p-4 space-y-3">
-            <h3 className="font-semibold">Aperçu validé</h3>
-            <dl className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-              <div><dt className="text-muted-foreground">Date</dt><dd>{new Date(preview.exportedAt).toLocaleString('fr-FR')}</dd></div>
-              <div><dt className="text-muted-foreground">Application</dt><dd>{preview.appVersion}</dd></div>
-              <div><dt className="text-muted-foreground">Format</dt><dd>v{preview.formatVersion}</dd></div>
-              <div><dt className="text-muted-foreground">Total</dt><dd>{preview.totalRecords}</dd></div>
-              <div><dt>Contacts</dt><dd>{preview.counts.contacts}</dd></div><div><dt>Prospects</dt><dd>{preview.counts.prospectProfiles}</dd></div>
-              <div><dt>Clients</dt><dd>{preview.counts.clientProfiles}</dd></div><div><dt>Produits/services</dt><dd>{preview.counts.products}</dd></div>
-              <div><dt>Factures</dt><dd>{preview.counts.invoices}</dd></div><div><dt>Paiements</dt><dd>{preview.counts.payments}</dd></div><div><dt>Campagnes</dt><dd>{preview.counts.campaigns}</dd></div>
-            </dl>
-            <div className="border-t pt-3 space-y-3">
-              <label className="block text-sm font-medium">Saisissez exactement « {REPLACE_PHRASE} »<input data-testid="restore-confirmation" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} className="mt-1 h-10 w-full rounded-md border bg-background px-3" /></label>
-              {session.settings?.pinEnabled && <label className="block text-sm font-medium">PIN actuel<input data-testid="restore-pin" type="password" inputMode="numeric" value={pin} onChange={(event) => setPin(event.target.value)} className="mt-1 h-10 w-full rounded-md border bg-background px-3" /></label>}
-              <button data-testid="restore-backup" disabled={busy || confirmation !== REPLACE_PHRASE || Boolean(session.settings?.pinEnabled && !pin)} onClick={() => void restore()} className="h-10 rounded-md bg-destructive px-4 text-white disabled:opacity-50">Remplacer toutes les données métier</button>
-            </div>
+    <div className="space-y-6 max-w-4xl mx-auto pb-16">
+      <PageHeader 
+        title="Sauvegarde et restauration" 
+        description="Toutes les opérations sont locales et restent disponibles hors connexion."
+      />
+      {message && <div data-testid="backup-message" role="status" className="p-3 text-sm rounded-md bg-secondary text-secondary-foreground">{message}</div>}
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Exporter une sauvegarde</CardTitle>
+          <CardDescription>Dernière sauvegarde : {lastExportedAt ? new Date(lastExportedAt).toLocaleString('fr-FR') : 'Aucune'}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="rounded-md border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-950">
+            Protégez votre sauvegarde avec un mot de passe fort (12 caractères min.). <strong>Attention : Sans ce mot de passe, vos données seront impossibles à restaurer. Ce mot de passe est indépendant de votre PIN.</strong>
           </div>
-        )}
-      </section>
+          
+          <div className="space-y-2">
+            <Label htmlFor="export-password">Mot de passe de la sauvegarde</Label>
+            <div className="relative">
+              <Input
+                id="export-password"
+                type={showExportPassword ? 'text' : 'password'}
+                value={exportPassword}
+                onChange={(e) => setExportPassword(e.target.value)}
+                autoComplete="new-password"
+                placeholder="12 caractères minimum"
+              />
+              <button
+                type="button"
+                onClick={() => setShowExportPassword(!showExportPassword)}
+                className="absolute right-3 top-2.5 text-muted-foreground"
+              >
+                {showExportPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground">Recommandation : utilisez une phrase d&apos;au moins quatre mots.</p>
+          </div>
+
+          <Button disabled={busy || exportPassword.length < 12} onClick={exportEncryptedBackup} className="w-full sm:w-auto">
+            {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Exporter (.samtech-backup)
+          </Button>
+          
+          <div className="pt-4">
+            <Button variant="link" size="sm" onClick={() => setShowAdvanced(!showAdvanced)} className="px-0">
+              Options avancées
+            </Button>
+            {showAdvanced && (
+              <div className="mt-2 p-4 border rounded-md space-y-2">
+                <p className="text-sm text-destructive">Exporter un JSON non chiffré est risqué pour la confidentialité de vos données.</p>
+                <Button variant="outline" disabled={busy} onClick={exportClearBackup}>Exporter un JSON non chiffré</Button>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Restaurer une sauvegarde</CardTitle>
+          <CardDescription>La restauration remplacera toutes les données métier actuelles de cet appareil.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Label htmlFor="backup-file">Fichier de sauvegarde (.samtech-backup ou .json)</Label>
+          <Input id="backup-file" type="file" accept=".json,.samtech-backup" onChange={selectFile} />
+          
+          {isEncryptedFile && !preview && (
+            <div className="space-y-3 pt-4 border-t">
+              <Label htmlFor="import-password">Mot de passe de la sauvegarde</Label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    id="import-password"
+                    type={showImportPassword ? 'text' : 'password'}
+                    value={importPassword}
+                    onChange={(e) => setImportPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowImportPassword(!showImportPassword)}
+                    className="absolute right-3 top-2.5 text-muted-foreground"
+                  >
+                    {showImportPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <Button onClick={inspectEncrypted} disabled={busy || !importPassword}>Déchiffrer</Button>
+              </div>
+            </div>
+          )}
+
+          {preview && (
+            <div className="rounded-lg bg-muted p-4 space-y-3 mt-4">
+              <h3 className="font-semibold">Aperçu validé</h3>
+              <dl className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                <div><dt className="text-muted-foreground">Date</dt><dd>{new Date(preview.exportedAt).toLocaleString('fr-FR')}</dd></div>
+                <div><dt className="text-muted-foreground">Format</dt><dd>v{preview.formatVersion}</dd></div>
+                <div><dt className="text-muted-foreground">Total Enregistrements</dt><dd>{preview.totalRecords}</dd></div>
+              </dl>
+              <div className="border-t pt-3 space-y-3">
+                <div className="space-y-2">
+                  <Label>Saisissez exactement « {REPLACE_PHRASE} »</Label>
+                  <Input value={confirmation} onChange={(e) => setConfirmation(e.target.value)} />
+                </div>
+                {session.settings?.pinEnabled && (
+                  <div className="space-y-2">
+                    <Label>PIN actuel de l&apos;application</Label>
+                    <Input type="password" inputMode="numeric" value={pin} onChange={(e) => setPin(e.target.value)} />
+                  </div>
+                )}
+                <Button 
+                  variant="destructive" 
+                  className="w-full"
+                  disabled={busy || confirmation !== REPLACE_PHRASE || Boolean(session.settings?.pinEnabled && !pin)} 
+                  onClick={restore}
+                >
+                  Remplacer toutes les données métier
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
-

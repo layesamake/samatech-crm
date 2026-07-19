@@ -11,7 +11,9 @@ import {
   Settings,
   Receipt,
   MessageSquare,
-  X
+  X,
+  DollarSign,
+  PieChart
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -27,12 +29,15 @@ export function Sidebar({ onClose }: SidebarProps) {
     { href: '/', label: 'Tableau de bord', icon: Home },
     { href: '/prospects', label: 'Prospects', icon: Users },
     { href: '/clients', label: 'Clients', icon: Users },
+    { href: '/commercial-documents', label: 'Ventes', icon: FileText },
     { href: '/invoices', label: 'Factures', icon: FileText },
     { href: '/payments', label: 'Paiements', icon: CreditCard },
     { href: '/expenses', label: 'Dépenses', icon: Receipt },
+    { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
     { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
     { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },
     { href: '/statistics', label: 'Statistiques', icon: BarChart },
+    { href: '/reports', label: 'Rapports', icon: PieChart },
     { href: '/follow-ups', label: 'Relances', icon: Repeat },
     { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
     { href: '/settings', label: 'Paramètres', icon: Settings },

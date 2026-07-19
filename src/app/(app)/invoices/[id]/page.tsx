@@ -11,19 +11,6 @@ const manage = new ManageInvoicesUseCase();
 export default function InvoiceDetailPage() { const router = useRouter(); const { id } = useParams<{ id: string }>(); const [value, setValue] = useState<InvoiceAggregate | null>(); const [error, setError] = useState(''); const [cancelReason, setCancelReason] = useState(''); const [pending, setPending] = useState(false); const refresh = useCallback(() => manage.get(id).then(setValue), [id]); useEffect(() => { void manage.get(id).then(setValue).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')); }, [id]);
   if (value === undefined) return <p className="p-4">Chargement...</p>; if (value === null) return <p className="p-4">Facture introuvable.</p>; const { invoice, lines } = value; const pdf = async (mode: 'DOWNLOAD' | 'SHARE') => { setPending(true); setError(''); try { const { downloadPdf, generateInvoicePdf, safePdfFilename, shareOrDownloadPdf } = await import('@/modules/invoices/pdf/invoice-pdf'); const bytes = await generateInvoicePdf(value); const filename = safePdfFilename(invoice.number, invoice.status, invoice.type); if (mode === 'DOWNLOAD') downloadPdf(bytes, filename); else await shareOrDownloadPdf(bytes, filename); } catch (caught) { setError(caught instanceof Error ? caught.message : 'Génération PDF impossible'); } finally { setPending(false); } };
   
-  const duplicateAsInvoice = async () => {
-    if (!confirm('Créer une nouvelle facture à partir de ce devis ?')) return;
-    setPending(true);
-    try {
-      const newId = await manage.duplicateAsDraft(invoice.id, 'INVOICE');
-      router.push(`/invoices/${newId}/edit`);
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : 'Duplication impossible');
-    } finally {
-      setPending(false);
-    }
-  };
-
   const generateWhatsAppLink = () => {
     const phone = invoice.clientSnapshot.phone?.replace(/[^0-9+]/g, '') || '';
     const balance = formatMinor(invoice.balanceMinor, invoice.currency, invoice.currencyScale, { noCurrency: true });
@@ -39,22 +26,20 @@ export default function InvoiceDetailPage() { const router = useRouter(); const 
       <header className={`rounded-xl border bg-card text-card-foreground p-5 ${invoice.status === 'ANNULEE' ? 'border-red-400' : ''}`}>
         <div className="flex flex-wrap justify-between gap-3">
           <div>
-            <h1 className="text-xl font-bold">Aperçu {invoice.type === 'ESTIMATE' ? 'du devis' : 'de la facture'}</h1>
+            <h1 className="text-xl font-bold">Aperçu de la facture</h1>
             <p className="text-sm text-slate-500">Statut: <strong className={invoice.status === 'ANNULEE' ? 'text-red-700' : 'text-slate-700'}>{invoice.status}</strong></p>
           </div>
           <div className="flex flex-wrap gap-2">
             {invoice.status === 'BROUILLON' && (
               <>
                 <Link href={`/invoices/${id}/edit`} className="rounded-md border px-4 py-2 hover:bg-slate-50">Modifier</Link>
-                <button disabled={pending} onClick={async () => { if (!confirm(`Émettre définitivement ce ${invoice.type === 'ESTIMATE' ? 'devis' : 'document'} ?`)) return; setPending(true); try { const result = await manage.issue(id); setValue(result); } catch (caught) { setError(caught instanceof Error ? caught.message : 'Émission impossible'); } finally { setPending(false); } }} className="rounded-md bg-emerald-700 px-4 py-2 text-white hover:bg-emerald-800">Émettre</button>
+                <button disabled={pending} onClick={async () => { if (!confirm(`Émettre définitivement ce document ?`)) return; setPending(true); try { const result = await manage.issue(id); setValue(result); } catch (caught) { setError(caught instanceof Error ? caught.message : 'Émission impossible'); } finally { setPending(false); } }} className="rounded-md bg-emerald-700 px-4 py-2 text-white hover:bg-emerald-800">Émettre</button>
               </>
             )}
-            {invoice.type === 'ESTIMATE' && invoice.status !== 'BROUILLON' && (
-              <button disabled={pending} onClick={() => void duplicateAsInvoice()} className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">Convertir en facture</button>
-            )}
+
             <button disabled={pending} onClick={() => void pdf('DOWNLOAD')} className="rounded-md border px-4 py-2 hover:bg-slate-50">Télécharger PDF</button>
             <button disabled={pending} onClick={() => void pdf('SHARE')} className="rounded-md border px-4 py-2 hover:bg-slate-50">Partager</button>
-            {invoice.status !== 'BROUILLON' && invoice.status !== 'ANNULEE' && invoice.balanceMinor > 0 && invoice.clientSnapshot.phone && invoice.type !== 'ESTIMATE' && (
+            {invoice.status !== 'BROUILLON' && invoice.status !== 'ANNULEE' && invoice.balanceMinor > 0 && invoice.clientSnapshot.phone && (
               <a href={generateWhatsAppLink()} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-md bg-[#25D366] px-4 py-2 text-white hover:bg-[#128C7E]">
                 <MessageCircle className="w-4 h-4" />
                 Relancer via WhatsApp
@@ -85,7 +70,7 @@ export default function InvoiceDetailPage() { const router = useRouter(); const 
             </h2>
           </div>
           <div className="text-right">
-            <h1 className="text-4xl mb-4" style={{ color: '#2b7fb9' }}>{invoice.type === 'ESTIMATE' ? 'Devis / Proforma' : 'Facture'}</h1>
+            <h1 className="text-4xl mb-4" style={{ color: '#2b7fb9' }}>Facture</h1>
             <p className="font-bold text-sm text-slate-900 mb-6">
               {invoice.status === 'BROUILLON' ? 'BROUILLON' : `# ${invoice.number || ''}`}
             </p>

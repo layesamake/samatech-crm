@@ -32,7 +32,7 @@ describe('Migration Dexie V3 vers V4', () => {
     for (const [table, value] of Object.entries(v3Fixtures)) await v3.table(table).add(value);
     v3.close();
     const v4 = new SamtechCRMDatabase(name); await v4.open();
-    expect(v4.verno).toBe(10);
+    expect(v4.verno).toBe(13);
     for (const [table, key] of Object.entries(primaryKeys)) expect(await v4.table(table).get(key), `${table} doit être conservée après migration`).toMatchObject(v3Fixtures[table as keyof typeof v3Fixtures]);
     await v4.followUps.add({ id: 'f1', contactId: 'c1', channel: 'PHONE', dueAt: now, timezone: 'Africa/Dakar', priority: 'NORMAL', status: 'PLANIFIEE', createdAt: now, updatedAt: now });
     await v4.messageTemplates.add({ id: 'm1', name: 'R', category: 'FOLLOW_UP', content: 'Bonjour', variables: [], isActive: true, createdAt: now, updatedAt: now });

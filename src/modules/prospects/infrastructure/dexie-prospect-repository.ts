@@ -10,6 +10,8 @@ export interface ProspectSearchCriteria {
   source?: string;
   productIds?: string[];
   showArchived?: boolean;
+  limit?: number;
+  offset?: number;
 }
 
 export class DexieProspectRepository {
@@ -178,8 +180,11 @@ export class DexieProspectRepository {
     }
 
     // Tri par date de mise à jour (plus récent en premier)
-    return result.sort((a, b) => 
-      new Date(b.profile.updatedAt).getTime() - new Date(a.profile.updatedAt).getTime()
-    );
+    result.sort((a, b) => b.contact.updatedAt.localeCompare(a.contact.updatedAt));
+    if (criteria.limit) {
+      const offset = criteria.offset ?? 0;
+      return result.slice(offset, offset + criteria.limit);
+    }
+    return result;
   }
 }

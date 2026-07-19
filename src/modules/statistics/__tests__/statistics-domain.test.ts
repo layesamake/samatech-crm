@@ -11,7 +11,7 @@ import { calculateStatistics, formatMinorExact, formatQuantityExact, resolveStat
 
 const now = '2026-07-18T10:00:00.000Z';
 const audit = { createdAt: now, updatedAt: now };
-const empty = (): StatisticsData => ({ contacts: [], prospectProfiles: [], clientProfiles: [], locations: [], products: [], prospectInterests: [], followUps: [], invoices: [], invoiceLines: [], payments: [], campaigns: [], campaignRecipients: [] });
+const empty = (): StatisticsData => ({ contacts: [], prospectProfiles: [], clientProfiles: [], locations: [], products: [], prospectInterests: [], followUps: [], invoices: [], invoiceLines: [], payments: [], campaigns: [], campaignRecipients: [], expenses: [] });
 const contact = (id: string, createdAt: string, extra: Partial<ContactRecord> = {}): ContactRecord => ({ id, displayName: id, whatsappPhone: '+221770000000', normalizedWhatsappPhone: '+221770000000', createdAt, updatedAt: now, ...extra });
 const profile = (id: string, contactId: string, createdAt: string, extra: Partial<ProspectProfileRecord> = {}): ProspectProfileRecord => ({ id, contactId, status: 'NOUVEAU', interestLevel: 'FROID', firstContactDate: createdAt.slice(0, 10), lastStatusChangedAt: now, createdAt, updatedAt: now, ...extra });
 const client = (id: string, contactId: string, convertedAt: string): ClientProfileRecord => ({ id, contactId, convertedAt, ...audit });

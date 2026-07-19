@@ -5,8 +5,13 @@ import type { InvoiceAggregate } from '@/modules/invoices/domain/invoice';
 import { formatMinor } from '@/modules/invoices/domain/invoice';
 import { ManagePaymentsUseCase } from '../application/manage-payments';
 import { minorToPaymentInput, PAYMENT_METHOD_LABELS, PAYMENT_METHODS, PaymentMethod, PaymentRecord, parsePaymentAmount } from '../domain/payment';
+import { ManageTreasuryAccountsUseCase, TreasuryAccountWithBalance } from '@/modules/treasury/application/manage-treasury-accounts';
+import { AllocateTreasurySourcesUseCase } from '@/modules/treasury/application/allocate-treasury-sources';
+import { treasuryRepository } from '@/modules/treasury/infrastructure/dexie-treasury-repository';
 
 const managePayments = new ManagePaymentsUseCase();
+const accountUseCase = new ManageTreasuryAccountsUseCase(treasuryRepository);
+const allocateUseCase = new AllocateTreasurySourcesUseCase(treasuryRepository);
 
 function todayLocal(): string {
   const date = new Date();
@@ -28,6 +33,12 @@ export function PaymentPanel({ value, onInvoiceChanged }: { value: InvoiceAggreg
   const [pending, setPending] = useState(false);
   const [reverseId, setReverseId] = useState('');
   const [reverseReason, setReverseReason] = useState('');
+  const [accountId, setAccountId] = useState('');
+  const [accounts, setAccounts] = useState<TreasuryAccountWithBalance[]>([]);
+
+  useEffect(() => {
+    accountUseCase.listAccountsWithBalance().then(setAccounts).catch(console.error);
+  }, []);
 
   const load = useCallback(() => managePayments.forInvoice(invoice.id).then(setItems), [invoice.id]);
   useEffect(() => { void managePayments.forInvoice(invoice.id).then(setItems).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement des paiements impossible')); }, [invoice.id]);
@@ -42,7 +53,10 @@ export function PaymentPanel({ value, onInvoiceChanged }: { value: InvoiceAggreg
       if (historical && !window.confirm('La date précède l’émission. Confirmer cet historique légitime ?')) return;
       if (!window.confirm(`Enregistrer le paiement de ${formatMinor(amountMinor, invoice.currency, invoice.currencyScale)} ?`)) return;
       setPending(true);
-      await managePayments.record({ invoiceId: invoice.id, clientProfileId: invoice.clientProfileId, paymentDate, amountMinor, currency: invoice.currency, currencyScale: invoice.currencyScale, method, reference, note, confirmHistoricalDate: historical });
+      const agg = await managePayments.record({ invoiceId: invoice.id, clientProfileId: invoice.clientProfileId, paymentDate, amountMinor, currency: invoice.currency, currencyScale: invoice.currencyScale, method, reference, note, confirmHistoricalDate: historical });
+      if (accountId) {
+        await allocateUseCase.allocate('PAYMENT', agg.payment.id, accountId);
+      }
       setAmount(''); setReference(''); setNote(''); setSuccess('Paiement enregistré.');
       await Promise.all([load(), onInvoiceChanged()]);
     } catch (caught) { setError(caught instanceof Error ? caught.message : 'Enregistrement impossible'); }
@@ -70,7 +84,8 @@ export function PaymentPanel({ value, onInvoiceChanged }: { value: InvoiceAggreg
         <label className="text-sm">Montant ({invoice.currency})<input required inputMode="decimal" aria-label="Montant du paiement" className="mt-1 h-11 w-full rounded-md border px-3" value={amount} onChange={(event) => setAmount(event.target.value)} /></label>
         <label className="text-sm">Date<input required type="date" aria-label="Date du paiement" className="mt-1 h-11 w-full rounded-md border px-3" value={paymentDate} onChange={(event) => setPaymentDate(event.target.value)} /></label>
         <label className="text-sm">Mode<select aria-label="Mode de paiement" className="mt-1 h-11 w-full rounded-md border px-3" value={method} onChange={(event) => setMethod(event.target.value as PaymentMethod)}>{PAYMENT_METHODS.map((item) => <option key={item} value={item}>{PAYMENT_METHOD_LABELS[item]}</option>)}</select></label>
-        <label className="text-sm">Référence facultative<input aria-label="Référence du paiement" className="mt-1 h-11 w-full rounded-md border px-3" value={reference} onChange={(event) => setReference(event.target.value)} /></label>
+        <label className="text-sm">Compte de trésorerie<select aria-label="Compte de trésorerie" className="mt-1 h-11 w-full rounded-md border px-3" value={accountId} onChange={(event) => setAccountId(event.target.value)}><option value="">Aucun compte affecté</option>{accounts.map(acc => <option key={acc.id} value={acc.id}>{acc.name}</option>)}</select></label>
+        <label className="text-sm sm:col-span-2">Référence facultative<input aria-label="Référence du paiement" className="mt-1 h-11 w-full rounded-md border px-3" value={reference} onChange={(event) => setReference(event.target.value)} /></label>
       </div>
       <label className="block text-sm">Note {method === 'OTHER' ? '(obligatoire pour Autre)' : 'facultative'}<textarea required={method === 'OTHER'} aria-label="Note du paiement" className="mt-1 min-h-20 w-full rounded-md border p-3" value={note} onChange={(event) => setNote(event.target.value)} /></label>
       {invoice.issueDate && paymentDate < invoice.issueDate && <p role="alert" className="rounded-md bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-200">Cette date précède l’émission du {invoice.issueDate}. Une confirmation supplémentaire sera demandée.</p>}

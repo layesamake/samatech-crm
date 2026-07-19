@@ -55,7 +55,7 @@ describe('Migration Dexie V7 vers V8', () => {
 
     const v8 = new SamtechCRMDatabase(name);
     await v8.open();
-    expect(v8.verno).toBe(10);
+    expect(v8.verno).toBe(13);
     for (const table of Object.keys(fixtures)) expect(await v8.table(table).count(), `V7 ${table}`).toBe(1);
     await v8.payments.bulkAdd([
       { id: 'payment1', invoiceId: 'invoice1', clientProfileId: 'client1', paymentDate: '2026-07-18', amountMinor: 30_000, currency: 'XOF', currencyScale: 0, method: 'WAVE', status: 'ACTIVE', createdAt: now, updatedAt: now },

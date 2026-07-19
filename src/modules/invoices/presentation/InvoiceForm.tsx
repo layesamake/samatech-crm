@@ -12,7 +12,7 @@ type EditableLine = Omit<DraftLineInput, 'quantityScaled' | 'quantityScale'> & {
 const blankLine = (): EditableLine => ({ id: crypto.randomUUID(), position: 0, designation: '', quantityText: '1', unitPriceMinor: 0, discountType: 'NONE', discountValue: 0, taxRateBasisPoints: 0 });
 export default function InvoiceForm({ invoiceId }: { invoiceId?: string }) {
   const router = useRouter(); const search = useSearchParams(); const [options, setOptions] = useState<InvoiceFormOptions>(); const [clientId, setClientId] = useState(search.get('clientId') ?? ''); const [lines, setLines] = useState<EditableLine[]>([]); const [selectedProduct, setSelectedProduct] = useState(''); const [issueDate, setIssueDate] = useState(new Date().toISOString().slice(0, 10)); const [dueDate, setDueDate] = useState(''); const [notes, setNotes] = useState(''); const [terms, setTerms] = useState(''); const [error, setError] = useState(''); const [pending, setPending] = useState(false);
-  const [docType, setDocType] = useState<'INVOICE' | 'ESTIMATE'>('INVOICE');
+  const [docType, setDocType] = useState<'INVOICE'>('INVOICE');
   const [productMode, setProductMode] = useState<'SELECT' | 'NEW'>('SELECT');
   const [newProductName, setNewProductName] = useState('');
   const [clientMode, setClientMode] = useState<'SELECT' | 'NEW'>('SELECT');
@@ -94,9 +94,8 @@ export default function InvoiceForm({ invoiceId }: { invoiceId?: string }) {
     <section className="grid gap-3 rounded-xl border bg-card text-card-foreground p-4 sm:grid-cols-4">
       <div className="flex flex-col gap-1">
         <label className="text-sm">Type de document</label>
-        <select aria-label="Type de document" className="h-11 w-full rounded-md border px-3" value={docType} onChange={(e) => setDocType(e.target.value as 'INVOICE' | 'ESTIMATE')}>
+        <select aria-label="Type de document" className="h-11 w-full rounded-md border px-3" value={docType} onChange={(e) => setDocType(e.target.value as 'INVOICE')}>
           <option value="INVOICE">Facture</option>
-          <option value="ESTIMATE">Devis / Proforma</option>
         </select>
       </div>
       <div className="flex flex-col gap-1">
@@ -169,7 +168,7 @@ export default function InvoiceForm({ invoiceId }: { invoiceId?: string }) {
             <BarcodeScannerComponent
               width="100%"
               height="100%"
-              onUpdate={(err: unknown, result: any) => {
+              onUpdate={(err: unknown, result: { text?: string } | undefined) => {
                 if (result?.text) {
                   const p = options?.products.find(x => x.barcode === result.text);
                   if (p) {

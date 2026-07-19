@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { GetStatisticsUseCase } from '../application/get-statistics';
 import { formatMinorExact, formatQuantityExact, PERIOD_PRESETS, PeriodPreset, StatisticsReport } from '../domain/statistics';
 import { AccessibleBars } from './AccessibleBars';

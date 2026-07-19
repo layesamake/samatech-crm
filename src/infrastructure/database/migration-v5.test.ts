@@ -19,7 +19,7 @@ describe('Migration Dexie V4 vers V5', () => {
     for (const table of Object.keys(fixtures)) expect(await v5.table(table).count(), table).toBe(1);
     await v5.table('clientProfiles').add({ id: 'client1', contactId: 'c1', convertedAt: now, createdAt: now, updatedAt: now });
     v5.close();
-    const v6 = new SamtechCRMDatabase(name); await v6.open(); expect(v6.verno).toBe(10);
+    const v6 = new SamtechCRMDatabase(name); await v6.open(); expect(v6.verno).toBe(13);
     for (const table of Object.keys(fixtures)) expect(await v6.table(table).count(), table).toBe(1);
     expect(await v6.clientProfiles.get('client1')).toMatchObject({ contactId: 'c1', convertedAt: now });
     await v6.transaction('rw', v6.tags, v6.contactTags, v6.notes, async () => {
@@ -28,7 +28,7 @@ describe('Migration Dexie V4 vers V5', () => {
       await v6.notes.add({ id: 'note1', contactId: 'c1', content: 'Historique conservé', pinned: true, createdAt: now, updatedAt: now });
     });
     v6.close();
-    const reopened = new SamtechCRMDatabase(name); await reopened.open(); expect(reopened.verno).toBe(10);
+    const reopened = new SamtechCRMDatabase(name); await reopened.open(); expect(reopened.verno).toBe(13);
     for (const table of Object.keys(fixtures)) expect(await reopened.table(table).count(), table).toBe(1);
     expect(await reopened.clientProfiles.get('client1')).toMatchObject({ contactId: 'c1', convertedAt: now });
     expect(await reopened.contacts.get('c1')).toMatchObject({ locationId: 'l1' });

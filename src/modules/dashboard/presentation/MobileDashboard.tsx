@@ -6,9 +6,13 @@ import { FileText, User, ReceiptText, Timer, Clock, ChevronRight, DollarSign } f
 import { GetStatisticsUseCase } from '@/modules/statistics/application/get-statistics';
 import { StatisticsReport, formatMinorExact, PeriodPreset } from '@/modules/statistics/domain/statistics';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@/infrastructure/database/db';
+import { ManageInvoicesUseCase } from '@/modules/invoices/application/manage-invoices';
+import { ManageTreasuryAccountsUseCase } from '@/modules/treasury/application/manage-treasury-accounts';
+import { treasuryRepository } from '@/modules/treasury/infrastructure/dexie-treasury-repository';
 
 const getStatistics = new GetStatisticsUseCase();
+const manageInvoices = new ManageInvoicesUseCase();
+const accountUseCase = new ManageTreasuryAccountsUseCase(treasuryRepository);
 
 export function MobileDashboard() {
   const [report, setReport] = useState<StatisticsReport | null>(null);
@@ -23,10 +27,12 @@ export function MobileDashboard() {
   // Fetch recent transactions (invoices)
   const recentInvoices = useLiveQuery(
     async () => {
-      const all = await db.invoices.toArray();
-      return all.sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 3);
+      const all = await manageInvoices.getRecent(3);
+      return all;
     }
   );
+
+  const treasuryAccounts = useLiveQuery(() => accountUseCase.listAccountsWithBalance());
 
   if (!report) {
     return <div className="p-8 text-center text-muted-foreground animate-pulse">Chargement du tableau de bord...</div>;
@@ -36,12 +42,12 @@ export function MobileDashboard() {
   const primary = { currency: report.primaryCurrency, scale: report.primaryCurrencyScale };
 
   // Calculate percentages for Accounts Receivable
-  const totalReceivable = Number(money.receivableMinor);
-  const overdueReceivable = Number(money.overdueMinor);
+  const totalReceivable = BigInt(money.receivableMinor);
+  const overdueReceivable = BigInt(money.overdueMinor);
   const currentReceivable = totalReceivable - overdueReceivable;
   
-  const currentPct = totalReceivable > 0 ? (currentReceivable / totalReceivable) * 100 : 0;
-  const overduePct = totalReceivable > 0 ? (overdueReceivable / totalReceivable) * 100 : 0;
+  const currentPct = totalReceivable > BigInt(0) ? Number((currentReceivable * BigInt(100)) / totalReceivable) : 0;
+  const overduePct = totalReceivable > BigInt(0) ? Number((overdueReceivable * BigInt(100)) / totalReceivable) : 0;
 
   return (
     <div className="flex flex-col gap-6 p-4 pb-20 bg-muted/50 min-h-full">
@@ -135,6 +141,38 @@ export function MobileDashboard() {
         </div>
       </section>
 
+      {/* Treasury Overview Card */}
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="font-semibold text-foreground flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-emerald-500" />
+            Trésorerie globale
+          </h2>
+          <Link href="/treasury" className="text-xs font-semibold text-primary">Gérer</Link>
+        </div>
+        <div className="space-y-4">
+          {treasuryAccounts === undefined ? (
+            <p className="text-sm text-muted-foreground animate-pulse">Chargement...</p>
+          ) : treasuryAccounts.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Aucun compte de trésorerie.</p>
+          ) : (
+            <>
+              <p className="text-2xl font-bold mb-4">
+                {formatMinorExact(treasuryAccounts.reduce((sum, acc) => sum + BigInt(acc.balanceMinor), BigInt(0)).toString(), treasuryAccounts[0]?.currency || 'XOF', treasuryAccounts[0]?.currencyScale || 0)}
+              </p>
+              <div className="flex flex-col gap-2">
+                {treasuryAccounts.slice(0, 3).map(acc => (
+                  <div key={acc.id} className="flex justify-between items-center text-sm border-b border-border pb-2 last:border-0 last:pb-0">
+                    <span className="font-medium">{acc.name}</span>
+                    <span className="font-semibold">{formatMinorExact(acc.balanceMinor.toString(), acc.currency, acc.currencyScale)}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+
       {/* Recent Transactions Card */}
       <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border">
         <div className="flex justify-between items-center mb-4">
@@ -220,8 +258,8 @@ export function MobileDashboard() {
         </div>
         <div className="pt-3 border-t border-border flex justify-between items-center text-sm">
           <p className="font-medium text-muted-foreground">Mouvement Net</p>
-          <p className={`font-bold ${Number(money.collectedMinor) - Number(money.expensesMinor || 0) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
-             {formatMinorExact((Number(money.collectedMinor) - Number(money.expensesMinor || 0)).toString(), primary.currency, primary.scale)}
+          <p className={`font-bold ${BigInt(money.collectedMinor) - BigInt(money.expensesMinor || 0) >= BigInt(0) ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
+             {formatMinorExact((BigInt(money.collectedMinor) - BigInt(money.expensesMinor || 0)).toString(), primary.currency, primary.scale)}
           </p>
         </div>
       </section>
@@ -237,7 +275,7 @@ export function MobileDashboard() {
            <div className="space-y-4">
              {report.receivables.topDebtors.slice(0,3).map(debtor => {
                 const amount = debtor.amounts.find(a => a.currency === primary.currency)?.minor || '0';
-                const pct = totalReceivable > 0 ? (Number(amount) / totalReceivable) * 100 : 0;
+                const pct = totalReceivable > BigInt(0) ? Number((BigInt(amount) * BigInt(100)) / totalReceivable) : 0;
                 return (
                   <div key={debtor.clientProfileId}>
                      <div className="flex justify-between text-sm mb-1">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useDeferredValue, memo } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import Link from "next/link";
 import { Plus, Search } from "lucide-react";
@@ -16,8 +16,28 @@ const listUseCase = new ListProspectsUseCase(repository);
 const locationRepository = new DexieLocationRepository();
 const catalogRepository = new DexieCatalogRepository();
 
+const ProspectCard = memo(({ p }: { p: Prospect }) => (
+  <Link href={`/prospects/${p.contact.id}`}>
+    <div className="bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-border active:scale-[0.98] transition-transform">
+      <div className="flex justify-between items-start mb-2">
+        <h3 className="font-semibold text-foreground line-clamp-1">{p.contact.displayName}</h3>
+        <span className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-800 dark:text-blue-200">
+          {p.profile.status}
+        </span>
+      </div>
+      <div className="text-sm text-muted-foreground mb-1">{p.contact.whatsappPhone}</div>
+      <div className="text-xs text-slate-400">
+        Niveau: {p.profile.interestLevel.replace('_', ' ')}
+      </div>
+    </div>
+  </Link>
+));
+ProspectCard.displayName = 'ProspectCard';
+
 export default function ProspectsPage() {
   const [search, setSearch] = useState("");
+  const deferredSearch = useDeferredValue(search);
+  const [limit, setLimit] = useState(50);
   const [filterStatus, setFilterStatus] = useState<string>("");
   const [showArchived, setShowArchived] = useState(false);
   const [locationId, setLocationId] = useState("");
@@ -27,13 +47,14 @@ export default function ProspectsPage() {
 
   const prospects = useLiveQuery(
     () => listUseCase.execute({ 
-      query: search, 
+      query: deferredSearch, 
       status: filterStatus ? [filterStatus] : undefined,
       showArchived,
       locationId: locationId || undefined,
       productIds: productId ? [productId] : undefined,
+      limit
     }),
-    [search, filterStatus, showArchived, locationId, productId]
+    [deferredSearch, filterStatus, showArchived, locationId, productId, limit]
   );
 
   return (
@@ -103,21 +124,14 @@ export default function ProspectsPage() {
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {prospects.map((p: Prospect) => (
-              <Link key={p.contact.id} href={`/prospects/${p.contact.id}`}>
-                <div className="bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-border active:scale-[0.98] transition-transform">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-foreground line-clamp-1">{p.contact.displayName}</h3>
-                    <span className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-800 dark:text-blue-200">
-                      {p.profile.status}
-                    </span>
-                  </div>
-                  <div className="text-sm text-muted-foreground mb-1">{p.contact.whatsappPhone}</div>
-                  <div className="text-xs text-slate-400">
-                    Niveau: {p.profile.interestLevel.replace('_', ' ')}
-                  </div>
-                </div>
-              </Link>
+              <ProspectCard key={p.contact.id} p={p} />
             ))}
+          </div>
+        )}
+        
+        {prospects && prospects.length >= limit && (
+          <div className="mt-6 flex justify-center pb-8">
+            <Button variant="outline" onClick={() => setLimit(l => l + 50)}>Charger plus</Button>
           </div>
         )}
       </main>

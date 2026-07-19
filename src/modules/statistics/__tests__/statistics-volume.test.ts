@@ -4,7 +4,7 @@ import { calculateStatistics, resolveStatisticsPeriod } from '../domain/statisti
 
 it('volume Sprint 8 — 10k contacts, 20k intérêts, 2k factures, 10k lignes, 5k paiements et 20k relances', () => {
   const now = '2026-07-18T10:00:00.000Z';
-  const data: StatisticsData = { contacts: [], prospectProfiles: [], clientProfiles: [], locations: [], products: [], prospectInterests: [], followUps: [], invoices: [], invoiceLines: [], payments: [], campaigns: [], campaignRecipients: [] };
+  const data: StatisticsData = { contacts: [], prospectProfiles: [], clientProfiles: [], locations: [], products: [], prospectInterests: [], followUps: [], invoices: [], invoiceLines: [], payments: [], campaigns: [], campaignRecipients: [], expenses: [] };
   for (let index = 0; index < 10; index += 1) data.products.push({ id: `product-${index}`, name: `Produit ${index}`, normalizedName: `produit ${index}`, type: 'PRODUCT', unitPriceMinor: 1000, currency: 'XOF', currencyScale: 0, isActive: true, createdAt: now, updatedAt: now });
   for (let index = 0; index < 10_000; index += 1) {
     const contactId = `contact-${index}`; const profileId = `prospect-${index}`;

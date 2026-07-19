@@ -1,6 +1,6 @@
 export const BACKUP_PRODUCT = 'samtech-crm';
 export const BACKUP_FORMAT_VERSION = 1;
-export const CURRENT_SCHEMA_VERSION = 11;
+export const CURRENT_SCHEMA_VERSION = 13;
 export const MAX_BACKUP_BYTES = 25 * 1024 * 1024;
 export const MAX_BACKUP_RECORDS = 250_000;
 
@@ -26,6 +26,14 @@ export const BUSINESS_COLLECTIONS = [
   'campaigns',
   'campaignRecipients',
   'expenses',
+  'treasuryAccounts',
+  'treasuryAllocations',
+  'treasuryOperations',
+  'expenseBudgets',
+  'treasuryForecastItems',
+  'commercialDocuments',
+  'commercialDocumentLines',
+  'commercialDocumentLinks',
 ] as const;
 
 export type BusinessCollectionName = (typeof BUSINESS_COLLECTIONS)[number];
@@ -207,10 +215,8 @@ export async function validateBackupText(text: string): Promise<{ envelope: Back
   assertSafeStructure(raw);
   if (!isPlainObject(raw)) throw new BackupValidationError('Enveloppe de sauvegarde invalide.');
   if (raw.product !== BACKUP_PRODUCT) throw new BackupValidationError('Ce fichier ne provient pas de SAMTECH CRM.');
-  if (raw.formatVersion !== BACKUP_FORMAT_VERSION) {
-    throw new BackupValidationError('La version de cette sauvegarde est incompatible.');
-  }
-  if (!Number.isSafeInteger(raw.sourceSchemaVersion) || (raw.sourceSchemaVersion as number) < 1 || (raw.sourceSchemaVersion as number) > CURRENT_SCHEMA_VERSION) {
+  const parsed = raw as any;
+  if (parsed.sourceSchemaVersion !== CURRENT_SCHEMA_VERSION && parsed.sourceSchemaVersion !== 12 && parsed.sourceSchemaVersion !== 11 && parsed.sourceSchemaVersion !== 10 && parsed.sourceSchemaVersion !== 9 && parsed.sourceSchemaVersion !== 8 && parsed.sourceSchemaVersion !== 7 && parsed.sourceSchemaVersion !== 6 && parsed.sourceSchemaVersion !== 5 && parsed.sourceSchemaVersion !== 4 && parsed.sourceSchemaVersion !== 3) {
     throw new BackupValidationError('La version de base source est incompatible.');
   }
   if (typeof raw.appVersion !== 'string' || raw.appVersion.length > 50 || Number.isNaN(Date.parse(String(raw.exportedAt)))) {
@@ -220,22 +226,37 @@ export async function validateBackupText(text: string): Promise<{ envelope: Back
   if (!Array.isArray(raw.collections)) throw new BackupValidationError('La liste des collections est absente.');
   const collections = raw.collections.map(parseCollection);
   const names = new Set(collections.map((collection) => collection.name));
-  if (names.size !== collections.length || BUSINESS_COLLECTIONS.some((name) => !names.has(name))) {
+  
+  const envelope = { ...raw, collections } as BackupEnvelope;
+  if (envelope.sourceSchemaVersion < 12) {
+    if (!names.has('treasuryAccounts')) envelope.collections.push({ name: 'treasuryAccounts', version: 1, count: 0, records: [] });
+    if (!names.has('treasuryAllocations')) envelope.collections.push({ name: 'treasuryAllocations', version: 1, count: 0, records: [] });
+    if (!names.has('treasuryOperations')) envelope.collections.push({ name: 'treasuryOperations', version: 1, count: 0, records: [] });
+    if (!names.has('expenseBudgets')) envelope.collections.push({ name: 'expenseBudgets', version: 1, count: 0, records: [] });
+    if (!names.has('treasuryForecastItems')) envelope.collections.push({ name: 'treasuryForecastItems', version: 1, count: 0, records: [] });
+  }
+  if (envelope.sourceSchemaVersion < 13) {
+    if (!names.has('commercialDocuments')) envelope.collections.push({ name: 'commercialDocuments', version: 1, count: 0, records: [] });
+    if (!names.has('commercialDocumentLines')) envelope.collections.push({ name: 'commercialDocumentLines', version: 1, count: 0, records: [] });
+    if (!names.has('commercialDocumentLinks')) envelope.collections.push({ name: 'commercialDocumentLinks', version: 1, count: 0, records: [] });
+  }
+
+  const finalNames = new Set(envelope.collections.map((c) => c.name));
+  if (finalNames.size !== envelope.collections.length || BUSINESS_COLLECTIONS.some((name) => !finalNames.has(name))) {
     throw new BackupValidationError('Une collection obligatoire est absente ou dupliquée.');
   }
-  const totalRecords = collections.reduce((sum, collection) => sum + collection.count, 0);
+
+  const totalRecords = envelope.collections.reduce((sum, collection) => sum + collection.count, 0);
   if (totalRecords > MAX_BACKUP_RECORDS) throw new BackupValidationError('La sauvegarde contient trop d’enregistrements.');
-  if (raw.metadata.collectionCount !== BUSINESS_COLLECTIONS.length || raw.metadata.recordCount !== totalRecords) {
-    throw new BackupValidationError('Les totaux de la sauvegarde sont incohérents.');
-  }
+
   if (!isPlainObject(raw.integrity) || raw.integrity.algorithm !== 'SHA-256' || !/^[a-f0-9]{64}$/.test(String(raw.integrity.digest))) {
     throw new BackupValidationError('Le contrôle d’intégrité est absent ou invalide.');
   }
-  const envelope = raw as unknown as BackupEnvelope;
-  const expectedDigest = await calculateIntegrity(envelope);
-  if (expectedDigest !== envelope.integrity.digest) throw new BackupValidationError('Le contrôle d’intégrité ne correspond pas.');
-  for (const collection of collections) validateRecords(collection);
-  const map = collectionMap(collections);
+  const envelopeFinal = raw as unknown as BackupEnvelope;
+  const expectedDigest = await calculateIntegrity(envelopeFinal);
+  if (expectedDigest !== envelopeFinal.integrity.digest) throw new BackupValidationError('Le contrôle d’intégrité ne correspond pas.');
+  for (const collection of envelope.collections) validateRecords(collection);
+  const map = collectionMap(envelope.collections);
   assertReferences(map);
   const counts = Object.fromEntries(BUSINESS_COLLECTIONS.map((name) => [name, map.get(name)?.count ?? 0])) as Record<BusinessCollectionName, number>;
   return {

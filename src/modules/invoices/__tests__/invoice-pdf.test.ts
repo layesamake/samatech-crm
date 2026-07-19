@@ -42,7 +42,7 @@ describe('PDF de facture Sprint 5', () => {
     const document = await PDFDocument.load(bytes);
     expect(document.getPageCount()).toBeGreaterThanOrEqual(1);
     expect(document.getTitle()).toBe(status === 'BROUILLON' ? 'Facture brouillon' : 'FAC-2026-0001');
-    expect(document.getSubject()).toContain(`SAMTECH CRM - ${status} - SAMTECH - Entreprise Démonstration - XOF`);
+    expect(document.getSubject()).toContain(`SAMTECH CRM - FACTURE ${status} - SAMTECH - Entreprise Démonstration - XOF`);
   });
 
   it('pagine une facture longue sans altérer les données', async () => {

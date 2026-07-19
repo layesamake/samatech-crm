@@ -16,7 +16,9 @@ import {
   Moon,
   Sun,
   Receipt,
-  MessageSquare
+  MessageSquare,
+  DollarSign,
+  PieChart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
@@ -54,12 +56,15 @@ export function BottomNav() {
   ];
 
   const moreLinks = [
+    { href: '/commercial-documents', label: 'Ventes', icon: FileText },
     { href: '/prospects', label: 'Prospects', icon: Users },
     { href: '/payments', label: 'Paiements', icon: CreditCard },
     { href: '/expenses', label: 'Dépenses', icon: Receipt },
+    { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
     { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
     { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },
     { href: '/statistics', label: 'Statistiques', icon: BarChart },
+    { href: '/reports', label: 'Rapports', icon: PieChart },
     { href: '/follow-ups', label: 'Relances', icon: Repeat },
     { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
     { href: '/settings', label: 'Paramètres', icon: Settings },
@@ -75,45 +80,19 @@ export function BottomNav() {
             <span className="text-[10px] font-medium">Accueil</span>
           </Link>
           
+          <Link href="/prospects" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/prospects') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
+            <Users className={cn("h-5 w-5", pathname?.startsWith('/prospects') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
+            <span className="text-[10px] font-medium">Prospects</span>
+          </Link>
+
+          <Link href="/follow-ups" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/follow-ups') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
+            <Repeat className={cn("h-5 w-5", pathname?.startsWith('/follow-ups') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
+            <span className="text-[10px] font-medium">Relances</span>
+          </Link>
+
           <Link href="/clients" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/clients') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
             <Users className={cn("h-5 w-5", pathname?.startsWith('/clients') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
             <span className="text-[10px] font-medium">Clients</span>
-          </Link>
-
-          {/* FAB (Floating Action Button) */}
-          <div className="relative fab-container flex items-center justify-center">
-            <button 
-              aria-label={fabOpen ? "Fermer les actions rapides" : "Ouvrir les actions rapides"}
-              aria-expanded={fabOpen}
-              onClick={() => setFabOpen(!fabOpen)}
-              className={cn(
-                "flex items-center justify-center -mt-8 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg shadow-primary/30 transition-all focus:outline-none", 
-                fabOpen ? "rotate-45 bg-destructive text-destructive-foreground shadow-destructive/30" : "hover:scale-105 active:scale-95"
-              )}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-            </button>
-            
-            {/* Popover */}
-            <div className={cn("absolute bottom-20 left-1/2 -translate-x-1/2 bg-popover/90 backdrop-blur-xl text-popover-foreground rounded-2xl shadow-2xl border w-56 flex flex-col p-2 gap-1 origin-bottom transition-all duration-200", fabOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none")}>
-               <Link href="/invoices/new" onClick={() => setFabOpen(false)} className="flex items-center p-3 rounded-xl hover:bg-muted font-medium text-sm transition-colors">
-                  <div className="bg-primary/10 p-2 rounded-lg mr-3"><FileText className="h-4 w-4 text-primary" /></div> Facture
-               </Link>
-               <Link href="/prospects/nouveau" onClick={() => setFabOpen(false)} className="flex items-center p-3 rounded-xl hover:bg-muted font-medium text-sm transition-colors">
-                  <div className="bg-orange-500/10 p-2 rounded-lg mr-3"><Users className="h-4 w-4 text-orange-500" /></div> Prospect
-               </Link>
-               <Link href="/payments" onClick={() => setFabOpen(false)} className="flex items-center p-3 rounded-xl hover:bg-muted font-medium text-sm transition-colors">
-                  <div className="bg-green-500/10 p-2 rounded-lg mr-3"><CreditCard className="h-4 w-4 text-green-500" /></div> Paiement
-               </Link>
-               <Link href="/expenses/new" onClick={() => setFabOpen(false)} className="flex items-center p-3 rounded-xl hover:bg-muted font-medium text-sm transition-colors">
-                  <div className="bg-red-500/10 p-2 rounded-lg mr-3"><Receipt className="h-4 w-4 text-red-500" /></div> Dépense
-               </Link>
-            </div>
-          </div>
-
-          <Link href="/invoices" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/invoices') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
-            <FileText className={cn("h-5 w-5", pathname?.startsWith('/invoices') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
-            <span className="text-[10px] font-medium">Factures</span>
           </Link>
 
           <Sheet open={open} onOpenChange={setOpen}>
@@ -168,10 +147,7 @@ export function BottomNav() {
           </Sheet>
         </div>
       </nav>
-      {/* Overlay to block interactions behind the fab popover */}
-      {fabOpen && (
-        <div className="fixed inset-0 z-40 bg-background/50 backdrop-blur-sm lg:hidden transition-opacity" onClick={() => setFabOpen(false)} />
-      )}
+
     </>
   );
 }

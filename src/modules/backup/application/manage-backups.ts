@@ -1,4 +1,6 @@
 import { ManageSecurityUseCase } from '@/modules/security/application/manage-security';
+import { WebCryptoService } from '../infrastructure/web-crypto-service';
+import { EncryptedBackupContainerV1, isValidEncryptedContainerHeader } from '../domain/encrypted-backup';
 import {
   BACKUP_FORMAT_VERSION,
   BACKUP_PRODUCT,
@@ -17,10 +19,18 @@ export interface PreparedBackup {
   filename: string;
 }
 
+export interface PreparedEncryptedBackup {
+  envelope: BackupEnvelope; // used for confirmation
+  container: EncryptedBackupContainerV1;
+  text: string; // JSON string of container
+  filename: string;
+}
+
 export class ManageBackupsUseCase {
   constructor(
     private readonly repository: DexieBackupRepository,
     private readonly security?: ManageSecurityUseCase,
+    private readonly cryptoService: WebCryptoService = new WebCryptoService(),
     private readonly now: () => Date = () => new Date(),
   ) {}
 
@@ -52,7 +62,51 @@ export class ManageBackupsUseCase {
   }
 
   async inspect(text: string): Promise<{ envelope: BackupEnvelope; preview: BackupPreview }> {
+    let parsed: any;
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      throw new Error('Le fichier ne contient pas un JSON valide.');
+    }
+
+    if (isValidEncryptedContainerHeader(parsed)) {
+      throw new Error('Ce fichier est chiffré. Veuillez utiliser inspectEncrypted avec le mot de passe.');
+    }
+
     return validateBackupText(text);
+  }
+
+  async inspectEncrypted(text: string, password: string): Promise<{ envelope: BackupEnvelope; preview: BackupPreview }> {
+    let container: any;
+    try {
+      container = JSON.parse(text);
+    } catch {
+      throw new Error('Le fichier ne contient pas un JSON valide.');
+    }
+
+    if (!isValidEncryptedContainerHeader(container)) {
+      throw new Error('Le conteneur chiffré est invalide ou corrompu.');
+    }
+
+    const clearText = await this.cryptoService.decryptContainer(container, password);
+    return validateBackupText(clearText);
+  }
+
+  async prepareEncryptedExport(password: string): Promise<PreparedEncryptedBackup> {
+    const prepared = await this.prepareExport(); // builds envelope and validates
+    const container = await this.cryptoService.encryptContainer(prepared.text, password);
+    const containerText = JSON.stringify(container, null, 2);
+    
+    // Auto-vérification
+    const decryptedText = await this.cryptoService.decryptContainer(JSON.parse(containerText), password);
+    await validateBackupText(decryptedText);
+
+    return {
+      envelope: prepared.envelope,
+      container,
+      text: containerText,
+      filename: `samtech-crm-backup-${this.now().toISOString().replace(/[:.]/g, '-')}.samtech-backup`
+    };
   }
 
   async restore(envelope: BackupEnvelope, currentPin?: string, beforeCommit?: () => Promise<void>): Promise<void> {
