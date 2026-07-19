@@ -78,7 +78,7 @@ export function MobileDashboard() {
           </div>
           <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouveau<br/>client</span>
         </Link>
-        <Link href="/payments" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
+        <Link href="/expenses/new" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
           <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shadow-sm relative">
              <ReceiptText className="w-6 h-6" />
              <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
