@@ -2,14 +2,14 @@
 'use client';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { ManageInvoicesUseCase } from '@/modules/invoices/application/manage-invoices';
 import { formatMinor, formatQuantity, InvoiceAggregate } from '@/modules/invoices/domain/invoice';
 import { downloadPdf, generateInvoicePdf, safePdfFilename, shareOrDownloadPdf } from '@/modules/invoices/pdf/invoice-pdf';
 import { PaymentPanel } from '@/modules/payments/presentation/PaymentPanel';
 import { MessageCircle } from 'lucide-react';
 const manage = new ManageInvoicesUseCase();
-export default function InvoiceDetailPage() { const { id } = useParams<{ id: string }>(); const [value, setValue] = useState<InvoiceAggregate | null>(); const [error, setError] = useState(''); const [cancelReason, setCancelReason] = useState(''); const [pending, setPending] = useState(false); const refresh = useCallback(() => manage.get(id).then(setValue), [id]); useEffect(() => { void manage.get(id).then(setValue).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')); }, [id]);
+export default function InvoiceDetailPage() { const router = useRouter(); const { id } = useParams<{ id: string }>(); const [value, setValue] = useState<InvoiceAggregate | null>(); const [error, setError] = useState(''); const [cancelReason, setCancelReason] = useState(''); const [pending, setPending] = useState(false); const refresh = useCallback(() => manage.get(id).then(setValue), [id]); useEffect(() => { void manage.get(id).then(setValue).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')); }, [id]);
   if (value === undefined) return <p className="p-4">Chargement...</p>; if (value === null) return <p className="p-4">Facture introuvable.</p>; const { invoice, lines } = value; const pdf = async (mode: 'DOWNLOAD' | 'SHARE') => { setPending(true); setError(''); try { const bytes = await generateInvoicePdf(value); const filename = safePdfFilename(invoice.number, invoice.status, invoice.type); if (mode === 'DOWNLOAD') downloadPdf(bytes, filename); else await shareOrDownloadPdf(bytes, filename); } catch (caught) { setError(caught instanceof Error ? caught.message : 'Génération PDF impossible'); } finally { setPending(false); } };
   
   const duplicateAsInvoice = async () => {
