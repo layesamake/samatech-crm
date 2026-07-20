@@ -10,7 +10,8 @@ describe('Écran des modèles de messages', () => {
     render(<MessageTemplatesManager />);
     fireEvent.change(screen.getByLabelText('Nom du modèle'), { target: { value: 'Relance composant' } });
     fireEvent.change(screen.getByLabelText('Contenu du modèle'), { target: { value: 'Bonjour {{prenom}} <b>texte</b>' } });
-    expect(screen.getAllByText('Bonjour {{prenom}} <b>texte</b>')).toHaveLength(2);
+    expect(screen.getByLabelText('Contenu du modèle')).toHaveValue('Bonjour {{prenom}} <b>texte</b>');
+    expect(screen.getByText('Bonjour Fatou <b>texte</b>')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Créer le modèle' }));
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Modèle créé avec succès'));
     expect(await db.messageTemplates.count()).toBe(1);
@@ -24,5 +25,17 @@ describe('Écran des modèles de messages', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Créer le modèle' }));
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Variables inconnues'));
     expect(await db.messageTemplates.count()).toBe(0);
+  });
+
+  it('insère les variables client et affiche un aperçu personnalisé', () => {
+    render(<MessageTemplatesManager />);
+    fireEvent.change(screen.getByLabelText('Contenu du modèle'), { target: { value: 'Bonjour ' } });
+    fireEvent.click(screen.getByRole('button', { name: '+ Prénom' }));
+    expect(screen.getByLabelText('Contenu du modèle')).toHaveValue('Bonjour {{prenom}}');
+    fireEvent.change(screen.getByLabelText('Contenu du modèle'), { target: { value: 'Bonjour {{prenom}} {{nom}}' } });
+
+    expect(screen.getByLabelText('Contenu du modèle')).toHaveValue('Bonjour {{prenom}} {{nom}}');
+    expect(screen.getByText('Bonjour Fatou Diop')).toBeInTheDocument();
+    expect(screen.getByText(/Variables utilisées : Prénom, Nom/)).toBeInTheDocument();
   });
 });

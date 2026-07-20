@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ALLOWED_MESSAGE_VARIABLES, MessageTemplateRecord, MessageVariable, buildWhatsAppUrl, extractVariables } from '../domain/message-template';
 import { ManageMessageTemplatesUseCase } from '../application/manage-message-templates';
 import { ResolveProspectMessageUseCase } from '../application/resolve-prospect-message';
@@ -27,13 +27,7 @@ export function WhatsAppMessagePanel({ contactId, normalizedPhone, displayName }
   const [error, setError] = useState('');
   const [unresolved, setUnresolved] = useState<MessageVariable[]>([]);
 
-  useEffect(() => {
-    if (open) {
-      templateUseCase.getActive().then(setTemplates).catch(() => setTemplates([]));
-    }
-  }, [open]);
-
-  const selectTemplate = async (template: MessageTemplateRecord) => {
+  const selectTemplate = useCallback(async (template: MessageTemplateRecord) => {
     setSelectedTemplate(template);
     setError('');
     setResolving(true);
@@ -50,7 +44,18 @@ export function WhatsAppMessagePanel({ contactId, normalizedPhone, displayName }
     } finally {
       setResolving(false);
     }
-  };
+  }, [contactId]);
+
+  useEffect(() => {
+    if (!open) return;
+    templateUseCase.getActive().then((activeTemplates) => {
+      setTemplates(activeTemplates);
+      if (activeTemplates[0]) void selectTemplate(activeTemplates[0]);
+    }).catch(() => {
+      setTemplates([]);
+      setError('Impossible de charger les modèles de messages.');
+    });
+  }, [open, selectTemplate]);
 
   const messageText = mode === 'template' ? resolvedText : customText;
   const linkDisabled = !messageText.trim() || resolving || (mode === 'template' && unresolved.length > 0);

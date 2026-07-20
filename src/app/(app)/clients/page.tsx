@@ -7,7 +7,6 @@ import { ManageClientsUseCase } from '@/modules/clients/application/manage-clien
 import { ClientAggregate } from '@/modules/clients/domain/client';
 import { ManagePaymentsUseCase } from '@/modules/payments/application/manage-payments';
 import { ReceivableRecord } from '@/modules/payments/domain/payment';
-import { formatMinor } from '@/modules/invoices/domain/invoice';
 import { formatMinorExact } from '@/modules/statistics/domain/statistics';
 import { Search, ArrowUpDown, Plus, Eye, FileText } from 'lucide-react';
 import { ListSkeleton } from '@/components/ui/loading-skeletons';
@@ -137,13 +136,22 @@ export default function ClientsPage() {
   return (
     <main className="mx-auto max-w-5xl bg-background min-h-screen pb-24">
       <header className="sticky top-0 z-10 bg-background pt-4 px-4 pb-0 border-b">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-3 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Clients</h1>
           <div className="flex items-center gap-2">
             <button className="p-2 rounded-md hover:bg-muted" aria-label="Trier"><ArrowUpDown className="w-5 h-5" /></button>
             <button className="p-2 rounded-md hover:bg-muted" onClick={() => setShowSearch(!showSearch)} aria-label="Rechercher"><Search className="w-5 h-5" /></button>
           </div>
         </div>
+
+        <Link
+          href="/prospects/nouveau"
+          aria-label="Ajouter un nouveau client"
+          className="mb-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-base font-semibold text-white shadow-md shadow-blue-600/25 transition-colors hover:bg-blue-700 active:bg-blue-800"
+        >
+          <Plus className="h-5 w-5" />
+          Nouveau client
+        </Link>
 
         {showSearch && (
           <div className="mb-4">
@@ -204,12 +212,6 @@ export default function ClientsPage() {
         </div>
       )}
 
-      <Link 
-        href="/prospects/nouveau"
-        className="fixed bottom-6 right-6 w-14 h-14 bg-black dark:bg-white text-white dark:text-black rounded-3xl flex items-center justify-center shadow-lg hover:scale-105 transition-transform z-50"
-      >
-        <Plus className="w-6 h-6" />
-      </Link>
     </main>
   );
 }
