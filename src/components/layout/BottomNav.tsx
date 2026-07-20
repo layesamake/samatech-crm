@@ -18,7 +18,8 @@ import {
   Receipt,
   MessageSquare,
   DollarSign,
-  PieChart
+  PieChart,
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
@@ -104,19 +105,30 @@ export function BottomNav() {
               <SheetHeader className="px-6 py-4 border-b">
                 <div className="flex items-center justify-between">
                   <SheetTitle className="text-left font-bold text-lg">Menu</SheetTitle>
-                  {mounted && (
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                  <div className="flex items-center gap-2">
+                    {mounted && (
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="rounded-full bg-muted/50"
+                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                      >
+                        {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="rounded-full bg-muted/50"
-                      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                      onClick={() => setOpen(false)}
+                      aria-label="Fermer le menu"
                     >
-                      {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                      <X className="h-5 w-5" />
                     </Button>
-                  )}
+                  </div>
                 </div>
               </SheetHeader>
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
+              <div className="flex-1 overflow-y-auto px-4 py-4 pb-20 space-y-2">
                 {moreLinks.map((link) => {
                   const Icon = link.icon;
                   const isActive = pathname === link.href || pathname?.startsWith(link.href);
