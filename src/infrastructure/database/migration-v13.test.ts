@@ -44,12 +44,17 @@ describe('Migration Dexie V12 vers V13', () => {
     await v13.commercialDocuments.add({
       id: 'doc1', type: 'QUOTE', status: 'DRAFT', clientProfileId: 'cl1',
       companySnapshot: { displayName: 'C' }, clientSnapshot: { displayName: 'Client' },
+      currency: 'XOF', currencyScale: 0, subtotalMinor: 0, discountTotalMinor: 0,
+      taxTotalMinor: 0, grandTotalMinor: 0,
       createdAt: '2026-07-01', updatedAt: '2026-07-01'
     });
 
     await v13.commercialDocumentLines.add({
       id: 'l1', documentId: 'doc1', position: 1, designationSnapshot: 'Ligne 1',
-      quantityScaled: 1, quantityScale: 0, createdAt: '2026-07-01', updatedAt: '2026-07-01'
+      quantityScaled: 1, quantityScale: 0, unitPriceMinor: 0, grossMinor: 0,
+      discountType: 'NONE', discountValue: 0, discountMinor: 0,
+      taxRateBasisPoints: 0, taxMinor: 0, lineTotalMinor: 0,
+      createdAt: '2026-07-01', updatedAt: '2026-07-01'
     });
 
     await v13.commercialDocumentLinks.add({

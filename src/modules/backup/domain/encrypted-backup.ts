@@ -37,3 +37,9 @@ export function isValidEncryptedContainerHeader(obj: any): obj is EncryptedBacku
 
   return true;
 }
+
+export function isValidEncryptedContainer(obj: unknown): obj is EncryptedBackupContainerV1 {
+  if (!isValidEncryptedContainerHeader(obj)) return false;
+  const payload = (obj as unknown as { payload?: unknown }).payload;
+  return typeof payload === 'string' && payload.length > 0;
+}

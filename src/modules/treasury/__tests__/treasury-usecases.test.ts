@@ -30,7 +30,7 @@ describe('Treasury UseCases', () => {
     });
 
     await db.payments.put({ id: 'p1', invoiceId: 'inv1', clientProfileId: 'c1', paymentDate: '2023-01-05', amountMinor: 50000, currency: 'XOF', currencyScale: 0, method: 'CASH', status: 'ACTIVE', createdAt: '', updatedAt: '' });
-    await db.expenses.put({ id: 'e1', description: 'Test', amountMinor: 20000, currency: 'XOF', currencyScale: 0, expenseDate: '2023-01-10', status: 'ACTIVE', category: 'OTHER', createdAt: '', updatedAt: '' });
+    await db.expenses.put({ id: 'e1', description: 'Test', amountMinor: 20000, currency: 'XOF', currencyScale: 0, expenseDate: '2023-01-10', status: 'ACTIVE', category: 'OTHER', paymentMethod: 'CASH', createdAt: '', updatedAt: '' });
 
     await allocateUseCase.allocate('PAYMENT', 'p1', accId);
     await allocateUseCase.allocate('EXPENSE', 'e1', accId);
@@ -68,8 +68,8 @@ describe('Treasury UseCases', () => {
       name: 'Marketing', amountMinor: 100000, currency: 'XOF', currencyScale: 0, startDate: '2023-01-01', endDate: '2023-01-31'
     });
 
-    await db.expenses.put({ id: 'e1', description: 'Pub', amountMinor: 80000, currency: 'XOF', currencyScale: 0, expenseDate: '2023-01-15', status: 'ACTIVE', category: 'OTHER', createdAt: '', updatedAt: '' });
-    await db.expenses.put({ id: 'e2', description: 'Flyers', amountMinor: 30000, currency: 'XOF', currencyScale: 0, expenseDate: '2023-01-20', status: 'ACTIVE', category: 'OTHER', createdAt: '', updatedAt: '' });
+    await db.expenses.put({ id: 'e1', description: 'Pub', amountMinor: 80000, currency: 'XOF', currencyScale: 0, expenseDate: '2023-01-15', status: 'ACTIVE', category: 'OTHER', paymentMethod: 'CASH', createdAt: '', updatedAt: '' });
+    await db.expenses.put({ id: 'e2', description: 'Flyers', amountMinor: 30000, currency: 'XOF', currencyScale: 0, expenseDate: '2023-01-20', status: 'ACTIVE', category: 'OTHER', paymentMethod: 'CASH', createdAt: '', updatedAt: '' });
 
     const budget = await budgetUseCase.getBudgetWithConsumption(bId);
     expect(budget?.consumedMinor).toBe(110000);

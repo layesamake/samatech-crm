@@ -2,8 +2,10 @@ import { db } from '@/infrastructure/database/db';
 import { CompanyProfile, InvoiceSettings, SequenceRecord } from '@/modules/settings/domain/settings';
 import { TimelineEventRecord } from '@/modules/follow-ups/domain/follow-up';
 import { DexieClientRepository } from '@/modules/clients/infrastructure/dexie-client-repository';
+import { ClientAggregate } from '@/modules/clients/domain/client';
+import { ProductRecord } from '@/modules/catalog/domain/catalog';
 import { calculateInvoiceLine, calculateInvoiceTotals } from '@/modules/invoices/domain/invoice';
-import { CommercialDocumentAggregate, CommercialDocumentLineRecord, CommercialDocumentLinkRecord, CommercialDocumentRecord, DraftCommercialDocumentInput } from '../domain/commercial-document';
+import { CommercialDocumentAggregate, CommercialDocumentLineRecord, CommercialDocumentLinkRecord, CommercialDocumentRecord, CommercialDocumentStatus } from '../domain/commercial-document';
 
 export interface CommercialDocumentSearchCriteria {
   query?: string;
@@ -15,8 +17,8 @@ export interface CommercialDocumentSearchCriteria {
 }
 
 export interface CommercialDocumentFormOptions {
-  clients: Record<string, unknown>[];
-  products: Record<string, unknown>[];
+  clients: ClientAggregate[];
+  products: ProductRecord[];
   company: CompanyProfile | null;
   settings: InvoiceSettings | null;
 }

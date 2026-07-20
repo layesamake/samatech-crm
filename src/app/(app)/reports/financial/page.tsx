@@ -37,7 +37,7 @@ export default function FinancialReportPage() {
       const report = await useCase.generateFinancialReport(period);
       const pdfBytes = await generateFinancialReportPdf(report);
       
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const blob = new Blob([Uint8Array.from(pdfBytes).buffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

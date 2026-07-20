@@ -36,13 +36,13 @@ export default function CommercialDocumentDetail({ documentId }: { documentId: s
     return t;
   };
 
-  const handleAction = async (action: () => Promise<any>) => {
+  const handleAction = async (action: () => Promise<unknown>) => {
     setActionPending(true);
     try {
       await action();
       await load();
-    } catch (e: Record<string, unknown>) {
-      alert(e.message);
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : 'Action impossible');
     } finally {
       setActionPending(false);
     }
@@ -60,8 +60,8 @@ export default function CommercialDocumentDetail({ documentId }: { documentId: s
     try {
       const bytes = await generateCommercialDocumentPdf(data);
       await shareOrDownloadPdf(bytes, safePdfFilename(data));
-    } catch (e: Record<string, unknown>) {
-      alert("Erreur PDF: " + e.message);
+    } catch (e: unknown) {
+      alert(`Erreur PDF: ${e instanceof Error ? e.message : 'gÃ©nÃ©ration impossible'}`);
     } finally {
       setActionPending(false);
     }

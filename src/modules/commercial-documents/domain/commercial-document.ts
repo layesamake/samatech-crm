@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { PartySnapshot } from '@/modules/invoices/domain/invoice';
-import { DiscountType } from '@/modules/invoices/domain/invoice';
+import { DiscountType, DISCOUNT_TYPES } from '@/modules/invoices/domain/invoice';
 
 export type CommercialDocumentType =
   | 'QUOTE'
@@ -23,8 +23,8 @@ export interface CommercialDocumentRecord {
   status: CommercialDocumentStatus;
   number?: string;
   clientProfileId: string;
-  currency?: string;
-  currencyScale?: number;
+  currency: string;
+  currencyScale: number;
   companySnapshot: PartySnapshot;
   clientSnapshot: PartySnapshot;
   issueDate?: string;
@@ -35,10 +35,10 @@ export interface CommercialDocumentRecord {
   customerReference?: string;
   notes?: string;
   terms?: string;
-  subtotalMinor?: number;
-  discountTotalMinor?: number;
-  taxTotalMinor?: number;
-  grandTotalMinor?: number;
+  subtotalMinor: number;
+  discountTotalMinor: number;
+  taxTotalMinor: number;
+  grandTotalMinor: number;
   issuedAt?: string;
   acceptedAt?: string;
   rejectedAt?: string;
@@ -63,14 +63,14 @@ export interface CommercialDocumentLineRecord {
   unitLabelSnapshot?: string;
   quantityScaled: number;
   quantityScale: number;
-  unitPriceMinor?: number;
-  grossMinor?: number;
-  discountType?: DiscountType;
-  discountValue?: number;
-  discountMinor?: number;
-  taxRateBasisPoints?: number;
-  taxMinor?: number;
-  lineTotalMinor?: number;
+  unitPriceMinor: number;
+  grossMinor: number;
+  discountType: DiscountType;
+  discountValue: number;
+  discountMinor: number;
+  taxRateBasisPoints: number;
+  taxMinor: number;
+  lineTotalMinor: number;
   sourceEntityType?: 'COMMERCIAL_DOCUMENT_LINE' | 'INVOICE_LINE';
   sourceLineId?: string;
   createdAt: string;
@@ -111,8 +111,8 @@ export const DraftCommercialDocumentLineSchema = z.object({
   unitLabel: z.string().trim().max(50).optional(),
   quantityScaled: z.number().int(),
   quantityScale: z.number().int().min(0).max(3),
-  unitPriceMinor: z.number().int().optional(),
-  discountType: z.enum(['NONE', 'PERCENTAGE', 'FIXED']).optional().default('NONE'),
+  unitPriceMinor: z.number().int().nonnegative().default(0),
+  discountType: z.enum(DISCOUNT_TYPES).optional().default('NONE'),
   discountValue: z.number().int().min(0).optional().default(0),
   taxRateBasisPoints: z.number().int().min(0).max(10000).optional().default(0),
 });
@@ -121,8 +121,8 @@ export type DraftCommercialDocumentLine = z.infer<typeof DraftCommercialDocument
 export const DraftCommercialDocumentSchema = z.object({
   type: z.enum(['QUOTE', 'PROFORMA', 'DELIVERY_NOTE']),
   clientProfileId: z.string().uuid('Client invalide'),
-  currency: z.string().regex(/^[A-Z]{3}$/, 'Devise invalide').optional(),
-  currencyScale: z.number().int().min(0).max(3).optional(),
+  currency: z.string().regex(/^[A-Z]{3}$/, 'Devise invalide'),
+  currencyScale: z.number().int().min(0).max(3),
   issueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')),
   validUntil: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')),
   deliveryDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().or(z.literal('')),
@@ -134,4 +134,5 @@ export const DraftCommercialDocumentSchema = z.object({
   lines: z.array(DraftCommercialDocumentLineSchema).min(1, 'Au moins une ligne est requise'),
   taxesEnabled: z.boolean().optional().default(false),
 });
-export type DraftCommercialDocumentInput = z.infer<typeof DraftCommercialDocumentSchema>;
+export type DraftCommercialDocumentInput = z.input<typeof DraftCommercialDocumentSchema>;
+export type ValidatedDraftCommercialDocumentInput = z.output<typeof DraftCommercialDocumentSchema>;

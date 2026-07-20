@@ -6,7 +6,7 @@ export class GenerateReportUseCase {
     private readonly appVersion: string = '0.1.0'
   ) {}
 
-  private createContext(type: 'COMMERCIAL' | 'FINANCIAL' | 'RECEIVABLES' | 'CLIENT_STATEMENT', period: ReportPeriod, filters: Record<string, string | number | boolean> = {}): ReportContext {
+  private createContext(type: 'COMMERCIAL' | 'FINANCIAL' | 'RECEIVABLES' | 'CLIENT_STATEMENT', period: ReportPeriod, filters: Record<string, string | boolean | string[]> = {}): ReportContext {
     return {
       reportId: crypto.randomUUID(),
       reportType: type,

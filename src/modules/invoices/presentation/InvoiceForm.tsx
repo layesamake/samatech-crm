@@ -168,14 +168,15 @@ export default function InvoiceForm({ invoiceId }: { invoiceId?: string }) {
             <BarcodeScannerComponent
               width="100%"
               height="100%"
-              onUpdate={(err: unknown, result: { text?: string } | undefined) => {
-                if (result?.text) {
-                  const p = options?.products.find(x => x.barcode === result.text);
+              onUpdate={(_err, result) => {
+                const code = result?.getText();
+                if (code) {
+                  const p = options?.products.find(x => x.barcode === code);
                   if (p) {
                     addProductById(p.id);
                     setScanning(false);
                   } else {
-                    setScanMessage(`Code ${result.text} inconnu`);
+                    setScanMessage(`Code ${code} inconnu`);
                   }
                 }
               }}

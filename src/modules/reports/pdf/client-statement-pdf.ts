@@ -1,6 +1,6 @@
 import { PDFPage } from 'pdf-lib';
 import { ClientStatement } from '../domain/report';
-import { formatMinor } from '@/modules/invoices/domain/invoice';
+import { formatMinorExact } from '@/modules/statistics/domain/statistics';
 import { createReportDocument, drawReportHeader, drawFinancialWarning, A4, MARGIN, BOTTOM } from './report-pdf-utils';
 
 export async function generateClientStatementPdf(report: ClientStatement): Promise<Uint8Array> {
@@ -41,7 +41,7 @@ export async function generateClientStatementPdf(report: ClientStatement): Promi
       page.drawText(`Devise : ${group.currency}`, { x: MARGIN + 10, y: y - 2, size: 12, font: fonts.bold, color: colors.primaryBlue });
       y -= 30;
 
-      const format = (minor: string) => formatMinor(BigInt(minor), group.currency, group.currencyScale);
+      const format = (minor: string) => formatMinorExact(minor, group.currency, group.currencyScale);
 
       drawRow('Solde d\'ouverture (avant la période)', format(group.openingBalanceMinor), true);
       y -= 10;

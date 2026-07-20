@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { escapeSpreadsheetCell } from '../domain/csv';
 
 describe('CSV Domain - escapeSpreadsheetCell', () => {

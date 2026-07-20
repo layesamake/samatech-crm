@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ManageCommercialDocumentsUseCase } from '../application/manage-commercial-documents';
-import { CommercialDocumentAggregate } from '../domain/commercial-document';
+import { CommercialDocumentAggregate, CommercialDocumentRecord } from '../domain/commercial-document';
 import { formatMinor } from '@/modules/invoices/domain/invoice';
 import { Plus, Search, FileText } from 'lucide-react';
 
@@ -22,8 +22,8 @@ export default function CommercialDocumentList() {
       try {
         const docs = await manage.list({ 
           query, 
-          status: (statusFilter || undefined) as Parameters<typeof manage.list>[0]['status'], 
-          type: (typeFilter || undefined) as Parameters<typeof manage.list>[0]['type']
+          status: (statusFilter || undefined) as CommercialDocumentRecord['status'] | undefined,
+          type: (typeFilter || undefined) as CommercialDocumentRecord['type'] | undefined
         });
         if (active) setDocuments(docs);
       } finally {

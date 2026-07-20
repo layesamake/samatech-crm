@@ -48,6 +48,7 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
       if (!current && !clientId) setClientId(formOptions.clients[0]?.profile.id || ''); 
       if (current) { 
         if (current.document.status !== 'DRAFT') throw new Error('Ce document n’est plus modifiable'); 
+        if (current.document.type === 'LEGACY_ESTIMATE') throw new Error('Un ancien devis ne peut pas être modifié');
         setDocType(current.document.type); 
         setClientId(current.document.clientProfileId); 
         setIssueDate(current.document.issueDate ?? ''); 
@@ -145,17 +146,18 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
     try {
       const { DexieProspectRepository } = await import('@/modules/prospects/infrastructure/dexie-prospect-repository');
       const { CreateProspectUseCase } = await import('@/modules/prospects/application/create-prospect');
-      const { DexieClientRepository } = await import('@/modules/clients/infrastructure/dexie-client-repository');
-      const { ConvertProspectUseCase } = await import('@/modules/clients/application/convert-prospect');
+      const { ConvertProspectToClientUseCase } = await import('@/modules/clients/application/convert-prospect-to-client');
       const createProspect = new CreateProspectUseCase(new DexieProspectRepository());
-      const convertProspect = new ConvertProspectUseCase(new DexieClientRepository(), new DexieProspectRepository());
+      const convertProspect = new ConvertProspectToClientUseCase();
       
-      const p = await createProspect.execute({ displayName: newClientName.trim(), whatsappPhone: newClientPhone.trim(), source: 'OTHER' });
-      await convertProspect.execute(p.id);
+      const created = await createProspect.execute({ displayName: newClientName.trim(), whatsappPhone: newClientPhone.trim(), source: 'OTHER', status: 'NOUVEAU', interestLevel: 'NON_QUALIFIE' });
+      if (!created.prospect) throw new Error(created.error ?? created.warning ?? 'CrÃ©ation du contact impossible');
+      const contactId = created.prospect.contact.id;
+      await convertProspect.execute(contactId, { convertedAt: new Date().toISOString() });
       
       const newOpts = await manage.formOptions();
       setOptions(newOpts);
-      const newClient = newOpts.clients.find(c => c.contact.id === p.id);
+      const newClient = newOpts.clients.find(c => c.contact.id === contactId);
       if (newClient) setClientId(newClient.profile.id);
       
       setClientMode('SELECT');
@@ -185,7 +187,10 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
         currency, 
         currencyScale: scale, 
         taxesEnabled, 
-        lines: calculated.lines 
+        lines: lines.map((line, position) => {
+          const quantity = parseScaledDecimal(line.quantityText);
+          return { ...line, position, quantityScaled: quantity.scaled, quantityScale: quantity.scale };
+        })
       }; 
       if (documentId) { 
         await manage.updateDraft(documentId, input); 
@@ -354,10 +359,11 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
               <button onClick={() => setScanning(false)} className="p-1"><X className="w-5 h-5" /></button>
             </div>
             <div className="bg-black aspect-square w-full relative">
-              <BarcodeScannerComponent width="100%" height="100%" onUpdate={(err: unknown, result: Record<string, unknown>) => {
-                if (result?.text) {
-                  const p = options?.products.find(x => x.barcode === result.text);
-                  if (p) { addProductById(p.id); setScanning(false); } else { setScanMessage(`Code ${result.text} inconnu`); }
+              <BarcodeScannerComponent width="100%" height="100%" onUpdate={(_err, result) => {
+                const code = result?.getText();
+                if (code) {
+                  const p = options?.products.find(x => x.barcode === code);
+                  if (p) { addProductById(p.id); setScanning(false); } else { setScanMessage(`Code ${code} inconnu`); }
                 }
               }} />
             </div>

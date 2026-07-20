@@ -3,6 +3,9 @@ import { ExportCriteria } from '../domain/csv';
 import { ReportPeriod, ReportRepository, FinancialReportGroup, ReceivablesReportGroup, ClientStatementGroup, CommercialReport, FinancialReport, ReceivablesReport, ClientStatement } from '../domain/report';
 import { DexieStatisticsReadRepository } from '@/modules/statistics/infrastructure/dexie-statistics-read-repository';
 import { calculateStatistics } from '@/modules/statistics/domain/statistics';
+import { calculateTreasuryBalance } from '@/modules/treasury/domain/treasury';
+
+const asExportRecords = <T extends object>(rows: T[]): Record<string, unknown>[] => rows.map((row) => ({ ...row }) as unknown as Record<string, unknown>);
 
 export class DexieReportRepository implements ReportRepository {
   private readonly statsRepo = new DexieStatisticsReadRepository();
@@ -11,35 +14,35 @@ export class DexieReportRepository implements ReportRepository {
     // CSV logic
     switch (criteria.dataset) {
       case 'CONTACTS_PROSPECTS':
-        return await db.contacts.toArray();
+        return asExportRecords(await db.contacts.toArray());
       case 'CLIENTS':
-        return await db.clientProfiles.toArray();
+        return asExportRecords(await db.clientProfiles.toArray());
       case 'CATALOG':
-        return await db.products.toArray();
+        return asExportRecords(await db.products.toArray());
       case 'FOLLOW_UPS':
-        return await db.followUps.toArray();
+        return asExportRecords(await db.followUps.toArray());
       case 'INVOICES':
-        return await db.invoices.toArray();
+        return asExportRecords(await db.invoices.toArray());
       case 'INVOICE_LINES':
-        return await db.invoiceLines.toArray();
+        return asExportRecords(await db.invoiceLines.toArray());
       case 'PAYMENTS':
-        return await db.payments.toArray();
+        return asExportRecords(await db.payments.toArray());
       case 'EXPENSES':
-        return await db.expenses.toArray();
+        return asExportRecords(await db.expenses.toArray());
       case 'TREASURY_ACCOUNTS':
-        return await db.treasuryAccounts.toArray();
+        return asExportRecords(await db.treasuryAccounts.toArray());
       case 'TREASURY_MOVEMENTS':
-        return await db.treasuryOperations.toArray();
+        return asExportRecords(await db.treasuryOperations.toArray());
       case 'BUDGETS':
-        return await db.expenseBudgets.toArray();
+        return asExportRecords(await db.expenseBudgets.toArray());
       case 'FORECASTS':
-        return await db.treasuryForecastItems.toArray();
+        return asExportRecords(await db.treasuryForecastItems.toArray());
       case 'COMMERCIAL_DOCUMENTS':
-        return await db.commercialDocuments.toArray();
+        return asExportRecords(await db.commercialDocuments.toArray());
       case 'COMMERCIAL_DOCUMENT_LINES':
-        return await db.commercialDocumentLines.toArray();
+        return asExportRecords(await db.commercialDocumentLines.toArray());
       case 'DELIVERY_NOTES':
-        return await db.commercialDocuments.where('type').equals('DELIVERY_NOTE').toArray();
+        return asExportRecords(await db.commercialDocuments.where('type').equals('DELIVERY_NOTE').toArray());
       default:
         return [];
     }
@@ -86,7 +89,7 @@ export class DexieReportRepository implements ReportRepository {
       invoicedByCurrency: stats.financial.map(f => ({ currency: f.currency, currencyScale: f.currencyScale, minor: f.billedMinor })),
       collectedByCurrency: stats.financial.map(f => ({ currency: f.currency, currencyScale: f.currencyScale, minor: f.collectedMinor })),
       
-      productsSold: stats.soldProducts,
+      productsSold: stats.soldProducts.map((product) => ({ designation: product.label, quantityScaled: product.quantityScaled, quantityScale: product.quantityScale })),
       
       quotesIssued: quotes.filter(q => q.status === 'ISSUED').length,
       quotesAccepted: quotes.filter(q => q.status === 'ACCEPTED').length,
@@ -108,6 +111,7 @@ export class DexieReportRepository implements ReportRepository {
     const payments = await db.payments.toArray();
     const expenses = await db.expenses.toArray();
     const operations = await db.treasuryOperations.toArray();
+    const allocations = await db.treasuryAllocations.toArray();
     
     const inPeriod = (d?: string) => d && d >= period.from && d <= period.to;
 
@@ -145,8 +149,7 @@ export class DexieReportRepository implements ReportRepository {
         group.billedMinor = (BigInt(group.billedMinor) + BigInt(invoice.grandTotalMinor)).toString();
       }
       
-      const paidMinor = invoice.paidAmountMinor || 0;
-      const due = BigInt(invoice.grandTotalMinor) - BigInt(paidMinor);
+      const due = BigInt(invoice.balanceMinor);
       if (due > 0n) {
         group.receivableMinor = (BigInt(group.receivableMinor) + due).toString();
         const todayStr = new Date().toISOString().slice(0, 10);
@@ -159,34 +162,32 @@ export class DexieReportRepository implements ReportRepository {
     }
 
     for (const payment of payments) {
-      if (payment.status !== 'CONFIRME' || !inPeriod(payment.paymentDate)) continue;
+      if (payment.status !== 'ACTIVE' || !inPeriod(payment.paymentDate)) continue;
       const group = getGroup(payment.currency, payment.currencyScale);
       group.collectedMinor = (BigInt(group.collectedMinor) + BigInt(payment.amountMinor)).toString();
     }
 
     for (const exp of expenses) {
-      if (exp.status !== 'PAYEE' || !inPeriod(exp.expenseDate)) continue;
+      if (exp.status !== 'ACTIVE' || !inPeriod(exp.expenseDate)) continue;
       const group = getGroup(exp.currency, exp.currencyScale);
-      group.expensesMinor = (BigInt(group.expensesMinor) + BigInt(exp.totalAmountMinor)).toString();
+      group.expensesMinor = (BigInt(group.expensesMinor) + BigInt(exp.amountMinor)).toString();
     }
 
     // Treasury balances
     const accounts = await db.treasuryAccounts.toArray();
     for (const account of accounts) {
-      // Calculate balance up to 'to'
-      let balance = BigInt(0);
-      const accOps = operations.filter(o => (o.accountId === account.id || o.destinationAccountId === account.id) && o.status === 'COMPLETED' && o.operationDate <= period.to);
-      for (const op of accOps) {
-        if (op.accountId === account.id) {
-          if (op.kind === 'EXPENSE_PAYMENT' || op.kind === 'ADJUSTMENT_OUT' || op.kind === 'TRANSFER_OUT') balance -= BigInt(op.amountMinor);
-          else balance += BigInt(op.amountMinor);
-        } else if (op.destinationAccountId === account.id && op.kind === 'TRANSFER_OUT') {
-          balance += BigInt(op.amountMinor);
+      const allocationSources = allocations.filter((allocation) => allocation.accountId === account.id && allocation.status === 'ACTIVE').flatMap((allocation) => {
+        if (allocation.sourceType === 'PAYMENT') {
+          const payment = payments.find((item) => item.id === allocation.sourceId && item.status === 'ACTIVE');
+          return payment ? [{ allocation, sourceAmountMinor: payment.amountMinor, sourceDate: payment.paymentDate }] : [];
         }
-      }
+        const expense = expenses.find((item) => item.id === allocation.sourceId && item.status === 'ACTIVE');
+        return expense ? [{ allocation, sourceAmountMinor: expense.amountMinor, sourceDate: expense.expenseDate }] : [];
+      });
+      const balance = calculateTreasuryBalance(account, allocationSources, operations, period.to);
       
       const group = getGroup(account.currency, account.currencyScale);
-      group.treasuryBalanceMinor = (BigInt(group.treasuryBalanceMinor) + balance).toString();
+      group.treasuryBalanceMinor = (BigInt(group.treasuryBalanceMinor) + BigInt(balance)).toString();
     }
 
     // Net Cash Flow = collected - expenses
@@ -230,10 +231,10 @@ export class DexieReportRepository implements ReportRepository {
     };
 
     for (const invoice of invoices) {
-      if (invoice.status === 'BROUILLON' || invoice.status === 'ANNULEE' || invoice.issueDate > asOfDate) continue;
+      if (invoice.status === 'BROUILLON' || invoice.status === 'ANNULEE' || !invoice.issueDate || invoice.issueDate > asOfDate) continue;
 
       // Calculate paid up to asOfDate
-      const invPayments = payments.filter(p => p.invoiceId === invoice.id && p.status === 'CONFIRME' && p.paymentDate <= asOfDate);
+      const invPayments = payments.filter(p => p.invoiceId === invoice.id && p.status === 'ACTIVE' && p.paymentDate <= asOfDate);
       const paidMinor = invPayments.reduce((acc, p) => acc + BigInt(p.amountMinor), 0n);
       const due = BigInt(invoice.grandTotalMinor) - paidMinor;
 
@@ -273,7 +274,7 @@ export class DexieReportRepository implements ReportRepository {
       }
     }
 
-    return { groups: Array.from(groupsMap.values()) };
+    return { asOfDate, groups: Array.from(groupsMap.values()) };
   }
 
   async getClientStatementData(clientId: string, period: ReportPeriod): Promise<Omit<ClientStatement, 'context'>> {
@@ -322,7 +323,7 @@ export class DexieReportRepository implements ReportRepository {
     }
 
     for (const payment of payments) {
-      if (payment.status !== 'CONFIRME') continue;
+      if (payment.status !== 'ACTIVE') continue;
       const invoice = invoices.find(i => i.id === payment.invoiceId);
       if (!invoice) continue;
       
@@ -355,6 +356,7 @@ export class DexieReportRepository implements ReportRepository {
     }
 
     return {
+      clientId,
       clientName: contact?.displayName || 'Inconnu',
       groups: Array.from(groupsMap.values()),
     };

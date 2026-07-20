@@ -1,6 +1,6 @@
 import { Clock, SystemClock } from '@/modules/follow-ups/domain/follow-up';
 import { calculateInvoiceLine, calculateInvoiceTotals } from '@/modules/invoices/domain/invoice';
-import { CommercialDocumentLineRecord, CommercialDocumentRecord, DraftCommercialDocumentInput, DraftCommercialDocumentSchema } from '../domain/commercial-document';
+import { CommercialDocumentLineRecord, CommercialDocumentRecord, DraftCommercialDocumentInput, DraftCommercialDocumentSchema, ValidatedDraftCommercialDocumentInput } from '../domain/commercial-document';
 import { DexieCommercialDocumentRepository, CommercialDocumentSearchCriteria } from '../infrastructure/dexie-commercial-document-repository';
 
 export class ManageCommercialDocumentsUseCase {
@@ -10,7 +10,7 @@ export class ManageCommercialDocumentsUseCase {
   get(id: string) { return this.repository.get(id); }
   formOptions() { return this.repository.formOptions(); }
 
-  private buildLines(documentId: string, input: DraftCommercialDocumentInput, now: string): CommercialDocumentLineRecord[] { 
+  private buildLines(documentId: string, input: ValidatedDraftCommercialDocumentInput, now: string): CommercialDocumentLineRecord[] {
     return input.lines.map((value, index) => ({ 
       id: value.id || crypto.randomUUID(), 
       documentId, 
@@ -98,7 +98,7 @@ export class ManageCommercialDocumentsUseCase {
       ...line, 
       id: crypto.randomUUID(), 
       documentId: newId, 
-      sourceEntityType: 'COMMERCIAL_DOCUMENT_LINE', 
+      sourceEntityType: 'COMMERCIAL_DOCUMENT_LINE' as const,
       sourceLineId: line.id, 
       createdAt: now, 
       updatedAt: now 

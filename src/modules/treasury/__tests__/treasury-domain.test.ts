@@ -101,7 +101,7 @@ describe('Forecast Domain', () => {
     const items: TreasuryForecastItemRecord[] = [
       { id: 'f1', type: 'INFLOW', expectedDate: '2023-01-10', amountMinor: 5000, currency: 'XOF', currencyScale: 0, label: 'Vente', status: 'ACTIVE', createdAt: '', updatedAt: '' },
       { id: 'f2', type: 'OUTFLOW', expectedDate: '2023-01-15', amountMinor: 2000, currency: 'XOF', currencyScale: 0, label: 'Loyer', status: 'ACTIVE', createdAt: '', updatedAt: '' },
-      { id: 'f3', type: 'INFLOW', expectedDate: '2023-01-20', amountMinor: 10000, currency: 'XOF', currencyScale: 0, label: 'Gros client', status: 'CANCELLED', createdAt: '', updatedAt: '' }
+      { id: 'f3', type: 'INFLOW', expectedDate: '2023-01-20', amountMinor: 10000, currency: 'XOF', currencyScale: 0, label: 'Gros client', status: 'ARCHIVED', createdAt: '', updatedAt: '' }
     ];
 
     const forecast = calculateCashForecast(10000, items, 'XOF', 0, '2023-01-01', '2023-01-31');

@@ -1,6 +1,6 @@
 import { PDFPage } from 'pdf-lib';
 import { CommercialReport } from '../domain/report';
-import { formatMinor } from '@/modules/invoices/domain/invoice';
+import { formatMinorExact } from '@/modules/statistics/domain/statistics';
 import { createReportDocument, drawReportHeader, A4, MARGIN, BOTTOM } from './report-pdf-utils';
 
 export async function generateCommercialReportPdf(report: CommercialReport): Promise<Uint8Array> {
@@ -63,7 +63,7 @@ export async function generateCommercialReportPdf(report: CommercialReport): Pro
   if (report.invoicedByCurrency.length > 0) {
     drawSection('Facturation');
     for (const c of report.invoicedByCurrency) {
-      drawRow(`Facturé (${c.currency})`, formatMinor(BigInt(c.minor), c.currency, c.currencyScale), true);
+      drawRow(`Facturé (${c.currency})`, formatMinorExact(c.minor, c.currency, c.currencyScale), true);
     }
   }
 

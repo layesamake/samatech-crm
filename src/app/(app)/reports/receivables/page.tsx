@@ -28,7 +28,7 @@ export default function ReceivablesReportPage() {
       const report = await useCase.generateReceivablesReport(asOfDate);
       const pdfBytes = await generateReceivablesReportPdf(report);
       
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const blob = new Blob([Uint8Array.from(pdfBytes).buffer], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

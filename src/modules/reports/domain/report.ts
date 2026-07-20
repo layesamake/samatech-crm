@@ -48,7 +48,7 @@ export interface CommercialReport {
   collectedByCurrency: ExactMoney[];
   
   // Products
-  productsSold: { designation: string; quantityScaled: number; quantityScale: number }[];
+  productsSold: { designation: string; quantityScaled: string; quantityScale: number }[];
   
   // Commercial Documents
   quotesIssued: number;

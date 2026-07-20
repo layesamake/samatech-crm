@@ -219,7 +219,7 @@ export async function generateCommercialDocumentPdf(value: CommercialDocumentAgg
 }
 
 export function downloadPdf(bytes: Uint8Array, filename: string): void {
-  const blob = new Blob([bytes], { type: PDF_MIME_TYPE });
+  const blob = new Blob([Uint8Array.from(bytes).buffer], { type: PDF_MIME_TYPE });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url; link.download = filename;
@@ -228,7 +228,7 @@ export function downloadPdf(bytes: Uint8Array, filename: string): void {
 }
 
 export async function shareOrDownloadPdf(bytes: Uint8Array, filename: string): Promise<void> {
-  const file = new File([bytes], filename, { type: PDF_MIME_TYPE });
+  const file = new File([Uint8Array.from(bytes).buffer], filename, { type: PDF_MIME_TYPE });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     try { await navigator.share({ files: [file], title: filename }); return; } catch (caught) { if ((caught as Error).name !== 'AbortError') throw caught; return; }
   }

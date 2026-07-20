@@ -1,7 +1,7 @@
 import { EncryptedBackupHeaderV1, EncryptedBackupContainerV1 } from '../domain/encrypted-backup';
 
 export class WebCryptoService {
-  private base64ToBuffer(b64: string): Uint8Array {
+  private base64ToBuffer(b64: string): Uint8Array<ArrayBuffer> {
     const binStr = atob(b64);
     const len = binStr.length;
     const bytes = new Uint8Array(len);
@@ -11,9 +11,9 @@ export class WebCryptoService {
     return bytes;
   }
 
-  private bufferToBase64(buffer: ArrayBuffer): string {
+  private bufferToBase64(buffer: ArrayBuffer | Uint8Array<ArrayBuffer>): string {
     let binary = '';
-    const bytes = new Uint8Array(buffer);
+    const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
     const len = bytes.byteLength;
     for (let i = 0; i < len; i++) {
       binary += String.fromCharCode(bytes[i]);
@@ -21,7 +21,7 @@ export class WebCryptoService {
     return btoa(binary);
   }
 
-  private async deriveKey(password: string, salt: Uint8Array, iterations: number = 600000): Promise<CryptoKey> {
+  private async deriveKey(password: string, salt: Uint8Array<ArrayBuffer>, iterations: number = 600000): Promise<CryptoKey> {
     const encoder = new TextEncoder();
     const keyMaterial = await crypto.subtle.importKey(
       'raw',

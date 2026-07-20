@@ -2,7 +2,8 @@
 
 import { PageHeader } from '@/components/ui/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { FileText, PieChart, DollarSign, Download, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -27,12 +28,10 @@ export default function ReportsDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" className="w-full justify-between group">
-              <Link href="/reports/commercial">
+              <Link href="/reports/commercial" className={cn(buttonVariants({ variant: 'outline' }), 'group w-full justify-between')}>
                 Générer
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
-            </Button>
           </CardContent>
         </Card>
 
@@ -47,12 +46,10 @@ export default function ReportsDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" className="w-full justify-between group">
-              <Link href="/reports/financial">
+              <Link href="/reports/financial" className={cn(buttonVariants({ variant: 'outline' }), 'group w-full justify-between')}>
                 Générer
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
-            </Button>
           </CardContent>
         </Card>
 
@@ -67,12 +64,10 @@ export default function ReportsDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" className="w-full justify-between group">
-              <Link href="/reports/receivables">
+              <Link href="/reports/receivables" className={cn(buttonVariants({ variant: 'outline' }), 'group w-full justify-between')}>
                 Générer
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
-            </Button>
           </CardContent>
         </Card>
 
@@ -87,12 +82,10 @@ export default function ReportsDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button asChild variant="outline" className="w-full justify-between group">
-              <Link href="/reports/exports">
+              <Link href="/reports/exports" className={cn(buttonVariants({ variant: 'outline' }), 'group w-full justify-between')}>
                 Accéder
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
-            </Button>
           </CardContent>
         </Card>
         

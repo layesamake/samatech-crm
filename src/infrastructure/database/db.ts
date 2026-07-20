@@ -141,7 +141,7 @@ export class SamtechCRMDatabase extends Dexie {
         
         const lines = await tx.table('invoiceLines').where('invoiceId').equals(id).toArray();
         const docLines = lines.map((line: Record<string, unknown>) => {
-          const docLine = { ...line, documentId: document.id };
+          const docLine: Record<string, unknown> = { ...line, documentId: document.id };
           delete docLine.invoiceId;
           return docLine;
         });

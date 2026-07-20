@@ -1,6 +1,6 @@
 import { ManageSecurityUseCase } from '@/modules/security/application/manage-security';
 import { WebCryptoService } from '../infrastructure/web-crypto-service';
-import { EncryptedBackupContainerV1, isValidEncryptedContainerHeader } from '../domain/encrypted-backup';
+import { EncryptedBackupContainerV1, isValidEncryptedContainer, isValidEncryptedContainerHeader } from '../domain/encrypted-backup';
 import {
   BACKUP_FORMAT_VERSION,
   BACKUP_PRODUCT,
@@ -84,7 +84,7 @@ export class ManageBackupsUseCase {
       throw new Error('Le fichier ne contient pas un JSON valide.');
     }
 
-    if (!isValidEncryptedContainerHeader(container)) {
+    if (!isValidEncryptedContainer(container)) {
       throw new Error('Le conteneur chiffré est invalide ou corrompu.');
     }
 

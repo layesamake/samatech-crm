@@ -5,7 +5,7 @@ import { BACKUP_FORMAT_VERSION, BACKUP_PRODUCT, BUSINESS_COLLECTIONS, calculateI
 import { DexieBackupRepository } from '../infrastructure/dexie-backup-repository';
 
 const fixedNow = () => new Date('2026-07-18T10:30:00.000Z');
-const useCase = new ManageBackupsUseCase(new DexieBackupRepository(), undefined, fixedNow);
+const useCase = new ManageBackupsUseCase(new DexieBackupRepository(), undefined, undefined, fixedNow);
 
 async function resetDatabase() {
   db.close(); await db.delete(); await db.open();

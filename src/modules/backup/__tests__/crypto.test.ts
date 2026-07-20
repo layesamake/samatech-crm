@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { WebCryptoService } from '../infrastructure/web-crypto-service';
 import { isValidEncryptedContainerHeader } from '../domain/encrypted-backup';
 
