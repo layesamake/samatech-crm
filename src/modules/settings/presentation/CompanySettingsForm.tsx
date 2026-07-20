@@ -8,6 +8,7 @@ import { CompanyProfile, CompanyProfileSchema } from '../domain/settings';
 import { GetSettingsUseCase } from '../application/get-settings';
 import { UpdateSettingsUseCase } from '../application/update-settings';
 import { DexieSettingsRepository } from '../infrastructure/dexie-settings-repository';
+import { Save } from 'lucide-react';
 
 const repository = new DexieSettingsRepository();
 const getSettingsUseCase = new GetSettingsUseCase(repository);
@@ -85,7 +86,7 @@ export default function CompanySettingsForm() {
   return (
     <div className="space-y-6 max-w-2xl">
       {message && (
-        <div className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-500/10 text-green-800 dark:text-green-200' : 'bg-red-500/10 text-red-800 dark:text-red-200'}`}>
+        <div role={message.includes('succès') ? 'status' : 'alert'} className={`p-4 rounded-md ${message.includes('succès') ? 'bg-green-500/10 text-green-800 dark:text-green-200' : 'bg-red-500/10 text-red-800 dark:text-red-200'}`}>
           {message}
         </div>
       )}
@@ -220,13 +221,14 @@ export default function CompanySettingsForm() {
           </div>
         </div>
 
-        <div className="pt-4 border-t flex justify-end">
+        <div className="sticky bottom-16 z-20 -mx-4 flex border-t bg-background/95 p-4 shadow-[0_-8px_24px_-16px_rgba(0,0,0,0.45)] backdrop-blur lg:bottom-0 lg:mx-0 lg:justify-end lg:px-0">
           <button 
             type="submit" 
             disabled={saving}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 text-base font-semibold text-white shadow-md shadow-blue-600/20 transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
           >
-            {saving ? 'Enregistrement...' : 'Enregistrer'}
+            <Save className="h-5 w-5" />
+            {saving ? 'Enregistrement...' : 'Enregistrer les paramètres de l’entreprise'}
           </button>
         </div>
       </form>
