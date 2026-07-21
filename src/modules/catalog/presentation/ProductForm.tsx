@@ -28,6 +28,8 @@ export function ProductForm({
   const [categoryMode, setCategoryMode] = useState<'SELECT' | 'NEW'>('SELECT');
   const [newCategoryName, setNewCategoryName] = useState('');
   const [error, setError] = useState('');
+  const [imageBase64, setImageBase64] = useState<string | undefined>(initialData?.imageBase64);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<UpdateProductInput>({
     resolver: zodResolver(UpdateProductSchema),
@@ -44,6 +46,7 @@ export function ProductForm({
       currencyScale: initialData.currencyScale,
       defaultTaxRateBasisPoints: initialData.defaultTaxRateBasisPoints,
       isActive: initialData.isActive,
+      imageBase64: initialData.imageBase64,
     } : {
       type: 'PRODUCT',
       currency: currencyCode,
@@ -54,6 +57,24 @@ export function ProductForm({
   });
 
   const watchType = watch('type');
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setError("L'image est trop volumineuse (max 2MB)");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setImageBase64(result);
+        setValue('imageBase64', result);
+        setError('');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleCreateCategory = async () => {
     if (!newCategoryName.trim()) return;
@@ -91,7 +112,7 @@ export function ProductForm({
         id={id}
         type={type}
         className={cn(
-          "flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base focus:border-blue-600 focus:ring-0",
+          "flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base text-gray-900 placeholder:text-gray-400 focus:border-blue-600 focus:ring-0",
           errorMsg && "border-red-500 focus:border-red-500"
         )}
         {...props}
@@ -144,9 +165,26 @@ export function ProductForm({
                 </label>
               </div>
             </div>
-            <div className="w-24 h-24 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100">
-              <span className="text-xl leading-none mb-1">+</span>
-              <span className="text-xs text-center leading-tight">Ajouter<br/>une image</span>
+            <div 
+              className="relative w-24 h-24 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100 overflow-hidden"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {imageBase64 ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={imageBase64} alt="Produit" className="w-full h-full object-cover" />
+              ) : (
+                <>
+                  <span className="text-xl leading-none mb-1">+</span>
+                  <span className="text-xs text-center leading-tight">Ajouter<br/>une image</span>
+                </>
+              )}
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleImageChange} 
+                accept="image/*" 
+                className="hidden" 
+              />
             </div>
           </div>
 
@@ -179,7 +217,7 @@ export function ProductForm({
                     setValue('categoryId', e.target.value || undefined);
                   }
                 }}
-                className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base focus:border-blue-600 focus:ring-0 text-gray-800"
+                className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base text-gray-900 focus:border-blue-600 focus:ring-0"
               >
                 <option value="">Aucune</option>
                 {categories.map(c => (
@@ -189,7 +227,7 @@ export function ProductForm({
               </select>
             ) : (
               <div className="flex gap-2 pt-2 border-b border-gray-300 pb-1">
-                <input autoFocus placeholder="Nom catégorie" className="flex-1 bg-transparent border-none px-0 text-base focus:ring-0" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} />
+                <input autoFocus placeholder="Nom catégorie" className="flex-1 bg-transparent border-none px-0 text-base text-gray-900 placeholder:text-gray-400 focus:ring-0" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} />
                 <button type="button" className="text-sm font-semibold text-blue-600" onClick={handleCreateCategory}>Créer</button>
                 <button type="button" className="text-sm font-semibold text-gray-500" onClick={() => { setCategoryMode('SELECT'); setNewCategoryName(''); }}>X</button>
               </div>
@@ -234,10 +272,10 @@ export function ProductForm({
             <label htmlFor="catalog-tax" className="absolute top-0 left-0 text-xs font-medium text-blue-600 transition-all">Taxe</label>
             <select 
               id="catalog-tax"
-              className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base focus:border-blue-600 focus:ring-0 text-gray-400"
+              className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base text-gray-900 focus:border-blue-600 focus:ring-0"
               defaultValue=""
             >
-              <option value="" disabled>Sélectionnez une Taxe</option>
+              <option value="" disabled className="text-gray-400">Sélectionnez une Taxe</option>
               <option value="1800">TVA (18%)</option>
               <option value="0">Aucune</option>
             </select>

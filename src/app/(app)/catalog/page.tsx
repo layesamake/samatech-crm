@@ -44,8 +44,13 @@ const CatalogCard = memo(({
           <div className="flex flex-col gap-1 flex-1">
             <strong className="text-base font-semibold">{item.name}</strong>
             <span className="text-sm text-muted-foreground flex items-center gap-2">
-              <Package className="w-3.5 h-3.5" />
-              {item.sku || 'Sans réf'} • {typeLabel}
+              {item.imageBase64 ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={item.imageBase64} alt={item.name} className="w-5 h-5 object-cover rounded shadow-sm" />
+              ) : (
+                <Package className="w-3.5 h-3.5" />
+              )}
+              {typeLabel}
             </span>
             {displayStatus && (
               <span className={cn("text-xs font-semibold mt-1 uppercase", isArchived ? "text-red-500" : "text-amber-500")}>
@@ -384,15 +389,56 @@ export default function CatalogPage() {
               (filteredItems as ProductRecord[]).length === 0 ? (
                 <p className="p-8 text-center text-muted-foreground">Aucun article ne correspond aux critères.</p>
               ) : (
-                (filteredItems as ProductRecord[]).slice(0, limit).map((p) => (
-                  <CatalogCard 
-                    key={p.id} 
-                    item={p} 
-                    currencySymbol={currencySymbol}
-                    onEdit={(p) => { setEditingProduct(p); setViewState('PRODUCT_FORM'); }} 
-                    onArchive={handleArchiveProduct} 
-                  />
-                ))
+                (() => {
+                  const items = (filteredItems as ProductRecord[]).slice(0, limit);
+                  const grouped = new Map<string, ProductRecord[]>();
+                  const uncategorized: ProductRecord[] = [];
+                  items.forEach(p => {
+                    if (p.categoryId) {
+                      if (!grouped.has(p.categoryId)) grouped.set(p.categoryId, []);
+                      grouped.get(p.categoryId)!.push(p);
+                    } else {
+                      uncategorized.push(p);
+                    }
+                  });
+
+                  return (
+                    <>
+                      {Array.from(grouped.entries()).map(([catId, prods]) => {
+                        const cat = activeCategories.find(c => c.id === catId);
+                        return (
+                          <div key={catId}>
+                            <div className="bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground border-y">{cat?.name || 'Catégorie inconnue'}</div>
+                            {prods.map(p => (
+                              <CatalogCard 
+                                key={p.id} 
+                                item={p} 
+                                currencySymbol={currencySymbol}
+                                onEdit={(p) => { setEditingProduct(p); setViewState('PRODUCT_FORM'); }} 
+                                onArchive={handleArchiveProduct} 
+                              />
+                            ))}
+                          </div>
+                        );
+                      })}
+                      
+                      {uncategorized.length > 0 && (
+                         <div>
+                            <div className="bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground border-y">Sans catégorie</div>
+                            {uncategorized.map(p => (
+                              <CatalogCard 
+                                key={p.id} 
+                                item={p} 
+                                currencySymbol={currencySymbol}
+                                onEdit={(p) => { setEditingProduct(p); setViewState('PRODUCT_FORM'); }} 
+                                onArchive={handleArchiveProduct} 
+                              />
+                            ))}
+                         </div>
+                      )}
+                    </>
+                  );
+                })()
               )
             )}
           </div>

@@ -97,6 +97,7 @@ export class ManageCatalogUseCase {
       currencyScale: validated.currencyScale,
       defaultTaxRateBasisPoints: validated.defaultTaxRateBasisPoints,
       isActive: true,
+      imageBase64: validated.imageBase64,
       createdAt: now,
       updatedAt: now,
     };
@@ -142,6 +143,9 @@ export class ManageCatalogUseCase {
     product.currencyScale = validated.currencyScale;
     product.defaultTaxRateBasisPoints = validated.defaultTaxRateBasisPoints;
     product.isActive = validated.isActive;
+    if (validated.imageBase64 !== undefined) {
+      product.imageBase64 = validated.imageBase64;
+    }
     product.updatedAt = new Date().toISOString();
 
     await this.repository.saveProduct(product);

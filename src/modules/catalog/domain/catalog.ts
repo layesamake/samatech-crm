@@ -34,6 +34,7 @@ export interface ProductRecord extends AuditFields {
   currencyScale: number;
   defaultTaxRateBasisPoints?: number;
   isActive: boolean;
+  imageBase64?: string;
 }
 
 export const CreateCategorySchema = z.object({
@@ -57,6 +58,7 @@ export const CreateProductSchema = z.object({
   currency: z.string().min(1, 'La devise est obligatoire'),
   currencyScale: z.number().int().min(0),
   defaultTaxRateBasisPoints: z.number().int().min(0).max(10000).optional(),
+  imageBase64: z.string().optional(),
 });
 export type CreateProductInput = z.infer<typeof CreateProductSchema>;
 
