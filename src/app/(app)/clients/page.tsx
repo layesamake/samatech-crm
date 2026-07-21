@@ -144,14 +144,7 @@ export default function ClientsPage() {
           </div>
         </div>
 
-        <Link
-          href="/prospects/nouveau"
-          aria-label="Ajouter un nouveau client"
-          className="mb-4 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-base font-semibold text-white shadow-md shadow-blue-600/25 transition-colors hover:bg-blue-700 active:bg-blue-800"
-        >
-          <Plus className="h-5 w-5" />
-          Nouveau client
-        </Link>
+
 
         {showSearch && (
           <div className="mb-4">
@@ -211,6 +204,15 @@ export default function ClientsPage() {
           )}
         </div>
       )}
+
+      {/* FAB */}
+      <Link
+        href="/prospects/nouveau"
+        aria-label="Ajouter un nouveau client"
+        className="fixed bottom-[84px] lg:bottom-8 right-4 z-40 w-14 h-14 bg-foreground text-background rounded-[20px] flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform"
+      >
+        <Plus className="w-6 h-6 stroke-[2.5]" />
+      </Link>
 
     </main>
   );
