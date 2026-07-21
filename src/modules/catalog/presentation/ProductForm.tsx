@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ProductRecord, CreateProductInput, CategoryRecord, UpdateProductInput, UpdateProductSchema } from '../domain/catalog';
+import { ArrowLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ProductFormProps {
   initialData?: ProductRecord | null;
@@ -27,7 +29,7 @@ export function ProductForm({
   const [newCategoryName, setNewCategoryName] = useState('');
   const [error, setError] = useState('');
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<UpdateProductInput>({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<UpdateProductInput>({
     resolver: zodResolver(UpdateProductSchema),
     defaultValues: initialData ? {
       name: initialData.name,
@@ -50,6 +52,8 @@ export function ProductForm({
       unitPriceMinor: 0,
     }
   });
+
+  const watchType = watch('type');
 
   const handleCreateCategory = async () => {
     if (!newCategoryName.trim()) return;
@@ -78,57 +82,91 @@ export function ProductForm({
     }
   };
 
+  const InputField = ({ label, id, errorMsg, required = false, type = 'text', ...props }: any) => (
+    <div className="space-y-1 relative pt-4">
+      <label htmlFor={id} className="absolute top-0 left-0 text-xs font-medium text-blue-600 transition-all">
+        {label} {required && '*'}
+      </label>
+      <input 
+        id={id}
+        type={type}
+        className={cn(
+          "flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base focus:border-blue-600 focus:ring-0",
+          errorMsg && "border-red-500 focus:border-red-500"
+        )}
+        {...props}
+      />
+      {errorMsg && <p className="text-xs text-red-500 mt-1">{errorMsg}</p>}
+    </div>
+  );
+
   return (
-    <div className="bg-background min-h-screen pb-24">
-      <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center justify-between">
-        <h2 className="text-lg font-bold">{initialData ? 'Modifier' : 'Ajouter'} {initialData?.type === 'SERVICE' ? 'un service' : 'un produit'}</h2>
-        <button type="button" onClick={onCancel} className="text-sm font-medium px-3 py-1.5 border rounded-xl hover:bg-muted">Annuler</button>
+    <div className="bg-slate-50 min-h-screen pb-24">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-white border-b px-2 py-3 flex items-center justify-between shadow-sm">
+        <div className="flex items-center gap-2">
+          <button type="button" onClick={onCancel} className="p-2 hover:bg-muted rounded-full">
+            <ArrowLeft className="w-6 h-6 text-gray-800" />
+          </button>
+          <h2 className="text-lg font-bold text-gray-900">{initialData ? 'Modifier un article' : 'Ajouter un article'}</h2>
+        </div>
+        <button 
+          onClick={handleSubmit(onSubmit)}
+          disabled={saving}
+          className="text-sm font-bold text-gray-800 hover:text-blue-600 px-4 py-2 uppercase tracking-wide"
+        >
+          {saving ? 'EN COURS...' : 'ENREGISTRER'}
+        </button>
       </div>
       
-      <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-6 max-w-lg mx-auto">
+      <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4 max-w-lg mx-auto">
         {error && <div className="p-3 bg-red-50 text-red-800 rounded-md text-sm">{error}</div>}
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Type</label>
-            <div className="flex gap-4 p-1 bg-muted/50 rounded-xl">
-              <label className="flex-1 flex items-center justify-center gap-2 bg-background shadow-sm py-2 rounded-lg border cursor-pointer">
-                <input type="radio" value="PRODUCT" {...register('type')} className="sr-only" /> Produit
-              </label>
-              <label className="flex-1 flex items-center justify-center gap-2 hover:bg-background/50 py-2 rounded-lg cursor-pointer transition-colors">
-                <input type="radio" value="SERVICE" {...register('type')} className="sr-only" /> Service
-              </label>
+        {/* Card 1: Informations Générales */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-5 space-y-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 space-y-3">
+              <label className="text-xs font-medium text-blue-600">Type de l'article</label>
+              <div className="space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", watchType === 'PRODUCT' ? "border-blue-600" : "border-gray-400")}>
+                    {watchType === 'PRODUCT' && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full" />}
+                  </div>
+                  <input type="radio" value="PRODUCT" {...register('type')} className="sr-only" /> 
+                  <span className="text-base text-gray-800">Produits</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", watchType === 'SERVICE' ? "border-blue-600" : "border-gray-400")}>
+                    {watchType === 'SERVICE' && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full" />}
+                  </div>
+                  <input type="radio" value="SERVICE" {...register('type')} className="sr-only" /> 
+                  <span className="text-base text-gray-800">Service</span>
+                </label>
+              </div>
+            </div>
+            <div className="w-24 h-24 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100">
+              <span className="text-xl leading-none mb-1">+</span>
+              <span className="text-xs text-center leading-tight">Ajouter<br/>une image</span>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="catalog-name" className="text-sm font-medium">Nom *</label>
-            <input 
-              id="catalog-name"
-              {...register('name')} 
-              className="flex h-12 w-full rounded-xl border border-input bg-background px-4 text-base" 
-              placeholder="Nom du produit ou service"
-            />
-            {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
-          </div>
+          <InputField 
+            label="Nom de l'article" 
+            id="catalog-name" 
+            required 
+            {...register('name')} 
+            errorMsg={errors.name?.message} 
+          />
 
-          <div className="space-y-2">
-            <label htmlFor="catalog-price" className="text-sm font-medium">Prix Unitaire *</label>
-            <div className="relative">
-              <input 
-                id="catalog-price"
-                type="number"
-                {...register('unitPriceMinor', { valueAsNumber: true })} 
-                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 pr-16 text-base" 
-                placeholder="0"
-              />
-              <div className="absolute right-4 top-3 text-sm font-medium text-muted-foreground">{currencySymbol}</div>
-            </div>
-            {errors.unitPriceMinor && <p className="text-xs text-red-500">{errors.unitPriceMinor.message}</p>}
-          </div>
+          <InputField 
+            label="Unité" 
+            id="catalog-unit" 
+            placeholder="Sélectionner ou taper pour ajouter"
+            {...register('unitLabel')} 
+          />
 
-          <div className="space-y-2">
-            <label htmlFor="catalog-category" className="text-sm font-medium">Catégorie</label>
+          <div className="space-y-1 relative pt-4">
+            <label htmlFor="catalog-category" className="absolute top-0 left-0 text-xs font-medium text-blue-600 transition-all">Catégorie</label>
             {categoryMode === 'SELECT' ? (
               <select 
                 id="catalog-category"
@@ -141,7 +179,7 @@ export function ProductForm({
                     setValue('categoryId', e.target.value || undefined);
                   }
                 }}
-                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 text-base"
+                className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base focus:border-blue-600 focus:ring-0 text-gray-800"
               >
                 <option value="">Aucune</option>
                 {categories.map(c => (
@@ -150,75 +188,74 @@ export function ProductForm({
                 <option value="NEW">+ Nouvelle catégorie...</option>
               </select>
             ) : (
-              <div className="flex gap-2 rounded-xl border p-2 bg-muted/30">
-                <input autoFocus placeholder="Nom catégorie" className="h-10 flex-1 rounded-lg border px-3 text-sm bg-background" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} />
-                <button type="button" className="rounded-lg border px-3 py-2 text-sm bg-secondary text-secondary-foreground font-medium" onClick={handleCreateCategory}>Créer</button>
-                <button type="button" className="rounded-lg border px-3 py-2 text-sm bg-background" onClick={() => { setCategoryMode('SELECT'); setNewCategoryName(''); }}>Annuler</button>
+              <div className="flex gap-2 pt-2 border-b border-gray-300 pb-1">
+                <input autoFocus placeholder="Nom catégorie" className="flex-1 bg-transparent border-none px-0 text-base focus:ring-0" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} />
+                <button type="button" className="text-sm font-semibold text-blue-600" onClick={handleCreateCategory}>Créer</button>
+                <button type="button" className="text-sm font-semibold text-gray-500" onClick={() => { setCategoryMode('SELECT'); setNewCategoryName(''); }}>X</button>
               </div>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="catalog-sku" className="text-sm font-medium">SKU / Réf</label>
-              <input 
-                id="catalog-sku"
-                {...register('sku')} 
-                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 text-base" 
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="catalog-unit" className="text-sm font-medium">Unité (ex: kg)</label>
-              <input 
-                id="catalog-unit"
-                {...register('unitLabel')} 
-                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 text-base" 
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="catalog-barcode" className="text-sm font-medium">Code-barres</label>
-            <input 
-              id="catalog-barcode"
-              {...register('barcode')} 
+            <InputField 
+              label="SKU / Réf" 
+              id="catalog-sku" 
+              {...register('sku')} 
+            />
+            <InputField 
+              label="Code-barres" 
+              id="catalog-barcode" 
               placeholder="EAN, UPC..."
-              className="flex h-12 w-full rounded-xl border border-input bg-background px-4 text-base" 
+              {...register('barcode')} 
             />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="catalog-description" className="text-sm font-medium">Description</label>
-            <textarea 
-              id="catalog-description"
-              {...register('description')} 
-              className="flex w-full rounded-xl border border-input bg-background px-4 py-3 text-base min-h-[100px]"
-              placeholder="Description détaillée (optionnelle)"
-            />
-          </div>
-
-          <div className="flex items-center gap-3 p-4 border rounded-xl bg-muted/20">
-            <input 
-              id="catalog-active"
-              type="checkbox"
-              {...register('isActive')} 
-              className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary"
-            />
-            <label htmlFor="catalog-active" className="text-sm font-medium leading-none">
-              Élément actif <span className="block text-xs text-muted-foreground font-normal mt-1">Sera visible lors de la création de factures</span>
-            </label>
           </div>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t">
-          <div className="max-w-lg mx-auto">
-            <button 
-              type="submit" 
-              disabled={saving}
-              className="w-full flex items-center justify-center rounded-xl text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 h-14"
+        {/* Card 2: Informations sur les ventes */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-5 space-y-6">
+          <h3 className="font-semibold text-gray-900 text-base">Informations sur les ventes</h3>
+
+          <InputField 
+            label={`Prix de vente(${currencyCode})`} 
+            id="catalog-price" 
+            required 
+            type="number"
+            {...register('unitPriceMinor', { valueAsNumber: true })} 
+            errorMsg={errors.unitPriceMinor?.message} 
+          />
+
+          <InputField 
+            label="Description" 
+            id="catalog-description" 
+            {...register('description')} 
+          />
+
+          <div className="space-y-1 relative pt-4">
+            <label htmlFor="catalog-tax" className="absolute top-0 left-0 text-xs font-medium text-blue-600 transition-all">Taxe</label>
+            <select 
+              id="catalog-tax"
+              className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base focus:border-blue-600 focus:ring-0 text-gray-400"
+              defaultValue=""
             >
-              {saving ? 'Enregistrement...' : initialData ? 'Mettre à jour' : 'Enregistrer'}
-            </button>
+              <option value="" disabled>Sélectionnez une Taxe</option>
+              <option value="1800">TVA (18%)</option>
+              <option value="0">Aucune</option>
+            </select>
+          </div>
+          
+          <div className="pt-2 flex items-center gap-3">
+             <div className="flex items-center">
+                <input 
+                  id="catalog-active"
+                  type="checkbox"
+                  {...register('isActive')} 
+                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-600"
+                />
+             </div>
+             <div>
+               <label htmlFor="catalog-active" className="text-base font-medium text-gray-900">Élément actif</label>
+               <p className="text-xs text-gray-500">Sera visible lors de la création de factures</p>
+             </div>
           </div>
         </div>
       </form>
