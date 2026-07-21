@@ -101,7 +101,7 @@ export function BottomNav() {
               <Menu className="h-5 w-5 stroke-2" />
               <span className="text-[10px] font-medium">Plus</span>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[75vw] max-w-[75vw] sm:w-[75vw] sm:max-w-[75vw] rounded-l-3xl border-l h-full flex flex-col p-0 bg-background/95 backdrop-blur-xl">
+            <SheetContent side="left" className="w-[75vw] max-w-[75vw] sm:w-[75vw] sm:max-w-[75vw] rounded-r-3xl border-r h-full flex flex-col p-0 bg-background/95 backdrop-blur-xl">
               <SheetHeader className="px-6 py-4 border-b">
                 <div className="flex items-center justify-between">
                   <SheetTitle className="text-left font-bold text-lg">Menu</SheetTitle>
