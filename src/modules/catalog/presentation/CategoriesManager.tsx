@@ -149,7 +149,7 @@ export default function CategoriesManager() {
                         {cat.description && <div className="text-xs text-muted-foreground">{cat.description}</div>}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {!cat.archivedAt && <><button onClick={() => { setEditingId(cat.id); reset({ name: cat.name, description: cat.description }); }} className="mr-2 min-h-11 px-2 text-blue-800 dark:text-blue-200 font-medium">Modifier</button><button 
+                        {!cat.archivedAt && <><button onClick={() => { setEditingId(cat.id); reset({ name: cat.name, description: cat.description }); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="mr-2 min-h-11 px-2 text-blue-800 dark:text-blue-200 font-medium">Modifier</button><button 
                           onClick={() => onArchive(cat.id)}
                           className="min-h-11 px-2 text-red-800 dark:text-red-200 hover:text-red-800 dark:text-red-200 font-medium"
                         >

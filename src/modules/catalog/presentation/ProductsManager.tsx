@@ -314,7 +314,7 @@ export default function ProductsManager() {
                         {p.unitPriceMinor} {currencySymbol} {p.unitLabel ? `/ ${p.unitLabel}` : ''}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {!p.archivedAt && <><button onClick={() => { setEditingId(p.id); reset({ name: p.name, type: p.type, categoryId: p.categoryId || '', sku: p.sku || '', barcode: p.barcode || '', description: p.description || '', unitLabel: p.unitLabel || '', unitPriceMinor: p.unitPriceMinor, currency: p.currency, currencyScale: p.currencyScale, defaultTaxRateBasisPoints: p.defaultTaxRateBasisPoints, isActive: p.isActive }); }} className="mr-2 min-h-11 px-2 text-blue-800 dark:text-blue-200 font-medium">Modifier</button><button 
+                        {!p.archivedAt && <><button onClick={() => { setEditingId(p.id); reset({ name: p.name, type: p.type, categoryId: p.categoryId || '', sku: p.sku || '', barcode: p.barcode || '', description: p.description || '', unitLabel: p.unitLabel || '', unitPriceMinor: p.unitPriceMinor, currency: p.currency, currencyScale: p.currencyScale, defaultTaxRateBasisPoints: p.defaultTaxRateBasisPoints, isActive: p.isActive }); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="mr-2 min-h-11 px-2 text-blue-800 dark:text-blue-200 font-medium">Modifier</button><button 
                           onClick={() => onArchive(p.id)}
                           className="min-h-11 px-2 text-red-800 dark:text-red-200 hover:text-red-800 dark:text-red-200 font-medium"
                         >
