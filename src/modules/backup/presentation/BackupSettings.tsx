@@ -181,8 +181,8 @@ export default function BackupSettings() {
           <CardDescription>Dernière sauvegarde : {lastExportedAt ? new Date(lastExportedAt).toLocaleString('fr-FR') : 'Aucune'}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-md border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-950">
-            Protégez votre sauvegarde avec un mot de passe fort (12 caractères min.). <strong>Attention : Sans ce mot de passe, vos données seront impossibles à restaurer. Ce mot de passe est indépendant de votre PIN.</strong>
+          <div className="rounded-md border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-400">
+            Protégez votre sauvegarde avec un mot de passe fort (12 caractères min.). <strong className="text-amber-950 dark:text-amber-200">Attention : Sans ce mot de passe, vos données seront impossibles à restaurer. Ce mot de passe est indépendant de votre PIN.</strong>
           </div>
           
           <div className="space-y-2">
