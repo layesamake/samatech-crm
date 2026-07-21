@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ProductRecord, CreateProductSchema, CreateProductInput, CategoryRecord } from '../domain/catalog';
+import { ProductRecord, CreateProductSchema, CreateProductInput, CategoryRecord, UpdateProductInput, UpdateProductSchema } from '../domain/catalog';
 import { ManageCatalogUseCase } from '../application/manage-catalog';
 import { DexieCatalogRepository } from '../infrastructure/dexie-catalog-repository';
 import { GetSettingsUseCase } from '@/modules/settings/application/get-settings';
@@ -33,12 +33,13 @@ export default function ProductsManager() {
   const [categoryMode, setCategoryMode] = useState<'SELECT' | 'NEW'>('SELECT');
   const [newCategoryName, setNewCategoryName] = useState('');
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<CreateProductInput>({
-    resolver: zodResolver(CreateProductSchema),
+  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<UpdateProductInput>({
+    resolver: zodResolver(UpdateProductSchema),
     defaultValues: {
       type: 'PRODUCT',
       currency: 'XOF',
       currencyScale: 0,
+      isActive: true,
     }
   });
 
@@ -87,21 +88,21 @@ export default function ProductsManager() {
     }
   };
 
-  const onSubmit = async (data: CreateProductInput) => {
+  const onSubmit = async (data: UpdateProductInput) => {
     setSaving(true);
     setMessage('');
     try {
       if (data.categoryId === '') data.categoryId = undefined;
       // Forcer la devise de l'entreprise (simplification)
       data.currency = currencyCode;
-      if (editingId) await manageCatalogUseCase.updateProduct(editingId, { ...data, isActive: true });
+      if (editingId) await manageCatalogUseCase.updateProduct(editingId, data);
       else await manageCatalogUseCase.createProduct(data);
       setMessage(`Produit/Service ${editingId ? 'modifié' : 'ajouté'} avec succès !`);
       setEditingId(null);
-      reset({ ...data, name: '', description: '', sku: '', barcode: '' });
+      reset({ ...data, name: '', description: '', sku: '', barcode: '', isActive: true });
       await loadData();
     } catch (error: unknown) {
-      setMessage(error instanceof Error ? error.message : "Erreur lors de l'ajout");
+      setMessage(error instanceof Error ? error.message : "Erreur lors de l'enregistrement");
     } finally {
       setSaving(false);
     }
@@ -238,15 +239,51 @@ export default function ProductsManager() {
                   rows={2}
                 />
               </div>
+
+              <div className="space-y-2 col-span-2 flex items-center gap-2">
+                <input 
+                  id="catalog-active"
+                  type="checkbox"
+                  {...register('isActive')} 
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <label htmlFor="catalog-active" className="text-sm font-medium">Élément actif (visible dans les ventes et factures)</label>
+              </div>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={saving}
-              className="w-full inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-            >
-              {saving ? 'Enregistrement...' : editingId ? 'Enregistrer' : 'Ajouter'}
-            </button>
+            <div className="flex gap-2">
+              <button 
+                type="submit" 
+                disabled={saving}
+                className="flex-1 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+              >
+                {saving ? 'Enregistrement...' : editingId ? 'Enregistrer' : 'Ajouter'}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingId(null);
+                    reset({
+                      type: 'PRODUCT',
+                      name: '',
+                      unitPriceMinor: 0,
+                      categoryId: '',
+                      sku: '',
+                      barcode: '',
+                      unitLabel: '',
+                      description: '',
+                      currency: currencyCode,
+                      currencyScale: 0,
+                      isActive: true
+                    });
+                  }}
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                >
+                  Annuler
+                </button>
+              )}
+            </div>
           </form>
         </div>
 
@@ -277,7 +314,7 @@ export default function ProductsManager() {
                         {p.unitPriceMinor} {currencySymbol} {p.unitLabel ? `/ ${p.unitLabel}` : ''}
                       </td>
                       <td className="px-4 py-3 text-right">
-                        {!p.archivedAt && <><button onClick={() => { setEditingId(p.id); reset({ name: p.name, type: p.type, categoryId: p.categoryId || '', sku: p.sku, description: p.description, unitLabel: p.unitLabel, unitPriceMinor: p.unitPriceMinor, currency: p.currency, currencyScale: p.currencyScale, defaultTaxRateBasisPoints: p.defaultTaxRateBasisPoints }); }} className="mr-2 min-h-11 px-2 text-blue-800 dark:text-blue-200 font-medium">Modifier</button><button 
+                        {!p.archivedAt && <><button onClick={() => { setEditingId(p.id); reset({ name: p.name, type: p.type, categoryId: p.categoryId || '', sku: p.sku || '', barcode: p.barcode || '', description: p.description || '', unitLabel: p.unitLabel || '', unitPriceMinor: p.unitPriceMinor, currency: p.currency, currencyScale: p.currencyScale, defaultTaxRateBasisPoints: p.defaultTaxRateBasisPoints, isActive: p.isActive }); }} className="mr-2 min-h-11 px-2 text-blue-800 dark:text-blue-200 font-medium">Modifier</button><button 
                           onClick={() => onArchive(p.id)}
                           className="min-h-11 px-2 text-red-800 dark:text-red-200 hover:text-red-800 dark:text-red-200 font-medium"
                         >

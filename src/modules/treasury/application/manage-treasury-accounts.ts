@@ -88,4 +88,37 @@ export class ManageTreasuryAccountsUseCase {
     
     return result;
   }
+
+  async updateAccount(id: string, dto: Partial<CreateAccountDTO>): Promise<void> {
+    const account = await this.repository.getAccount(id);
+    if (!account) throw new Error('Compte introuvable.');
+
+    if (dto.name !== undefined) {
+      account.name = dto.name.trim();
+      account.normalizedName = dto.name.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!account.name) throw new Error('Le nom du compte est obligatoire.');
+    }
+    if (dto.type !== undefined) account.type = dto.type;
+    if (dto.currency !== undefined) account.currency = dto.currency;
+    if (dto.currencyScale !== undefined) account.currencyScale = dto.currencyScale;
+    if (dto.openingBalanceMinor !== undefined) {
+      if (dto.openingBalanceMinor < 0) {
+        throw new Error('Le solde initial ne peut pas être négatif.');
+      }
+      account.openingBalanceMinor = dto.openingBalanceMinor;
+    }
+    if (dto.openingDate !== undefined) account.openingDate = dto.openingDate;
+    if (dto.note !== undefined) account.note = dto.note;
+    
+    account.updatedAt = new Date().toISOString();
+    await this.repository.saveAccount(account);
+  }
+
+  async archiveAccount(id: string): Promise<void> {
+    const account = await this.repository.getAccount(id);
+    if (!account) throw new Error('Compte introuvable.');
+    account.archivedAt = new Date().toISOString();
+    account.updatedAt = new Date().toISOString();
+    await this.repository.saveAccount(account);
+  }
 }

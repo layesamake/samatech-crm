@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { TreasuryAccountWithBalance, ManageTreasuryAccountsUseCase } from '@/modules/treasury/application/manage-treasury-accounts';
 import { treasuryRepository } from '@/modules/treasury/infrastructure/dexie-treasury-repository';
 import { formatMinorExact } from '@/modules/statistics/domain/statistics';
-import { Plus, ArrowRightLeft, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { Plus, ArrowRightLeft, TrendingUp, TrendingDown, DollarSign, Edit2, Archive } from 'lucide-react';
 import Link from 'next/link';
 
 const accountUseCase = new ManageTreasuryAccountsUseCase(treasuryRepository);
@@ -13,9 +13,25 @@ export default function TreasuryPage() {
   const [accounts, setAccounts] = useState<TreasuryAccountWithBalance[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadAccounts = () => {
+    setLoading(true);
     accountUseCase.listAccountsWithBalance().then(setAccounts).finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadAccounts();
   }, []);
+
+  const handleArchive = async (id: string, name: string) => {
+    if (confirm(`Voulez-vous vraiment archiver le compte "${name}" ?`)) {
+      try {
+        await accountUseCase.archiveAccount(id);
+        loadAccounts();
+      } catch (err: any) {
+        alert(`Erreur d'archivage : ${err.message}`);
+      }
+    }
+  };
 
   const totalBalance = accounts.reduce((sum, acc) => sum + BigInt(acc.balanceMinor), BigInt(0));
   const primaryCurrency = accounts.length > 0 ? accounts[0].currency : 'XOF';
@@ -58,13 +74,23 @@ export default function TreasuryPage() {
         ) : (
           <div className="space-y-4">
             {accounts.map(acc => (
-              <div key={acc.id} className="flex justify-between items-center pb-4 border-b border-border last:border-0 last:pb-0">
-                <div>
+              <div key={acc.id} className="flex justify-between items-center pb-4 border-b border-border last:border-0 last:pb-0 gap-4">
+                <div className="flex-1">
                   <p className="font-semibold">{acc.name}</p>
                   <p className="text-xs text-muted-foreground">{acc.type === 'BANK' ? 'Banque' : acc.type === 'CASH' ? 'Caisse' : 'Mobile Money'}</p>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold">{formatMinorExact(acc.balanceMinor.toString(), acc.currency, acc.currencyScale)}</p>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="font-semibold">{formatMinorExact(acc.balanceMinor.toString(), acc.currency, acc.currencyScale)}</p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Link href={`/treasury/${acc.id}/edit`} className="p-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors" title="Modifier">
+                      <Edit2 className="w-4 h-4" />
+                    </Link>
+                    <button onClick={() => handleArchive(acc.id, acc.name)} className="p-2 text-muted-foreground hover:text-destructive hover:bg-muted rounded-lg transition-colors" title="Archiver">
+                      <Archive className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

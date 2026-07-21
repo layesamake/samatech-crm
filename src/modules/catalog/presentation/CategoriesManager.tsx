@@ -103,13 +103,27 @@ export default function CategoriesManager() {
               />
             </div>
 
-            <button 
-              type="submit" 
-              disabled={saving}
-              className="w-full inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-            >
-              {saving ? 'Enregistrement...' : editingId ? 'Enregistrer' : 'Ajouter'}
-            </button>
+            <div className="flex gap-2">
+              <button 
+                type="submit" 
+                disabled={saving}
+                className="flex-1 inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+              >
+                {saving ? 'Enregistrement...' : editingId ? 'Enregistrer' : 'Ajouter'}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingId(null);
+                    reset({ name: '', description: '' });
+                  }}
+                  className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+                >
+                  Annuler
+                </button>
+              )}
+            </div>
           </form>
         </div>
 

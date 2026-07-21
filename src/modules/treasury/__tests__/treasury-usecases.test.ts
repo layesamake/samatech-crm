@@ -96,4 +96,30 @@ describe('Treasury UseCases', () => {
     expect(forecast.forecastBalanceMinor).toBe(70000); // 50000 + 20000
     expect(forecast.items).toHaveLength(1);
   });
+
+  it('permet de modifier et d’archiver un compte', async () => {
+    const accId = await accountUseCase.createAccount({
+      name: 'Compte Epargne', type: 'BANK', currency: 'XOF', currencyScale: 0, openingBalanceMinor: 25000, openingDate: '2023-01-01'
+    });
+
+    // Modification
+    await accountUseCase.updateAccount(accId, {
+      name: 'Compte Courant',
+      note: 'Note modifiée'
+    });
+
+    const modified = await accountUseCase.getAccount(accId);
+    expect(modified?.name).toBe('Compte Courant');
+    expect(modified?.note).toBe('Note modifiée');
+    expect(modified?.type).toBe('BANK'); // inchangé
+
+    // Archivage
+    await accountUseCase.archiveAccount(accId);
+    const archived = await accountUseCase.getAccount(accId);
+    expect(archived?.archivedAt).toBeDefined();
+
+    // Doit être exclu de la liste active
+    const activeAccounts = await accountUseCase.listAccountsWithBalance();
+    expect(activeAccounts.find(a => a.id === accId)).toBeUndefined();
+  });
 });
