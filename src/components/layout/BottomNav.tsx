@@ -57,6 +57,7 @@ export function BottomNav() {
   ];
 
   const moreLinks = [
+    { href: '/invoices', label: 'Factures', icon: FileText },
     { href: '/commercial-documents', label: 'Ventes', icon: FileText },
     { href: '/prospects', label: 'Prospects', icon: Users },
     { href: '/payments', label: 'Paiements', icon: CreditCard },
@@ -94,11 +95,6 @@ export function BottomNav() {
           <Link href="/clients" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/clients') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
             <Users className={cn("h-5 w-5", pathname?.startsWith('/clients') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
             <span className="text-[10px] font-medium">Clients</span>
-          </Link>
-
-          <Link href="/invoices" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/invoices') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
-            <FileText className={cn("h-5 w-5", pathname?.startsWith('/invoices') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
-            <span className="text-[10px] font-medium">Factures</span>
           </Link>
 
           <Sheet open={open} onOpenChange={setOpen}>
