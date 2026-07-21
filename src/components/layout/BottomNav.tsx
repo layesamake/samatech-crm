@@ -96,6 +96,11 @@ export function BottomNav() {
             <span className="text-[10px] font-medium">Clients</span>
           </Link>
 
+          <Link href="/invoices" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/invoices') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
+            <FileText className={cn("h-5 w-5", pathname?.startsWith('/invoices') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
+            <span className="text-[10px] font-medium">Factures</span>
+          </Link>
+
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger className="flex flex-col items-center justify-center w-16 h-full gap-1 text-muted-foreground hover:text-foreground transition-transform active:scale-95">
               <Menu className="h-5 w-5 stroke-2" />
