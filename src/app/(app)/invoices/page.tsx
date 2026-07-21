@@ -13,13 +13,13 @@ import { cn } from '@/lib/utils';
 const InvoiceCard = memo(({ invoiceAggr, router }: { invoiceAggr: InvoiceAggregate, router: any }) => {
   const { invoice, clientName } = invoiceAggr;
   
-  const formatDate = (dateStr: string | null) => {
+  const formatDate = (dateStr: string | null | undefined) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
     return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
   };
   
-  const isOverdue = invoice.status === 'EN_RETARD' || (invoice.dueDate && new Date(invoice.dueDate) < new Date() && invoice.status !== 'PAYEE');
+  const isOverdue = Boolean(invoice.dueDate && new Date(invoice.dueDate) < new Date() && invoice.status !== 'PAYEE' && invoice.status !== 'ANNULEE');
   const displayStatus = isOverdue ? 'EN RETARD' : invoice.status;
 
   return (
