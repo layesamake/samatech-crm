@@ -12,7 +12,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, CloudUpload } from 'lucide-react';
+import { loadGoogleIdentityClient, requestGoogleDriveAccessToken, uploadFileToGoogleDrive } from '@/lib/google-drive';
 
 const backupUseCase = new ManageBackupsUseCase(
   new DexieBackupRepository(),
@@ -50,8 +51,12 @@ export default function BackupSettings() {
   const [importPassword, setImportPassword] = useState('');
   const [showImportPassword, setShowImportPassword] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [googleDriveBusy, setGoogleDriveBusy] = useState(false);
 
-  useEffect(() => { void backupUseCase.getLastExportedAt().then(setLastExportedAt); }, []);
+  useEffect(() => { 
+    void backupUseCase.getLastExportedAt().then(setLastExportedAt); 
+    void loadGoogleIdentityClient().catch((err) => console.warn(err));
+  }, []);
 
   const exportEncryptedBackup = async () => {
     if (exportPassword.length < 12) {
@@ -69,6 +74,35 @@ export default function BackupSettings() {
     } catch {
       setMessage('Erreur lors de la création de la sauvegarde chiffrée.');
     } finally { setBusy(false); }
+  };
+
+  const exportToGoogleDrive = async () => {
+    if (exportPassword.length < 12) {
+      setMessage('Le mot de passe doit contenir au moins 12 caractères.');
+      return;
+    }
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      setMessage('La configuration Google Drive est manquante (NEXT_PUBLIC_GOOGLE_CLIENT_ID).');
+      return;
+    }
+
+    setGoogleDriveBusy(true);
+    setMessage('');
+    try {
+      const token = await requestGoogleDriveAccessToken(clientId);
+      const prepared = await backupUseCase.prepareEncryptedExport(exportPassword);
+      await uploadFileToGoogleDrive(token, prepared.text, prepared.filename);
+      
+      await backupUseCase.confirmExported(prepared as unknown as PreparedBackup);
+      setLastExportedAt(prepared.envelope.exportedAt);
+      setMessage('Sauvegarde chiffrée uploadée avec succès sur votre Google Drive.');
+      setExportPassword('');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Erreur lors de l’upload sur Google Drive.');
+    } finally {
+      setGoogleDriveBusy(false);
+    }
   };
 
   const exportClearBackup = async () => {
@@ -173,9 +207,15 @@ export default function BackupSettings() {
             <p className="text-xs text-muted-foreground">Recommandation : utilisez une phrase d&apos;au moins quatre mots.</p>
           </div>
 
-          <Button disabled={busy || exportPassword.length < 12} onClick={exportEncryptedBackup} className="w-full sm:w-auto">
-            {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Exporter (.samtech-backup)
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button disabled={busy || googleDriveBusy || exportPassword.length < 12} onClick={exportEncryptedBackup} className="w-full sm:w-auto">
+              {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Exporter (.samtech-backup)
+            </Button>
+            
+            <Button variant="outline" disabled={busy || googleDriveBusy || exportPassword.length < 12} onClick={exportToGoogleDrive} className="w-full sm:w-auto border-blue-200 text-blue-700 hover:bg-blue-50">
+              {googleDriveBusy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CloudUpload className="mr-2 h-4 w-4" />} Sauvegarder sur Google Drive
+            </Button>
+          </div>
           
           <div className="pt-4">
             <Button variant="link" size="sm" onClick={() => setShowAdvanced(!showAdvanced)} className="px-0">

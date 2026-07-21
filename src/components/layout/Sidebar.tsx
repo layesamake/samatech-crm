@@ -22,26 +22,26 @@ interface SidebarProps {
   onClose?: () => void
 }
 
+const links = [
+  { href: '/', label: 'Tableau de bord', icon: Home },
+  { href: '/prospects', label: 'Prospects', icon: Users },
+  { href: '/clients', label: 'Clients', icon: Users },
+  { href: '/commercial-documents', label: 'Ventes', icon: FileText },
+  { href: '/invoices', label: 'Factures', icon: FileText },
+  { href: '/payments', label: 'Paiements', icon: CreditCard },
+  { href: '/expenses', label: 'Dépenses', icon: Receipt },
+  { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
+  { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
+  { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },
+  { href: '/statistics', label: 'Statistiques', icon: BarChart },
+  { href: '/reports', label: 'Rapports', icon: PieChart },
+  { href: '/follow-ups', label: 'Relances', icon: Repeat },
+  { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
+  { href: '/settings', label: 'Paramètres', icon: Settings },
+]
+
 export function Sidebar({ onClose }: SidebarProps) {
   const pathname = usePathname()
-
-  const links = [
-    { href: '/', label: 'Tableau de bord', icon: Home },
-    { href: '/prospects', label: 'Prospects', icon: Users },
-    { href: '/clients', label: 'Clients', icon: Users },
-    { href: '/commercial-documents', label: 'Ventes', icon: FileText },
-    { href: '/invoices', label: 'Factures', icon: FileText },
-    { href: '/payments', label: 'Paiements', icon: CreditCard },
-    { href: '/expenses', label: 'Dépenses', icon: Receipt },
-    { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
-    { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
-    { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },
-    { href: '/statistics', label: 'Statistiques', icon: BarChart },
-    { href: '/reports', label: 'Rapports', icon: PieChart },
-    { href: '/follow-ups', label: 'Relances', icon: Repeat },
-    { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
-    { href: '/settings', label: 'Paramètres', icon: Settings },
-  ]
 
   return (
     <div className="flex flex-col h-full bg-background border-r">

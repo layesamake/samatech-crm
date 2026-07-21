@@ -27,6 +27,28 @@ import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 
+const primaryLinks = [
+  { href: '/', label: 'Accueil', icon: Home },
+  { href: '/clients', label: 'Clients', icon: Users },
+  { href: '/invoices', label: 'Factures', icon: FileText },
+];
+
+const moreLinks = [
+  { href: '/invoices', label: 'Factures', icon: FileText },
+  { href: '/commercial-documents', label: 'Ventes', icon: FileText },
+  { href: '/prospects', label: 'Prospects', icon: Users },
+  { href: '/payments', label: 'Paiements', icon: CreditCard },
+  { href: '/expenses', label: 'Dépenses', icon: Receipt },
+  { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
+  { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
+  { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },
+  { href: '/statistics', label: 'Statistiques', icon: BarChart },
+  { href: '/reports', label: 'Rapports', icon: PieChart },
+  { href: '/follow-ups', label: 'Relances', icon: Repeat },
+  { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
+  { href: '/settings', label: 'Paramètres', icon: Settings },
+];
+
 export function BottomNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -49,28 +71,6 @@ export function BottomNav() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
-
-  const primaryLinks = [
-    { href: '/', label: 'Accueil', icon: Home },
-    { href: '/clients', label: 'Clients', icon: Users },
-    { href: '/invoices', label: 'Factures', icon: FileText },
-  ];
-
-  const moreLinks = [
-    { href: '/invoices', label: 'Factures', icon: FileText },
-    { href: '/commercial-documents', label: 'Ventes', icon: FileText },
-    { href: '/prospects', label: 'Prospects', icon: Users },
-    { href: '/payments', label: 'Paiements', icon: CreditCard },
-    { href: '/expenses', label: 'Dépenses', icon: Receipt },
-    { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
-    { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
-    { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },
-    { href: '/statistics', label: 'Statistiques', icon: BarChart },
-    { href: '/reports', label: 'Rapports', icon: PieChart },
-    { href: '/follow-ups', label: 'Relances', icon: Repeat },
-    { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
-    { href: '/settings', label: 'Paramètres', icon: Settings },
-  ];
 
   return (
     <>

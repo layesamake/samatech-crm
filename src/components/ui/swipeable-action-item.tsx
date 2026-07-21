@@ -26,19 +26,32 @@ export function SwipeableActionItem({
   rightLabel,
   rightBgColor = 'bg-red-600',
 }: SwipeableActionItemProps) {
-  const [offset, setOffset] = useState(0);
-  const [isSwiping, setIsSwiping] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
   const startX = useRef(0);
   const currentX = useRef(0);
+  const isSwipingRef = useRef(false);
+  const offsetRef = useRef(0);
   const SWIPE_THRESHOLD = 80;
+
+  const updateTransform = (x: number, animate: boolean = false) => {
+    if (contentRef.current) {
+      contentRef.current.style.transition = animate ? 'transform 0.2s ease-out' : 'none';
+      contentRef.current.style.transform = `translate3d(${x}px, 0, 0)`;
+      if (x !== 0) {
+        contentRef.current.classList.add('shadow-xl');
+      } else {
+        contentRef.current.classList.remove('shadow-xl');
+      }
+    }
+  };
 
   const handleStart = (clientX: number) => {
     startX.current = clientX;
-    setIsSwiping(true);
+    isSwipingRef.current = true;
   };
 
   const handleMove = (clientX: number) => {
-    if (!isSwiping) return;
+    if (!isSwipingRef.current) return;
     currentX.current = clientX;
     const diff = currentX.current - startX.current;
     
@@ -46,17 +59,24 @@ export function SwipeableActionItem({
     if (diff < 0 && !onSwipeLeft) return;
     
     const boundedDiff = Math.max(Math.min(diff, 100), -100);
-    setOffset(boundedDiff);
+    offsetRef.current = boundedDiff;
+    
+    // Direct DOM manipulation
+    updateTransform(boundedDiff, false);
   };
 
   const handleEnd = () => {
-    setIsSwiping(false);
+    isSwipingRef.current = false;
+    const offset = offsetRef.current;
+    
     if (offset > SWIPE_THRESHOLD && onSwipeRight) {
       onSwipeRight();
     } else if (offset < -SWIPE_THRESHOLD && onSwipeLeft) {
       onSwipeLeft();
     }
-    setOffset(0);
+    
+    offsetRef.current = 0;
+    updateTransform(0, true);
   };
 
   return (
@@ -79,19 +99,16 @@ export function SwipeableActionItem({
 
       {/* Foreground Content */}
       <div 
-        className={cn(
-          "relative z-10 bg-card text-card-foreground w-full h-full rounded-xl transition-transform will-change-transform cursor-grab active:cursor-grabbing", 
-          isSwiping ? "duration-0" : "duration-200 ease-out",
-          offset !== 0 && "shadow-xl"
-        )}
-        style={{ transform: `translateX(${offset}px)` }}
+        ref={contentRef}
+        className="relative z-10 bg-card text-card-foreground w-full h-full rounded-xl will-change-transform cursor-grab active:cursor-grabbing"
+        style={{ transform: `translate3d(0px, 0, 0)` }}
         onTouchStart={(e) => handleStart(e.touches[0].clientX)}
         onTouchMove={(e) => handleMove(e.touches[0].clientX)}
         onTouchEnd={handleEnd}
         onMouseDown={(e) => handleStart(e.clientX)}
         onMouseMove={(e) => handleMove(e.clientX)}
         onMouseUp={handleEnd}
-        onMouseLeave={() => isSwiping && handleEnd()}
+        onMouseLeave={() => isSwipingRef.current && handleEnd()}
       >
         {children}
       </div>
