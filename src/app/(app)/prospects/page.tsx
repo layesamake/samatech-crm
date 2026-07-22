@@ -3,7 +3,7 @@
 import { useState, useDeferredValue, memo } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
+import { Plus, Filter, X } from "lucide-react";
 import { DexieProspectRepository } from "@/modules/prospects/infrastructure/dexie-prospect-repository";
 import { ListProspectsUseCase } from "@/modules/prospects/application/list-prospects";
 import { Prospect } from "@/modules/prospects/domain/prospect";
@@ -42,6 +42,8 @@ export default function ProspectsPage() {
   const [showArchived, setShowArchived] = useState(false);
   const [locationId, setLocationId] = useState("");
   const [productId, setProductId] = useState("");
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   const locations = useLiveQuery(() => locationRepository.getAllActive(), []) ?? [];
   const products = useLiveQuery(() => catalogRepository.getAllProductsActive(), []) ?? [];
 
@@ -57,91 +59,162 @@ export default function ProspectsPage() {
     [deferredSearch, filterStatus, showArchived, locationId, productId, limit]
   );
 
+  const hasActiveFilters = Boolean(search || filterStatus || locationId || productId || showArchived);
+
+  const clearFilters = () => {
+    setSearch("");
+    setFilterStatus("");
+    setLocationId("");
+    setProductId("");
+    setShowArchived(false);
+  };
+
   return (
-    <div className="flex flex-col h-full bg-muted/50 min-h-screen">
-      {/* Header Mobile-First */}
-      <header className="sticky top-0 z-10 bg-card text-card-foreground border-b px-4 py-3 flex flex-col gap-3 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-foreground">Prospects</h1>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="relative sm:col-span-2 lg:col-span-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-            <input
-              aria-label="Rechercher un prospect par nom ou numéro"
-              type="text"
-              placeholder="Rechercher par nom, numéro..."
-              className="w-full bg-muted border-transparent focus:bg-card text-card-foreground focus:border-blue-500 rounded-lg pl-9 pr-4 py-2 text-sm outline-none transition-all"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <select 
-            aria-label="Filtrer par statut"
-            className="bg-muted border-transparent rounded-lg px-3 py-2 text-sm outline-none"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+    <div className="relative flex flex-col h-full bg-muted/50 min-h-screen">
+      <div className="flex-1 max-w-6xl w-full mx-auto p-4 pb-24 md:p-8 space-y-5">
+        {/* Header Mobile-First */}
+        <header className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-bold text-foreground">Prospects</h1>
+          
+          {/* Filter toggle button */}
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((prev) => !prev)}
+            aria-label={filtersOpen ? 'Fermer les filtres' : 'Ouvrir les filtres'}
+            aria-expanded={filtersOpen}
+            className="relative flex h-11 w-11 items-center justify-center rounded-full border bg-card text-card-foreground transition-colors hover:bg-muted"
           >
-            <option value="">Tous</option>
-            <option value="NOUVEAU">Nouveaux</option>
-            <option value="CONTACTE">Contactés</option>
-            <option value="INTERESSE">Intéressés</option>
-            <option value="A_RELANCER">À Relancer</option>
-            <option value="NEGOCIATION">Négociation</option>
-          </select>
-          <select aria-label="Filtrer par localité" className="bg-muted rounded-lg px-3 py-2 text-sm" value={locationId} onChange={(e) => setLocationId(e.target.value)}><option value="">Toutes localités</option>{locations.map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}</select>
-          <select aria-label="Filtrer par produit" className="bg-muted rounded-lg px-3 py-2 text-sm" value={productId} onChange={(e) => setProductId(e.target.value)}><option value="">Tous produits</option>{products.map((product) => <option key={product.id} value={product.id}>{product.name}</option>)}</select>
-          <label className="flex items-center gap-2 text-sm text-muted-foreground bg-muted px-3 py-2 rounded-lg cursor-pointer hover:bg-slate-200 transition-colors">
-            <input 
-              type="checkbox" 
-              checked={showArchived} 
-              onChange={(e) => setShowArchived(e.target.checked)}
-              className="rounded text-blue-600"
-            />
-            Archives
-          </label>
+            {filtersOpen ? <X className="h-5 w-5" /> : <Filter className="h-5 w-5" />}
+            {hasActiveFilters && !filtersOpen && (
+              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-blue-600" />
+            )}
+          </button>
+        </header>
+
+        {/* Collapsible filters panel */}
+        <div
+          className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+            filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+          }`}
+        >
+          <div className="overflow-hidden">
+            <section
+              className="space-y-3 rounded-xl border bg-card p-4"
+              aria-label="Filtres de prospects"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-muted-foreground">Filtres</span>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                  >
+                    Réinitialiser
+                  </button>
+                )}
+              </div>
+
+              <input
+                aria-label="Rechercher un prospect par nom ou numéro"
+                type="text"
+                placeholder="Rechercher par nom, numéro..."
+                className="w-full h-11 bg-transparent border rounded-md px-3 text-sm outline-none transition-all"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <select 
+                  aria-label="Filtrer par statut"
+                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm outline-none"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <option value="">Tous les statuts</option>
+                  <option value="NOUVEAU">Nouveaux</option>
+                  <option value="CONTACTE">Contactés</option>
+                  <option value="INTERESSE">Intéressés</option>
+                  <option value="A_RELANCER">À Relancer</option>
+                  <option value="NEGOCIATION">Négociation</option>
+                </select>
+                <select 
+                  aria-label="Filtrer par localité" 
+                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm" 
+                  value={locationId} 
+                  onChange={(e) => setLocationId(e.target.value)}
+                >
+                  <option value="">Toutes les localités</option>
+                  {locations.map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}
+                </select>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
+                <select 
+                  aria-label="Filtrer par produit" 
+                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm" 
+                  value={productId} 
+                  onChange={(e) => setProductId(e.target.value)}
+                >
+                  <option value="">Tous les produits</option>
+                  {products.map((product) => <option key={product.id} value={product.id}>{product.name}</option>)}
+                </select>
+                
+                <label className="flex items-center gap-2 h-11 text-sm text-foreground bg-transparent border px-3 rounded-md cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={showArchived} 
+                    onChange={(e) => setShowArchived(e.target.checked)}
+                    className="rounded text-blue-600"
+                  />
+                  Afficher les archives
+                </label>
+              </div>
+            </section>
+          </div>
         </div>
-      </header>
 
-      {/* Liste des prospects */}
-      <main className="flex-1 p-4 pb-24 overflow-y-auto">
-        {!prospects ? (
-          <div className="flex justify-center p-8 text-slate-400">Chargement...</div>
-        ) : prospects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center p-8 text-center bg-card text-card-foreground rounded-xl border border-dashed border-border">
-            <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mb-3">
-              <Plus className="h-6 w-6 text-blue-500" />
+        {/* Liste des prospects */}
+        <main>
+          {!prospects ? (
+            <div className="flex justify-center p-8 text-slate-400">Chargement...</div>
+          ) : prospects.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-8 text-center bg-card text-card-foreground rounded-xl border border-dashed border-border">
+              <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mb-3">
+                <Plus className="h-6 w-6 text-blue-500" />
+              </div>
+              <h3 className="font-semibold text-foreground mb-1">Aucun prospect</h3>
+              <p className="text-sm text-muted-foreground mb-4 max-w-xs">
+                Commencez par ajouter votre premier prospect pour suivre vos opportunités.
+              </p>
+              <Link href="/prospects/nouveau">
+                <Button>Créer un prospect</Button>
+              </Link>
             </div>
-            <h3 className="font-semibold text-foreground mb-1">Aucun prospect</h3>
-            <p className="text-sm text-muted-foreground mb-4 max-w-xs">
-              Commencez par ajouter votre premier prospect pour suivre vos opportunités.
-            </p>
-            <Link href="/prospects/nouveau">
-              <Button>Créer un prospect</Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {prospects.map((p: Prospect) => (
-              <ProspectCard key={p.contact.id} p={p} />
-            ))}
-          </div>
-        )}
-        
-        {prospects && prospects.length >= limit && (
-          <div className="mt-6 flex justify-center pb-8">
-            <Button variant="outline" onClick={() => setLimit(l => l + 50)}>Charger plus</Button>
-          </div>
-        )}
-      </main>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {prospects.map((p: Prospect) => (
+                <ProspectCard key={p.contact.id} p={p} />
+              ))}
+            </div>
+          )}
+          
+          {prospects && prospects.length >= limit && (
+            <div className="mt-6 flex justify-center pb-8">
+              <Button variant="outline" onClick={() => setLimit(l => l + 50)}>Charger plus</Button>
+            </div>
+          )}
+        </main>
+      </div>
 
-      {/* FAB Mobile – masqué quand la liste est vide (le CTA empty-state suffit) */}
-      {prospects && prospects.length > 0 && (
-        <Link href="/prospects/nouveau" aria-label="Créer un prospect" className="fixed bottom-24 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-700 active:scale-95">
-            <Plus className="h-6 w-6" />
-        </Link>
-      )}
+      {/* FAB : Créer un prospect */}
+      <Link 
+        href="/prospects/nouveau" 
+        aria-label="Créer un prospect" 
+        className="fixed bottom-20 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-transform hover:scale-110 active:scale-95 md:bottom-8 md:right-8"
+      >
+        <Plus className="h-6 w-6" />
+      </Link>
     </div>
   );
 }

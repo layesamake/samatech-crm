@@ -73,7 +73,7 @@ export function CategoryForm({
           </div>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-background border-t">
+        <div className="pt-4 pb-8">
           <div className="max-w-lg mx-auto">
             <button 
               type="submit" 
