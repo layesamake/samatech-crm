@@ -82,7 +82,7 @@ export default function ProspectsPage() {
             onClick={() => setFiltersOpen((prev) => !prev)}
             aria-label={filtersOpen ? 'Fermer les filtres' : 'Ouvrir les filtres'}
             aria-expanded={filtersOpen}
-            className="relative flex h-11 w-11 items-center justify-center rounded-full border bg-card text-card-foreground transition-colors hover:bg-muted"
+            className="ml-auto relative flex h-11 w-11 items-center justify-center rounded-full border bg-card text-card-foreground transition-colors hover:bg-muted"
           >
             {filtersOpen ? <X className="h-5 w-5" /> : <Filter className="h-5 w-5" />}
             {hasActiveFilters && !filtersOpen && (

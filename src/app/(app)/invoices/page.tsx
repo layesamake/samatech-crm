@@ -111,7 +111,7 @@ export default function InvoicesPage() {
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold hidden md:block">Factures</h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-4">
             <button className="p-2 border rounded-xl hover:bg-muted" aria-label="Trier">
               <SlidersHorizontal className="w-5 h-5" />
             </button>
