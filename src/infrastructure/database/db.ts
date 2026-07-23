@@ -16,8 +16,9 @@ import { TreasuryAccountRecord, TreasuryAllocationRecord, TreasuryOperationRecor
 import { ExpenseBudgetRecord } from '../../modules/treasury/domain/budget';
 import { TreasuryForecastItemRecord } from '../../modules/treasury/domain/forecast';
 import { CommercialDocumentRecord, CommercialDocumentLineRecord, CommercialDocumentLinkRecord } from '../../modules/commercial-documents/domain/commercial-document';
+import { OpportunityRecord } from '../../modules/opportunities/domain/opportunity';
 
-export const CURRENT_SCHEMA_VERSION = 13;
+export const CURRENT_SCHEMA_VERSION = 14;
 
 export class SamtechCRMDatabase extends Dexie {
   contacts!: Dexie.Table<ContactRecord, string>;
@@ -52,6 +53,7 @@ export class SamtechCRMDatabase extends Dexie {
   commercialDocuments!: Dexie.Table<CommercialDocumentRecord, string>;
   commercialDocumentLines!: Dexie.Table<CommercialDocumentLineRecord, string>;
   commercialDocumentLinks!: Dexie.Table<CommercialDocumentLinkRecord, string>;
+  opportunities!: Dexie.Table<OpportunityRecord, string>;
 
   constructor(name = 'SamtechCRMDatabase') {
     super(name);
@@ -160,7 +162,24 @@ export class SamtechCRMDatabase extends Dexie {
         await tx.table('invoiceLines').bulkDelete(linesToDelete);
       }
     });
+
+    this.version(14).stores({
+      opportunities: 'id, contactId, stage, status, expectedCloseDate, archivedAt, [contactId+status], [stage+status]'
+    });
   }
 }
 
-export const db = new SamtechCRMDatabase();
+// Lecture synchrone au module load pour garantir que db est bien initialisé avec la bonne base.
+let activeDbName = 'SamtechCRM_Uninitialized'; // Pas de fallback dangereux vers la V1
+if (typeof window !== 'undefined') {
+  const storedDb = localStorage.getItem('samtech_active_business_db');
+  if (storedDb) {
+    activeDbName = storedDb;
+  }
+}
+
+export let db = new SamtechCRMDatabase(activeDbName);
+
+export function setDb(newDb: SamtechCRMDatabase) {
+  db = newDb;
+}

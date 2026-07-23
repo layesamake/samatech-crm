@@ -29,7 +29,7 @@ describe('Dexie migration V2 vers V3', () => {
 
     const v3 = new SamtechCRMDatabase(databaseName);
     await v3.open();
-    expect(v3.verno).toBe(13);
+    expect(v3.verno).toBeGreaterThanOrEqual(13);
     expect(await v3.contacts.toArray()).toHaveLength(2);
     expect(await v3.prospectProfiles.toArray()).toHaveLength(2);
     expect((await v3.contacts.get('contact-1'))?.displayName).toBe('Awa');

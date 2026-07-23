@@ -12,6 +12,6 @@ describe('Tableau de bord', () => {
 
   it('affiche le tableau de bord', async () => {
     render(<Home />);
-    await waitFor(() => expect(screen.getByText('Bienvenue sur SAMTECH CRM')).toBeInTheDocument());
+    expect(await screen.findByText('Bienvenue sur SAMTECH CRM', {}, { timeout: 3000 })).toBeInTheDocument();
   });
 });

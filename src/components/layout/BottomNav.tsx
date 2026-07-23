@@ -20,7 +20,8 @@ import {
   DollarSign,
   PieChart,
   X,
-  UserPlus
+  UserPlus,
+  Briefcase
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
@@ -35,6 +36,7 @@ const primaryLinks = [
 ];
 
 const moreLinks = [
+  { href: '/pipeline', label: 'Pipeline', icon: Briefcase },
   { href: '/commercial-documents', label: 'Ventes', icon: FileText },
   { href: '/payments', label: 'Paiements', icon: CreditCard },
   { href: '/expenses', label: 'Dépenses', icon: Receipt },

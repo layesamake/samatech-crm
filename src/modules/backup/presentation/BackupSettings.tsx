@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useBusiness } from '@/components/providers/BusinessProvider';
 import { Eye, EyeOff, Loader2, CloudUpload } from 'lucide-react';
 import { loadGoogleIdentityClient, requestGoogleDriveAccessToken, uploadFileToGoogleDrive } from '@/lib/google-drive';
 
@@ -35,10 +36,12 @@ function triggerDownload(text: string, filename: string): void {
 
 export default function BackupSettings() {
   const session = useSecuritySession();
+  const { activeBusiness } = useBusiness();
   const [lastExportedAt, setLastExportedAt] = useState<string | null>(null);
   const [envelope, setEnvelope] = useState<BackupEnvelope | null>(null);
   const [preview, setPreview] = useState<BackupPreview | null>(null);
   const [confirmation, setConfirmation] = useState('');
+  const [crossBusinessConsent, setCrossBusinessConsent] = useState(false);
   const [pin, setPin] = useState('');
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -65,7 +68,7 @@ export default function BackupSettings() {
     }
     setBusy(true); setMessage('');
     try {
-      const prepared = await backupUseCase.prepareEncryptedExport(exportPassword);
+      const prepared = await backupUseCase.prepareEncryptedExport(exportPassword, activeBusiness?.id, activeBusiness?.name);
       triggerDownload(prepared.text, prepared.filename);
       await backupUseCase.confirmExported(prepared as unknown as PreparedBackup); // using envelope structure
       setLastExportedAt(prepared.envelope.exportedAt);
@@ -91,7 +94,7 @@ export default function BackupSettings() {
     setMessage('');
     try {
       const token = await requestGoogleDriveAccessToken(clientId);
-      const prepared = await backupUseCase.prepareEncryptedExport(exportPassword);
+      const prepared = await backupUseCase.prepareEncryptedExport(exportPassword, activeBusiness?.id, activeBusiness?.name);
       await uploadFileToGoogleDrive(token, prepared.text, prepared.filename);
       
       await backupUseCase.confirmExported(prepared as unknown as PreparedBackup);
@@ -108,13 +111,13 @@ export default function BackupSettings() {
   const exportClearBackup = async () => {
     setBusy(true); setMessage('');
     try {
-      const prepared = await backupUseCase.prepareExport();
+      const prepared = await backupUseCase.prepareExport(activeBusiness?.id, activeBusiness?.name);
       triggerDownload(prepared.text, prepared.filename);
       await backupUseCase.confirmExported(prepared);
       setLastExportedAt(prepared.envelope.exportedAt);
-      setMessage('Sauvegarde JSON en clair créée.');
+      setMessage('Sauvegarde JSON non chiffrée téléchargée avec succès.');
     } catch {
-      setMessage('Erreur lors de la création de la sauvegarde en clair.');
+      setMessage('Erreur lors de la création de la sauvegarde.');
     } finally { setBusy(false); }
   };
 
@@ -148,6 +151,7 @@ export default function BackupSettings() {
     try {
       const result = await backupUseCase.inspectEncrypted(fileText, importPassword);
       setEnvelope(result.envelope); setPreview(result.preview);
+      setCrossBusinessConsent(false);
       setMessage('Mot de passe correct. Sauvegarde déchiffrée et valide.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Mot de passe incorrect ou fichier altéré.');
@@ -155,7 +159,8 @@ export default function BackupSettings() {
   };
 
   const restore = async () => {
-    if (!envelope || confirmation !== REPLACE_PHRASE) return;
+    const isCrossBusiness = preview?.businessId && preview.businessId !== activeBusiness?.id;
+    if (!envelope || confirmation !== REPLACE_PHRASE || (isCrossBusiness && !crossBusinessConsent)) return;
     setBusy(true); setMessage('');
     try {
       await backupUseCase.restore(envelope, pin || undefined);
@@ -170,8 +175,8 @@ export default function BackupSettings() {
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-16">
       <PageHeader 
-        title="Sauvegarde et restauration" 
-        description="Toutes les opérations sont locales et restent disponibles hors connexion."
+        title={`Sauvegarde et restauration : ${activeBusiness?.name || 'Votre espace'}`} 
+        description={`Toutes les opérations sont locales et restent disponibles hors connexion. Les données exportées ou importées concernent uniquement cet espace professionnel.`}
       />
       {message && <div data-testid="backup-message" role="status" className="p-3 text-sm rounded-md bg-secondary text-secondary-foreground">{message}</div>}
       
@@ -234,7 +239,7 @@ export default function BackupSettings() {
       <Card>
         <CardHeader>
           <CardTitle>Restaurer une sauvegarde</CardTitle>
-          <CardDescription>La restauration remplacera toutes les données métier actuelles de cet appareil.</CardDescription>
+          <CardDescription>La restauration remplacera toutes les données actuelles de l'espace <strong>{activeBusiness?.name}</strong> sur cet appareil.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Label htmlFor="backup-file">Fichier de sauvegarde (.samtech-backup ou .json)</Label>
@@ -271,7 +276,25 @@ export default function BackupSettings() {
                 <div><dt className="text-muted-foreground">Date</dt><dd>{new Date(preview.exportedAt).toLocaleString('fr-FR')}</dd></div>
                 <div><dt className="text-muted-foreground">Format</dt><dd>v{preview.formatVersion}</dd></div>
                 <div><dt className="text-muted-foreground">Total Enregistrements</dt><dd>{preview.totalRecords}</dd></div>
+                {preview.businessName && <div><dt className="text-muted-foreground">Espace Source</dt><dd>{preview.businessName}</dd></div>}
               </dl>
+              
+              {preview.businessId && preview.businessId !== activeBusiness?.id && (
+                <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive mt-4">
+                  <h4 className="font-semibold mb-1">⚠️ Avertissement de sécurité</h4>
+                  <p>Cette sauvegarde provient d'un espace différent ({preview.businessName || 'Inconnu'}). La restaurer ici écrasera les données actuelles de l'espace <strong>{activeBusiness?.name}</strong> avec celles de <strong>{preview.businessName || 'Inconnu'}</strong>.</p>
+                  <label className="flex items-center gap-2 mt-3 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={crossBusinessConsent} 
+                      onChange={(e) => setCrossBusinessConsent(e.target.checked)} 
+                      className="rounded border-destructive"
+                    />
+                    <span className="font-medium">Je comprends et je confirme vouloir écraser cet espace avec une sauvegarde provenant d'un autre espace.</span>
+                  </label>
+                </div>
+              )}
+
               <div className="border-t pt-3 space-y-3">
                 <div className="space-y-2">
                   <Label>Saisissez exactement « {REPLACE_PHRASE} »</Label>
@@ -286,7 +309,12 @@ export default function BackupSettings() {
                 <Button 
                   variant="destructive" 
                   className="w-full"
-                  disabled={busy || confirmation !== REPLACE_PHRASE || Boolean(session.settings?.pinEnabled && !pin)} 
+                  disabled={
+                    busy || 
+                    confirmation !== REPLACE_PHRASE || 
+                    Boolean(session.settings?.pinEnabled && !pin) ||
+                    Boolean(preview?.businessId && preview.businessId !== activeBusiness?.id && !crossBusinessConsent)
+                  } 
                   onClick={restore}
                 >
                   Remplacer toutes les données métier

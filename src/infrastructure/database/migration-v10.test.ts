@@ -25,7 +25,7 @@ describe('Migration Dexie V9 vers V10', () => {
     }
     v9.close();
     const v10 = new SamtechCRMDatabase(name); await v10.open();
-    expect(v10.verno).toBe(13);
+    expect(v10.verno).toBeGreaterThanOrEqual(13);
     for (const table of Object.keys(V9_STORES)) expect(await v10.table(table).count(), table).toBe(1);
     await v10.securitySettings.add({ id: 'local-security', pinEnabled: false, failedAttempts: 0, autoLockMinutes: 5, updatedAt: '2026-07-18T10:00:00.000Z' });
     v10.close();

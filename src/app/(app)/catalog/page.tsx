@@ -161,6 +161,12 @@ export default function CatalogPage() {
     void loadData();
   }, []);
 
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalContainer(document.getElementById('topbar-actions'));
+  }, []);
+
   const handleArchiveProduct = async (id: string) => {
     if (confirm('Voulez-vous vraiment archiver cet élément ?')) {
       try {
@@ -267,11 +273,7 @@ export default function CatalogPage() {
     );
   }
 
-  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
-  useEffect(() => {
-    setPortalContainer(document.getElementById('topbar-actions'));
-  }, []);
 
   const actionButtons = (
     <div className="flex items-center gap-2">

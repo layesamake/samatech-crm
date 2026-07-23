@@ -34,7 +34,7 @@ export class ManageBackupsUseCase {
     private readonly now: () => Date = () => new Date(),
   ) {}
 
-  async prepareExport(): Promise<PreparedBackup> {
+  async prepareExport(businessId?: string, businessName?: string): Promise<PreparedBackup> {
     const date = this.now();
     const collections = await this.repository.readCollections();
     const recordCount = collections.reduce((sum, collection) => sum + collection.count, 0);
@@ -44,13 +44,19 @@ export class ManageBackupsUseCase {
       appVersion: '0.1.0',
       sourceSchemaVersion: CURRENT_SCHEMA_VERSION,
       exportedAt: date.toISOString(),
-      metadata: { generator: 'SAMTECH CRM' as const, collectionCount: collections.length, recordCount },
+      metadata: { 
+        generator: 'SAMTECH CRM' as const, 
+        collectionCount: collections.length, 
+        recordCount
+      },
       collections,
     };
+    if (businessId) base.metadata.businessId = businessId;
+    if (businessName) base.metadata.businessName = businessName;
     const envelope: BackupEnvelope = { ...base, integrity: { algorithm: 'SHA-256', digest: await calculateIntegrity(base) } };
     const text = JSON.stringify(envelope, null, 2);
     await validateBackupText(text);
-    return { envelope, text, filename: backupFilename(date) };
+    return { envelope, text, filename: backupFilename(date, businessName) };
   }
 
   async confirmExported(prepared: PreparedBackup): Promise<void> {
@@ -92,8 +98,8 @@ export class ManageBackupsUseCase {
     return validateBackupText(clearText);
   }
 
-  async prepareEncryptedExport(password: string): Promise<PreparedEncryptedBackup> {
-    const prepared = await this.prepareExport(); // builds envelope and validates
+  async prepareEncryptedExport(password: string, businessId?: string, businessName?: string): Promise<PreparedEncryptedBackup> {
+    const prepared = await this.prepareExport(businessId, businessName); // builds envelope and validates
     const container = await this.cryptoService.encryptContainer(prepared.text, password);
     const containerText = JSON.stringify(container, null, 2);
     
@@ -105,7 +111,7 @@ export class ManageBackupsUseCase {
       envelope: prepared.envelope,
       container,
       text: containerText,
-      filename: `samtech-crm-backup-${this.now().toISOString().replace(/[:.]/g, '-')}.samtech-backup`
+      filename: backupFilename(this.now(), businessName).replace('.json', '.samtech-backup')
     };
   }
 
@@ -119,6 +125,26 @@ export class ManageBackupsUseCase {
         if (!verified.ok) throw new Error('Le PIN actuel est incorrect ou temporairement bloqué.');
       }
     }
-    await this.repository.replaceCollections(revalidated.envelope, beforeCommit);
+
+    // Règle Produit: Préserver l'identité et les paramètres fonctionnels du business cible
+    // lors d'une restauration (Cross-Business ou non).
+    // Les tables conservées sont : settings, sequences, securitySettings
+    const targetCollections = await this.repository.readCollections();
+    const finalEnvelope = revalidated.envelope;
+    
+    const preserveTables = ['settings', 'sequences', 'securitySettings'];
+    for (const tableName of preserveTables) {
+      const targetTable = targetCollections.find(c => c.name === tableName);
+      if (targetTable) {
+        const idx = finalEnvelope.collections.findIndex(c => c.name === tableName);
+        if (idx !== -1) {
+          finalEnvelope.collections[idx] = targetTable;
+        } else {
+          finalEnvelope.collections.push(targetTable);
+        }
+      }
+    }
+
+    await this.repository.replaceCollections(finalEnvelope, beforeCommit);
   }
 }

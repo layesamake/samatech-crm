@@ -8,7 +8,8 @@ import { CompanyProfile, CompanyProfileSchema } from '../domain/settings';
 import { GetSettingsUseCase } from '../application/get-settings';
 import { UpdateSettingsUseCase } from '../application/update-settings';
 import { DexieSettingsRepository } from '../infrastructure/dexie-settings-repository';
-import { Save } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Loader2, Save } from 'lucide-react';
 
 const repository = new DexieSettingsRepository();
 const getSettingsUseCase = new GetSettingsUseCase(repository);
@@ -32,7 +33,40 @@ export default function CompanySettingsForm() {
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64 = event.target?.result as string;
-      setValue(field, base64, { shouldDirty: true });
+      
+      // Image compression logic
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const compressedBase64 = canvas.toDataURL(file.type || 'image/jpeg', 0.8);
+          setValue(field, compressedBase64, { shouldDirty: true });
+        } else {
+          setValue(field, base64, { shouldDirty: true });
+        }
+      };
+      img.src = base64;
     };
     reader.readAsDataURL(file);
   };
@@ -202,26 +236,32 @@ export default function CompanySettingsForm() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="signature-upload" className="text-sm font-medium">Signature du responsable</label>
-            <div className="flex items-center gap-4">
-               {signatureDataUri ? (
-                 <img src={signatureDataUri} alt="Signature" className="w-16 h-16 object-contain border rounded-md" />
-               ) : (
-                 <div className="w-16 h-16 bg-muted border rounded-md flex items-center justify-center text-xs text-slate-400">Aucune</div>
-               )}
-               <input 
-                 id="signature-upload"
-                 type="file" 
-                 accept="image/png, image/jpeg"
-                 onChange={(e) => handleFileUpload(e, 'managerSignatureDataUri')}
-                 className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-800 dark:text-blue-200 hover:file:bg-blue-100"
-               />
-            </div>
-          </div>
-        </div>
+           <div className="space-y-2">
+             <label htmlFor="signature-upload" className="text-sm font-medium">Signature du responsable</label>
+             <div className="flex items-center gap-4">
+                {signatureDataUri ? (
+                  <img src={signatureDataUri} alt="Signature" className="w-16 h-16 object-contain border rounded-md" />
+                ) : (
+                  <div className="w-16 h-16 bg-muted border rounded-md flex items-center justify-center text-xs text-slate-400">Aucune</div>
+                )}
+                <input 
+                  id="signature-upload"
+                  type="file" 
+                  accept="image/png, image/jpeg"
+                  onChange={(e) => handleFileUpload(e, 'managerSignatureDataUri')}
+                  className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-800 dark:text-blue-200 hover:file:bg-blue-100"
+                />
+             </div>
+           </div>
+         </div>
 
-      </form>
+         <div className="flex justify-end pt-4 border-t">
+           <Button type="submit" disabled={saving}>
+             {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+             Enregistrer les paramètres de l’entreprise
+           </Button>
+         </div>
+       </form>
     </div>
   );
 }

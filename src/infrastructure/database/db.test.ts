@@ -14,7 +14,7 @@ describe('Database (Dexie)', () => {
 
   it('should create database instance correctly', () => {
     expect(db).toBeDefined();
-    expect(db.name).toBe('SamtechCRMDatabase');
+    expect(db.name).toBe('SamtechCRM_Uninitialized');
   });
 
   it('should open and close the database successfully', async () => {

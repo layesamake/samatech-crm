@@ -15,6 +15,7 @@ import { ManageFollowUpsUseCase } from "@/modules/follow-ups/application/manage-
 import { ManageClientsUseCase } from "@/modules/clients/application/manage-clients";
 import ConvertProspectPanel from "@/modules/clients/presentation/ConvertProspectPanel";
 import { WhatsAppMessagePanel } from "@/modules/messages/presentation/WhatsAppMessagePanel";
+import { OpportunityList } from "@/components/opportunities/OpportunityList";
 
 const repository = new DexieProspectRepository();
 const locRepo = new DexieLocationRepository();
@@ -151,6 +152,7 @@ export default function ProspectDetailPage() {
                   <span className="font-medium text-foreground text-right">{interestNames.map((item) => `${item.name}${item.inactive ? ' (Inactif)' : ''}`).join(', ')}</span>
                 </div>
               )}
+
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Téléphone</span>
                 <span className="font-medium text-foreground">{contact.whatsappPhone}</span>
@@ -184,6 +186,10 @@ export default function ProspectDetailPage() {
             </div>
           </div>
         </div>
+
+        <section className="bg-card p-4 rounded-xl shadow-sm border border-border">
+          <OpportunityList contactId={contact.id} />
+        </section>
 
         <section className="rounded-xl border bg-card text-card-foreground p-4">
           <h2 className="font-semibold text-foreground">Chronologie commerciale</h2>

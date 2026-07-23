@@ -43,6 +43,7 @@ async function seedRepresentativeData() {
     commercialDocuments: { id: 'doc1', type: 'QUOTE', status: 'DRAFT', clientProfileId: 'client1', companySnapshot: { displayName: 'C' }, clientSnapshot: { displayName: 'C' }, createdAt: now, updatedAt: now },
     commercialDocumentLines: { id: 'docline1', documentId: 'doc1', position: 1, designationSnapshot: 'L1', quantityScaled: 1, quantityScale: 0, createdAt: now, updatedAt: now },
     commercialDocumentLinks: { id: 'link1', relation: 'QUOTE_TO_PROFORMA', sourceType: 'COMMERCIAL_DOCUMENT', sourceId: 'doc1', targetType: 'COMMERCIAL_DOCUMENT', targetId: 'doc2', createdAt: now },
+    opportunities: { id: 'opp1', contactId: 'contact1', title: 'Opp test', status: 'OPEN', stage: 'NOUVEAU', createdAt: now, updatedAt: now },
   };
   for (const [table, record] of Object.entries(records)) await db.table(table).add(record);
 }
@@ -99,7 +100,7 @@ describe('Sauvegarde et restauration', () => {
     await expect(validateBackupText(JSON.stringify(future))).rejects.toThrow('incompatible');
     const corrupt = structuredClone(prepared.envelope); corrupt.appVersion = 'altérée';
     await expect(validateBackupText(JSON.stringify(corrupt))).rejects.toThrow('intégrité');
-    const missing = structuredClone(prepared.envelope); missing.collections.pop();
+    const missing = structuredClone(prepared.envelope); const popped = missing.collections.pop()!; missing.metadata.collectionCount -= 1; missing.metadata.recordCount -= popped.count; missing.integrity.digest = await calculateIntegrity(missing);
     await expect(validateBackupText(JSON.stringify(missing))).rejects.toThrow('obligatoire');
     const duplicate = structuredClone(prepared.envelope); const contacts = duplicate.collections.find((item) => item.name === 'contacts')!;
     contacts.records.push(structuredClone(contacts.records[0])); contacts.count += 1; duplicate.metadata.recordCount += 1; duplicate.integrity.digest = await calculateIntegrity(duplicate);

@@ -9,6 +9,8 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { ManageInvoicesUseCase } from '@/modules/invoices/application/manage-invoices';
 import { ManageTreasuryAccountsUseCase } from '@/modules/treasury/application/manage-treasury-accounts';
 import { treasuryRepository } from '@/modules/treasury/infrastructure/dexie-treasury-repository';
+import { opportunityUseCases } from '@/modules/opportunities/application/opportunity.usecases';
+import { Briefcase } from 'lucide-react';
 
 const getStatistics = new GetStatisticsUseCase();
 const manageInvoices = new ManageInvoicesUseCase();
@@ -33,6 +35,7 @@ export function MobileDashboard() {
   );
 
   const treasuryAccounts = useLiveQuery(() => accountUseCase.listAccountsWithBalance());
+  const activeOpportunities = useLiveQuery(() => opportunityUseCases.getPipeline());
 
   if (!report) {
     return <div className="p-8 text-center text-muted-foreground animate-pulse">Chargement du tableau de bord...</div>;
@@ -123,6 +126,39 @@ export function MobileDashboard() {
             <p className="text-amber-500 font-medium">En retard</p>
             <p className="font-semibold">{formatMinorExact((overdueReceivable).toString(), primary.currency, primary.scale)}</p>
           </div>
+        </div>
+      </section>
+
+      {/* Pipeline Overview Card */}
+      <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border">
+        <div className="flex justify-between items-start mb-4">
+          <h2 className="font-semibold text-foreground flex items-center gap-2">
+            <Briefcase className="w-4 h-4 text-purple-500" />
+            Pipeline Commercial
+          </h2>
+          <Link href="/pipeline" className="text-xs font-semibold text-primary">Voir tout</Link>
+        </div>
+        <div className="space-y-2">
+          {activeOpportunities === undefined ? (
+            <p className="text-sm text-muted-foreground animate-pulse">Chargement...</p>
+          ) : activeOpportunities.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Aucune opportunité en cours.</p>
+          ) : (
+            <>
+              <p className="text-2xl font-bold mb-2">
+                {formatMinorExact(activeOpportunities.reduce((sum, opp) => sum + BigInt(opp.valueMinor || 0), BigInt(0)).toString(), 'XOF', 0)}
+              </p>
+              <p className="text-sm text-muted-foreground mb-4">Valeur potentielle sur {activeOpportunities.length} opportunité(s)</p>
+              <div className="flex flex-col gap-2">
+                {activeOpportunities.slice(0, 3).map(opp => (
+                  <div key={opp.id} className="flex justify-between items-center text-sm border-b border-border pb-2 last:border-0 last:pb-0">
+                    <span className="font-medium truncate pr-2 flex-1">{opp.title}</span>
+                    <span className="font-semibold shrink-0">{formatMinorExact((opp.valueMinor || 0).toString(), opp.currency || 'XOF', 0)}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </section>
 

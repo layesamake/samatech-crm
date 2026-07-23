@@ -21,7 +21,8 @@ import PageTitleSync from '@/components/PageTitleSync';
 import { AppShell } from '@/components/layout/AppShell';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { NetworkIndicator } from '@/components/layout/NetworkIndicator';
-
+import { BusinessProvider } from '@/components/providers/BusinessProvider';
+import { BusinessGate } from '@/components/providers/BusinessGate';
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,10 +36,14 @@ export default function RootLayout({
           <PWARegister />
           <PageTitleSync />
           <SecurityGate>
-            <a href="#contenu-principal" className="sr-only fixed left-2 top-2 z-[100] rounded-md bg-background px-4 py-3 font-medium shadow focus:not-sr-only">Aller au contenu principal</a>
-            <AppShell>
-              {children}
-            </AppShell>
+            <BusinessProvider>
+              <BusinessGate>
+                <a href="#contenu-principal" className="sr-only fixed left-2 top-2 z-[100] rounded-md bg-background px-4 py-3 font-medium shadow focus:not-sr-only">Aller au contenu principal</a>
+                <AppShell>
+                  {children}
+                </AppShell>
+              </BusinessGate>
+            </BusinessProvider>
           </SecurityGate>
         </ThemeProvider>
       </body>

@@ -38,9 +38,11 @@ export default function SettingsPage() {
         {portalContainer ? createPortal(saveButton, portalContainer) : saveButton}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Link href="/settings/businesses" className="rounded-lg border p-4 hover:bg-muted border-primary/20 bg-primary/5"><span className="font-semibold text-primary">Mes espaces</span><span className="block text-sm text-muted-foreground">Créer, modifier ou archiver des espaces professionnels.</span></Link>
         <Link href="/settings/backup" className="rounded-lg border p-4 hover:bg-muted"><span className="font-semibold">Sauvegarde et restauration</span><span className="block text-sm text-muted-foreground">Exporter, vérifier ou restaurer les données locales.</span></Link>
         <Link href="/settings/security" className="rounded-lg border p-4 hover:bg-muted"><span className="font-semibold">Sécurité locale</span><span className="block text-sm text-muted-foreground">Configurer le PIN et le verrouillage.</span></Link>
+        <Link href="/settings/maintenance" className="rounded-lg border p-4 hover:bg-muted"><span className="font-semibold">Administration & Maintenance</span><span className="block text-sm text-muted-foreground">Diagnostic, nettoyage et résilience du stockage local.</span></Link>
       </div>
 
       <div className="flex space-x-2 border-b">

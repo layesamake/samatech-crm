@@ -13,7 +13,8 @@ import {
   MessageSquare,
   X,
   DollarSign,
-  PieChart
+  PieChart,
+  Briefcase
 } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -25,6 +26,7 @@ interface SidebarProps {
 const links = [
   { href: '/', label: 'Tableau de bord', icon: Home },
   { href: '/prospects', label: 'Prospects', icon: Users },
+  { href: '/pipeline', label: 'Pipeline', icon: Briefcase },
   { href: '/clients', label: 'Clients', icon: Users },
   { href: '/commercial-documents', label: 'Ventes', icon: FileText },
   { href: '/invoices', label: 'Factures', icon: FileText },

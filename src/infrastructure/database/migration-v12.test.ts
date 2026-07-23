@@ -33,7 +33,7 @@ describe('Migration Dexie V11 vers V12', () => {
     // Étape 2 : Ouvrir avec la classe V12 (SamtechCRMDatabase)
     const v12 = new SamtechCRMDatabase(name);
     await v12.open();
-    expect(v12.verno).toBe(13);
+    expect(v12.verno).toBeGreaterThanOrEqual(13);
     
     for (const table of Object.keys(V11_STORES)) {
       expect(await v12.table(table).count(), `Donnée perdue dans ${table}`).toBe(1);

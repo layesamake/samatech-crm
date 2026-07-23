@@ -1,6 +1,6 @@
 export const BACKUP_PRODUCT = 'samtech-crm';
 export const BACKUP_FORMAT_VERSION = 1;
-export const CURRENT_SCHEMA_VERSION = 13;
+export const CURRENT_SCHEMA_VERSION = 14;
 export const MAX_BACKUP_BYTES = 25 * 1024 * 1024;
 export const MAX_BACKUP_RECORDS = 250_000;
 
@@ -34,6 +34,7 @@ export const BUSINESS_COLLECTIONS = [
   'commercialDocuments',
   'commercialDocumentLines',
   'commercialDocumentLinks',
+  'opportunities',
 ] as const;
 
 export type BusinessCollectionName = (typeof BUSINESS_COLLECTIONS)[number];
@@ -61,6 +62,8 @@ export interface BackupEnvelope {
     generator: 'SAMTECH CRM';
     collectionCount: number;
     recordCount: number;
+    businessId?: string;
+    businessName?: string;
   };
   collections: BackupCollection[];
   integrity: BackupIntegrity;
@@ -72,6 +75,8 @@ export interface BackupPreview {
   formatVersion: number;
   totalRecords: number;
   counts: Record<BusinessCollectionName, number>;
+  businessId?: string;
+  businessName?: string;
 }
 
 export class BackupValidationError extends Error {
@@ -240,6 +245,9 @@ export async function validateBackupText(text: string): Promise<{ envelope: Back
     if (!names.has('commercialDocumentLines')) envelope.collections.push({ name: 'commercialDocumentLines', version: 1, count: 0, records: [] });
     if (!names.has('commercialDocumentLinks')) envelope.collections.push({ name: 'commercialDocumentLinks', version: 1, count: 0, records: [] });
   }
+  if (envelope.sourceSchemaVersion < 14) {
+    if (!names.has('opportunities')) envelope.collections.push({ name: 'opportunities', version: 1, count: 0, records: [] });
+  }
 
   const finalNames = new Set(envelope.collections.map((c) => c.name));
   if (finalNames.size !== envelope.collections.length || BUSINESS_COLLECTIONS.some((name) => !finalNames.has(name))) {
@@ -267,12 +275,18 @@ export async function validateBackupText(text: string): Promise<{ envelope: Back
       formatVersion: envelope.formatVersion,
       totalRecords,
       counts,
+      businessId: envelope.metadata.businessId,
+      businessName: envelope.metadata.businessName,
     },
   };
 }
 
-export function backupFilename(date: Date): string {
+export function backupFilename(date: Date, businessName?: string): string {
   const stamp = date.toISOString().slice(0, 16).replace('T', '-').replace(':', '');
+  if (businessName) {
+    const sanitized = businessName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+    return `samtech-crm-${sanitized}-${stamp}.json`;
+  }
   return `samtech-crm-backup-${stamp}.json`;
 }
 

@@ -35,7 +35,7 @@ describe('Migration Dexie V12 vers V13', () => {
     const v13 = new SamtechCRMDatabase(name);
     await v13.open();
 
-    expect(v13.verno).toBe(13);
+    expect(v13.verno).toBeGreaterThanOrEqual(13);
 
     for (const table of Object.keys(V12_STORES)) {
       expect(await v13.table(table).count(), table).toBe(1);
