@@ -43,21 +43,19 @@ export default function ClientDetailPage() {
           </div>
         </div>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <MoreVertical className="h-5 w-5" />
-              <span className="sr-only">Actions</span>
-            </Button>
+          <DropdownMenuTrigger className="inline-flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+            <MoreVertical className="h-5 w-5" />
+            <span className="sr-only">Actions</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link href={`/invoices/new?clientId=${client.profile.id}`} className="w-full cursor-pointer">Créer une facture</Link>
+            <DropdownMenuItem>
+              <Link href={`/invoices/new?clientId=${client.profile.id}`} className="w-full">Créer une facture</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/reports/client/${client.profile.id}`} className="w-full cursor-pointer">Générer un relevé</Link>
+            <DropdownMenuItem>
+              <Link href={`/reports/client/${client.profile.id}`} className="w-full">Générer un relevé</Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/follow-ups/new?contactId=${client.contact.id}`} className="w-full cursor-pointer">Relancer</Link>
+            <DropdownMenuItem>
+              <Link href={`/follow-ups/new?contactId=${client.contact.id}`} className="w-full">Relancer</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
