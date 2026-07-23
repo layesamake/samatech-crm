@@ -6,17 +6,27 @@ import InvoiceSettingsForm from '@/modules/settings/presentation/InvoiceSettings
 import LocationsManager from '@/modules/locations/presentation/LocationsManager';
 import AppearanceSettingsForm from '@/modules/settings/presentation/AppearanceSettingsForm';
 import Link from 'next/link';
+import { Save } from 'lucide-react';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'COMPANY' | 'INVOICE' | 'LOCATIONS' | 'APPEARANCE'>('COMPANY');
 
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Paramètres</h1>
-          <p className="text-muted-foreground">Gérez les préférences de votre entreprise, de facturation et les localités.</p>
+          <h1 className="text-2xl font-bold tracking-tight hidden md:block">Paramètres</h1>
         </div>
+        {(activeTab === 'COMPANY' || activeTab === 'INVOICE') && (
+          <button 
+            type="submit" 
+            form={`${activeTab}-form`}
+            aria-label="Enregistrer les modifications"
+            className="p-2 border rounded-xl hover:bg-muted text-blue-600 bg-blue-500/10 transition-colors"
+          >
+            <Save className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
