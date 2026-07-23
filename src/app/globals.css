@@ -46,6 +46,10 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-fg: var(--nav-fg);
+  --color-nav-muted: var(--nav-muted);
+  --color-nav-active: var(--nav-active);
 }
 
 :root {
@@ -81,6 +85,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.85 0 0);
   --sidebar-ring: oklch(0.432 0.232 264.376);
+  --nav-bg: var(--background);
+  --nav-fg: var(--foreground);
+  --nav-muted: var(--muted-foreground);
+  --nav-active: var(--primary);
 }
 
 .dark {
@@ -115,6 +123,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.623 0.214 259.815);
+  --nav-bg: var(--background);
+  --nav-fg: var(--foreground);
+  --nav-muted: var(--muted-foreground);
+  --nav-active: var(--primary);
 }
 
 .theme-phantom {
@@ -149,6 +161,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.75 0.12 290);
+  --nav-bg: var(--background);
+  --nav-fg: var(--foreground);
+  --nav-muted: var(--muted-foreground);
+  --nav-active: var(--primary);
 }
 
 .theme-chase {
@@ -183,6 +199,10 @@
   --sidebar-accent-foreground: oklch(0.3 0.1 260);
   --sidebar-border: oklch(0.9 0 0);
   --sidebar-ring: oklch(0.3 0.1 260);
+  --nav-bg: rgb(12, 42, 93);
+  --nav-fg: #FFFFFF;
+  --nav-muted: rgba(255, 255, 255, 0.7);
+  --nav-active: #FFFFFF;
 }
 
 @layer base {

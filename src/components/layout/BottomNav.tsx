@@ -74,31 +74,31 @@ export function BottomNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-xl border-t pb-safe lg:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-nav-bg/95 backdrop-blur-xl border-t pb-safe lg:hidden text-nav-fg">
         <div className="flex h-16 items-center justify-around px-2 relative">
           
-          <Link href="/" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname === '/' ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
-            <Home className={cn("h-5 w-5", pathname === '/' ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
+          <Link href="/" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname === '/' ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
+            <Home className={cn("h-5 w-5", pathname === '/' ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
             <span className="text-[10px] font-medium">Accueil</span>
           </Link>
           
-          <Link href="/prospects" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/prospects') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
-            <Users className={cn("h-5 w-5", pathname?.startsWith('/prospects') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
+          <Link href="/prospects" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/prospects') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
+            <Users className={cn("h-5 w-5", pathname?.startsWith('/prospects') ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
             <span className="text-[10px] font-medium">Prospects</span>
           </Link>
 
-          <Link href="/follow-ups" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/follow-ups') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
-            <Repeat className={cn("h-5 w-5", pathname?.startsWith('/follow-ups') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
+          <Link href="/follow-ups" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/follow-ups') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
+            <Repeat className={cn("h-5 w-5", pathname?.startsWith('/follow-ups') ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
             <span className="text-[10px] font-medium">Relances</span>
           </Link>
 
-          <Link href="/clients" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/clients') ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
-            <Users className={cn("h-5 w-5", pathname?.startsWith('/clients') ? "fill-primary/20 stroke-[2.5]" : "stroke-2")} />
+          <Link href="/clients" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/clients') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
+            <Users className={cn("h-5 w-5", pathname?.startsWith('/clients') ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
             <span className="text-[10px] font-medium">Clients</span>
           </Link>
 
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger className="flex flex-col items-center justify-center w-16 h-full gap-1 text-muted-foreground hover:text-foreground transition-transform active:scale-95">
+            <SheetTrigger className="flex flex-col items-center justify-center w-16 h-full gap-1 text-nav-muted hover:text-nav-fg transition-transform active:scale-95">
               <Menu className="h-5 w-5 stroke-2" />
               <span className="text-[10px] font-medium">Plus</span>
             </SheetTrigger>
