@@ -46,13 +46,37 @@ self.addEventListener('fetch', (event) => {
   if (!url.protocol.startsWith('http')) return;
   if (url.pathname.includes('/_next/webpack-hmr')) return;
 
+  // Les navigations de page (HTML) utilisent Network-First
+  // pour toujours servir la version la plus fraîche quand le réseau est disponible
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).then((response) => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      }).catch(() => {
+        return caches.match(event.request).then((cached) => {
+          return cached || caches.match('/offline').then((res) => {
+            return res || new Response('<html><body>Vous êtes hors ligne</body></html>', {
+              status: 200,
+              headers: { 'Content-Type': 'text/html;charset=utf-8' }
+            });
+          });
+        });
+      })
+    );
+    return;
+  }
+
+  // Les assets statiques (JS, CSS, images) restent en Cache-First
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      // Stratégie Cache-First
       if (cachedResponse) {
         return cachedResponse;
       }
-      
+
       return fetch(event.request).then((response) => {
         if (!response || response.status !== 200 || response.type !== 'basic') {
           return response;
@@ -60,21 +84,12 @@ self.addEventListener('fetch', (event) => {
 
         const responseClone = response.clone();
         caches.open(CACHE_NAME).then((cache) => {
-          // On cache les nouvelles requêtes (lazy-loaded chunks, pages visitées)
           cache.put(event.request, responseClone);
         });
 
         return response;
       }).catch(() => {
-        // En cas d'échec (hors ligne), si c'est une navigation, on affiche la page hors ligne
-        if (event.request.mode === 'navigate') {
-          return caches.match('/offline').then((res) => {
-            return res || new Response('<html><body>Vous êtes hors ligne</body></html>', { 
-              status: 200, 
-              headers: { 'Content-Type': 'text/html;charset=utf-8' } 
-            });
-          });
-        }
+        // Pas de fallback pour les assets non cachés
       });
     })
   );
