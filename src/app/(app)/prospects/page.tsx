@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useDeferredValue, memo } from "react";
+import { useState, useDeferredValue, memo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import Link from "next/link";
 import { Plus, Filter, X } from "lucide-react";
@@ -69,26 +70,34 @@ export default function ProspectsPage() {
     setShowArchived(false);
   };
 
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalContainer(document.getElementById('topbar-actions'));
+  }, []);
+
+  const actionButtons = (
+    <button
+      type="button"
+      onClick={() => setFiltersOpen((prev) => !prev)}
+      aria-label={filtersOpen ? 'Fermer les filtres' : 'Ouvrir les filtres'}
+      aria-expanded={filtersOpen}
+      className="relative flex h-10 w-10 items-center justify-center rounded-full text-nav-muted hover:text-nav-fg hover:bg-white/10"
+    >
+      {filtersOpen ? <X className="h-5 w-5" /> : <Filter className="h-5 w-5" />}
+      {hasActiveFilters && !filtersOpen && (
+        <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-blue-600 border border-nav-bg" />
+      )}
+    </button>
+  );
+
   return (
     <div className="relative flex flex-col h-full bg-muted/50 min-h-screen">
       <div className="flex-1 max-w-6xl w-full mx-auto p-4 pb-24 md:p-8 space-y-5">
         {/* Header Mobile-First */}
         <header className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-bold text-foreground hidden md:block">Prospects</h1>
-          
-          {/* Filter toggle button */}
-          <button
-            type="button"
-            onClick={() => setFiltersOpen((prev) => !prev)}
-            aria-label={filtersOpen ? 'Fermer les filtres' : 'Ouvrir les filtres'}
-            aria-expanded={filtersOpen}
-            className="ml-auto relative flex h-11 w-11 items-center justify-center rounded-full border bg-card text-card-foreground transition-colors hover:bg-muted"
-          >
-            {filtersOpen ? <X className="h-5 w-5" /> : <Filter className="h-5 w-5" />}
-            {hasActiveFilters && !filtersOpen && (
-              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-blue-600" />
-            )}
-          </button>
+          {portalContainer ? createPortal(actionButtons, portalContainer) : <div className="ml-auto">{actionButtons}</div>}
         </header>
 
         {/* Collapsible filters panel */}

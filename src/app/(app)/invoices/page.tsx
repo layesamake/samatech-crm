@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useDeferredValue, useMemo, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { ManageInvoicesUseCase } from '@/modules/invoices/application/manage-invoices';
 import { formatMinor, InvoiceAggregate, INVOICE_STATUSES } from '@/modules/invoices/domain/invoice';
 import { ListSkeleton } from '@/components/ui/loading-skeletons';
@@ -104,6 +105,27 @@ export default function InvoicesPage() {
   
   const paginatedItems = useMemo(() => items.slice(0, limit), [items, limit]);
 
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalContainer(document.getElementById('topbar-actions'));
+  }, []);
+
+  const actionButtons = (
+    <div className="flex items-center gap-2">
+      <button className="p-2 rounded-xl text-nav-muted hover:text-nav-fg hover:bg-white/10" aria-label="Trier">
+        <SlidersHorizontal className="w-5 h-5" />
+      </button>
+      <button 
+        className="p-2 rounded-xl text-nav-muted hover:text-nav-fg hover:bg-white/10" 
+        aria-label="Rechercher"
+        onClick={() => setShowSearch(!showSearch)}
+      >
+        <Search className="w-5 h-5" />
+      </button>
+    </div>
+  );
+
   return (
     <main className="flex flex-col min-h-screen bg-background pb-24 md:pb-8">
       <header className="sticky top-0 z-10 bg-background border-b pt-2 md:pt-4">
@@ -111,18 +133,7 @@ export default function InvoicesPage() {
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold hidden md:block">Factures</h1>
           </div>
-          <div className="ml-auto flex items-center gap-4">
-            <button className="p-2 border rounded-xl hover:bg-muted" aria-label="Trier">
-              <SlidersHorizontal className="w-5 h-5" />
-            </button>
-            <button 
-              className="p-2 border rounded-xl hover:bg-muted" 
-              aria-label="Rechercher"
-              onClick={() => setShowSearch(!showSearch)}
-            >
-              <Search className="w-5 h-5" />
-            </button>
-          </div>
+          {portalContainer ? createPortal(actionButtons, portalContainer) : <div className="ml-auto">{actionButtons}</div>}
         </div>
         
         {showSearch && (

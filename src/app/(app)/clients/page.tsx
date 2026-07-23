@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, useDeferredValue, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { ManageClientsUseCase } from '@/modules/clients/application/manage-clients';
 import { ClientAggregate } from '@/modules/clients/domain/client';
 import { ManagePaymentsUseCase } from '@/modules/payments/application/manage-payments';
@@ -133,15 +134,25 @@ export default function ClientsPage() {
 
   const paginatedClients = useMemo(() => filteredClients.slice(0, limit), [filteredClients, limit]);
 
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalContainer(document.getElementById('topbar-actions'));
+  }, []);
+
+  const actionButtons = (
+    <div className="flex items-center gap-2">
+      <button className="p-2 rounded-md hover:bg-muted" aria-label="Trier"><ArrowUpDown className="w-5 h-5" /></button>
+      <button className="p-2 rounded-md hover:bg-muted" onClick={() => setShowSearch(!showSearch)} aria-label="Rechercher"><Search className="w-5 h-5" /></button>
+    </div>
+  );
+
   return (
     <main className="mx-auto max-w-5xl bg-background min-h-screen pb-24">
       <header className="sticky top-0 z-10 bg-background pt-4 px-4 pb-0 border-b">
         <div className="mb-3 flex items-center justify-between">
           <h1 className="text-2xl font-bold hidden md:block">Clients</h1>
-          <div className="ml-auto flex items-center gap-2">
-            <button className="p-2 rounded-md hover:bg-muted" aria-label="Trier"><ArrowUpDown className="w-5 h-5" /></button>
-            <button className="p-2 rounded-md hover:bg-muted" onClick={() => setShowSearch(!showSearch)} aria-label="Rechercher"><Search className="w-5 h-5" /></button>
-          </div>
+          {portalContainer ? createPortal(actionButtons, portalContainer) : actionButtons}
         </div>
 
 
