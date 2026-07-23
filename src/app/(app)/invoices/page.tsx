@@ -109,7 +109,7 @@ export default function InvoicesPage() {
       <header className="sticky top-0 z-10 bg-background border-b pt-2 md:pt-4">
         <div className="flex items-center justify-between px-4 pb-2">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold">Factures</h1>
+            <h1 className="text-xl font-bold hidden md:block">Factures</h1>
           </div>
           <div className="flex items-center gap-4">
             <button className="p-2 border rounded-xl hover:bg-muted" aria-label="Trier">

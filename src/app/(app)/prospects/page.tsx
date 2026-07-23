@@ -74,7 +74,7 @@ export default function ProspectsPage() {
       <div className="flex-1 max-w-6xl w-full mx-auto p-4 pb-24 md:p-8 space-y-5">
         {/* Header Mobile-First */}
         <header className="flex items-center justify-between gap-3">
-          <h1 className="text-2xl font-bold text-foreground">Prospects</h1>
+          <h1 className="text-2xl font-bold text-foreground hidden md:block">Prospects</h1>
           
           {/* Filter toggle button */}
           <button

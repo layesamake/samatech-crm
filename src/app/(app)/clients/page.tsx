@@ -137,13 +137,12 @@ export default function ClientsPage() {
     <main className="mx-auto max-w-5xl bg-background min-h-screen pb-24">
       <header className="sticky top-0 z-10 bg-background pt-4 px-4 pb-0 border-b">
         <div className="mb-3 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Clients</h1>
+          <h1 className="text-2xl font-bold hidden md:block">Clients</h1>
           <div className="flex items-center gap-2">
             <button className="p-2 rounded-md hover:bg-muted" aria-label="Trier"><ArrowUpDown className="w-5 h-5" /></button>
             <button className="p-2 rounded-md hover:bg-muted" onClick={() => setShowSearch(!showSearch)} aria-label="Rechercher"><Search className="w-5 h-5" /></button>
           </div>
         </div>
-
 
 
         {showSearch && (
