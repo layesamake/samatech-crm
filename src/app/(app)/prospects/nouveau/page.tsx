@@ -152,6 +152,32 @@ export default function NouveauProspectPage() {
             {errors.displayName && <p className="text-xs text-red-500">{errors.displayName.message as string}</p>}
           </div>
 
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="title">Titre</Label>
+              <select id="title" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" {...register("title")}>
+                <option value="">Sélectionnez...</option>
+                <option value="M.">M.</option>
+                <option value="Mme">Mme</option>
+                <option value="Mlle">Mlle</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="firstName">Prénom</Label>
+              <Input id="firstName" placeholder="Ex: Jean" {...register("firstName")} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="lastName">Nom</Label>
+              <Input id="lastName" placeholder="Ex: Dupont" {...register("lastName")} />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="Ex: jean.dupont@email.com" {...register("email")} />
+            {errors.email && <p className="text-xs text-red-500">{errors.email.message as string}</p>}
+          </div>
+
           <div className="space-y-1">
             <Label htmlFor="whatsappPhone">Numéro WhatsApp *</Label>
             <Input id="whatsappPhone" type="tel" placeholder="Ex: +221 77 123 45 67" {...register("whatsappPhone")} />

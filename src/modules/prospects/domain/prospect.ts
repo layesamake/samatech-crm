@@ -27,6 +27,7 @@ export type ContactSource = (typeof CONTACT_SOURCES)[number];
 export interface ContactRecord extends AuditFields {
   id: UUID;
   displayName: string;
+  title?: string;
   firstName?: string;
   lastName?: string;
   companyName?: string;
@@ -130,6 +131,7 @@ export function normalizePhoneNumber(phone: string): string {
  */
 export const CreateProspectSchema = z.object({
   displayName: z.string().trim().min(1, 'Le nom est obligatoire'),
+  title: z.enum(['M.', 'Mme', 'Mlle']).optional().or(z.literal('')),
   firstName: z.string().trim().optional(),
   lastName: z.string().trim().optional(),
   companyName: z.string().trim().optional(),

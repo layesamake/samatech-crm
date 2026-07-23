@@ -38,6 +38,7 @@ export class CreateProspectUseCase {
       contact: {
         id: contactId,
         displayName: data.displayName,
+        title: data.title || undefined,
         firstName: data.firstName,
         lastName: data.lastName,
         companyName: data.companyName,

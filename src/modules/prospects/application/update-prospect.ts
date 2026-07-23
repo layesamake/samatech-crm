@@ -36,6 +36,7 @@ export class UpdateProspectUseCase {
     existingProspect.contact = {
       ...existingProspect.contact,
       displayName: data.displayName,
+      title: data.title || undefined,
       firstName: data.firstName,
       source: data.source || undefined,
       lastName: data.lastName,
