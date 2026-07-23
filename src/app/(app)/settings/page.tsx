@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import CompanySettingsForm from '@/modules/settings/presentation/CompanySettingsForm';
 import InvoiceSettingsForm from '@/modules/settings/presentation/InvoiceSettingsForm';
 import LocationsManager from '@/modules/locations/presentation/LocationsManager';
@@ -11,22 +12,30 @@ import { Save } from 'lucide-react';
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'COMPANY' | 'INVOICE' | 'LOCATIONS' | 'APPEARANCE'>('COMPANY');
 
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalContainer(document.getElementById('topbar-actions'));
+  }, []);
+
+  const saveButton = (activeTab === 'COMPANY' || activeTab === 'INVOICE') ? (
+    <button 
+      type="submit" 
+      form={`${activeTab}-form`}
+      aria-label="Enregistrer les modifications"
+      className="p-2 rounded-xl hover:bg-muted text-blue-600 bg-blue-500/10 transition-colors"
+    >
+      <Save className="w-5 h-5" />
+    </button>
+  ) : null;
+
   return (
     <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight hidden md:block">Paramètres</h1>
         </div>
-        {(activeTab === 'COMPANY' || activeTab === 'INVOICE') && (
-          <button 
-            type="submit" 
-            form={`${activeTab}-form`}
-            aria-label="Enregistrer les modifications"
-            className="p-2 border rounded-xl hover:bg-muted text-blue-600 bg-blue-500/10 transition-colors"
-          >
-            <Save className="w-5 h-5" />
-          </button>
-        )}
+        {portalContainer ? createPortal(saveButton, portalContainer) : saveButton}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

@@ -39,6 +39,8 @@ export function Topbar() {
            <h1 className="text-lg font-semibold lg:hidden">{currentTitle}</h1>
         </div>
         <div className="flex items-center gap-x-4 lg:gap-x-6">
+          <div id="topbar-actions" className="flex items-center"></div>
+          
           <Button variant="ghost" size="icon" className="-m-2.5 p-2.5 text-nav-muted hover:text-nav-fg hover:bg-white/10">
             <span className="sr-only">Voir les notifications</span>
             <Bell className="h-6 w-6" aria-hidden="true" />
