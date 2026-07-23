@@ -3,7 +3,7 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   turbopack: {},
   experimental: {
-    optimizePackageImports: ['lucide-react'],
+    optimizePackageImports: ['lucide-react', 'pdf-lib', 'react-qr-barcode-scanner', 'zod', 'dexie', 'react-hook-form', '@hookform/resolvers'],
   },
   async headers() {
     return [
