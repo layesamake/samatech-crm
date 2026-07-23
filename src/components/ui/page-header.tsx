@@ -9,8 +9,8 @@ interface PageHeaderProps {
 export function PageHeader({ title, description, children }: PageHeaderProps) {
   return (
     <div className="flex flex-col gap-1 mb-6">
-      <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
-      {description && <p className="text-muted-foreground">{description}</p>}
+      <h1 className="text-2xl font-bold tracking-tight text-foreground hidden md:block">{title}</h1>
+      {description && <p className="text-muted-foreground hidden md:block">{description}</p>}
       {children}
     </div>
   );
