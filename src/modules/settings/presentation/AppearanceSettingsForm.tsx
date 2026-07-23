@@ -26,7 +26,7 @@ export default function AppearanceSettingsForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           
           {/* Light Theme Option */}
           <button
@@ -72,6 +72,21 @@ export default function AppearanceSettingsForm() {
             </div>
             <span className="font-semibold">Phantom</span>
             <span className="text-xs text-muted-foreground mt-1">Crypto Style</span>
+          </button>
+
+          {/* Chase Theme Option */}
+          <button
+            onClick={() => setTheme('theme-chase')}
+            className={cn(
+              "flex flex-col items-center justify-center p-6 border-2 rounded-xl transition-all hover:bg-muted",
+              theme === 'theme-chase' ? "border-primary bg-primary/5" : "border-border"
+            )}
+          >
+            <div className="p-4 bg-[#f4f6f9] border rounded-full shadow-sm mb-4">
+              <Sun className="w-8 h-8 text-[#0a2540]" />
+            </div>
+            <span className="font-semibold">Chase</span>
+            <span className="text-xs text-muted-foreground mt-1">Banking Style</span>
           </button>
 
           {/* System Theme Option */}
