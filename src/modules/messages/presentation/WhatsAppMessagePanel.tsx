@@ -14,9 +14,10 @@ interface WhatsAppMessagePanelProps {
   contactId: string;
   normalizedPhone: string;
   displayName: string;
+  iconOnly?: boolean;
 }
 
-export function WhatsAppMessagePanel({ contactId, normalizedPhone, displayName }: WhatsAppMessagePanelProps) {
+export function WhatsAppMessagePanel({ contactId, normalizedPhone, displayName, iconOnly }: WhatsAppMessagePanelProps) {
   const [open, setOpen] = useState(false);
   const [templates, setTemplates] = useState<MessageTemplateRecord[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<MessageTemplateRecord | null>(null);
@@ -90,10 +91,12 @@ export function WhatsAppMessagePanel({ contactId, normalizedPhone, displayName }
     return (
       <Button
         onClick={() => setOpen(true)}
-        className="bg-[#0B6B2D] hover:bg-[#085725] text-white flex gap-2"
+        size={iconOnly ? "icon" : "default"}
+        className={iconOnly ? "bg-[#0B6B2D] hover:bg-[#085725] text-white rounded-full h-8 w-8" : "bg-[#0B6B2D] hover:bg-[#085725] text-white flex gap-2"}
+        title={iconOnly ? "Message WhatsApp" : undefined}
       >
-        <MessageCircle className="h-5 w-5" />
-        Message WhatsApp
+        <MessageCircle className={iconOnly ? "h-4 w-4" : "h-5 w-5"} />
+        {!iconOnly && "Message WhatsApp"}
       </Button>
     );
   }

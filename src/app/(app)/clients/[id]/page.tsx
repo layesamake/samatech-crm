@@ -10,7 +10,9 @@ import { ManageInvoicesUseCase } from '@/modules/invoices/application/manage-inv
 import { formatMinor, InvoiceAggregate, sumSafeMinor } from '@/modules/invoices/domain/invoice';
 import { ManagePaymentsUseCase } from '@/modules/payments/application/manage-payments';
 import { PAYMENT_METHOD_LABELS, PaymentAggregate, ReceivableRecord, sumActivePayments } from '@/modules/payments/domain/payment';
-import { Pencil } from 'lucide-react';
+import { Pencil, MoreVertical } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 const manage = new ManageClientsUseCase();
 const manageInvoices = new ManageInvoicesUseCase();
@@ -23,8 +25,44 @@ export default function ClientDetailPage() {
   if (error) return <p role="alert" className="p-4 text-red-800 dark:text-red-200">{error}</p>; if (client === undefined) return <p className="p-4">Chargement...</p>; if (client === null) return <p className="p-4">Client introuvable.</p>;
   const nextFollowUp = client.followUps.find((item) => item.status === 'PLANIFIEE');
   const activeInvoices = invoices.filter((item) => item.invoice.status === 'EMISE' || item.invoice.status === 'PARTIELLEMENT_PAYEE' || item.invoice.status === 'PAYEE'); const billed = sumSafeMinor(activeInvoices.map((item) => item.invoice.grandTotalMinor)); const balance = sumSafeMinor(activeInvoices.map((item) => item.invoice.balanceMinor)); const collected = sumActivePayments(paymentItems.map((item) => item.payment)); const invoiceCurrency = invoices[0]?.invoice.currency ?? paymentItems[0]?.payment.currency ?? 'XOF'; const invoiceScale = invoices[0]?.invoice.currencyScale ?? paymentItems[0]?.payment.currencyScale ?? 0;
-  return <main className="mx-auto max-w-4xl space-y-5 p-4 md:p-8"><Link href="/clients" className="text-blue-800 dark:text-blue-200">← Clients</Link><header className="rounded-xl border bg-card text-card-foreground p-5"><div className="flex flex-wrap items-start justify-between gap-3"><div><h1 className="text-2xl font-bold">{client.contact.displayName}</h1><p>Client depuis le {new Date(client.profile.convertedAt).toLocaleString('fr-FR')}</p></div><span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800 dark:text-emerald-200">CLIENT</span></div><div className="mt-4 flex flex-wrap gap-2"><Link href={`/clients/${client.profile.id}/modifier`} className="inline-flex items-center gap-2 rounded-md border px-4 py-3"><Pencil className="h-4 w-4" />Modifier</Link><Link href={`/follow-ups/new?contactId=${client.contact.id}`} className="rounded-md border px-4 py-3">Relancer</Link><Link href={`/invoices/new?clientId=${client.profile.id}`} className="rounded-md bg-blue-700 px-4 py-3 text-white">Créer une facture</Link><Link href={`/reports/client/${client.profile.id}`} className="rounded-md border px-4 py-3">Générer un relevé</Link></div></header>
-    <WhatsAppMessagePanel contactId={client.contact.id} normalizedPhone={client.contact.normalizedWhatsappPhone} displayName={client.contact.displayName} />
+  return <main className="mx-auto max-w-4xl space-y-5 p-4 md:p-8">
+    <Link href="/clients" className="text-blue-800 dark:text-blue-200">← Clients</Link>
+    <header className="rounded-xl border bg-card text-card-foreground p-5">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-bold">{client.contact.displayName}</h1>
+            <Link href={`/clients/${client.profile.id}/modifier`} className="p-2 rounded-full hover:bg-muted text-muted-foreground" aria-label="Modifier" title="Modifier">
+              <Pencil className="h-4 w-4" />
+            </Link>
+          </div>
+          <p className="text-sm text-muted-foreground">Client depuis le {new Date(client.profile.convertedAt).toLocaleString('fr-FR')}</p>
+          <div className="mt-3 flex items-center gap-3">
+            <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800 dark:text-emerald-200">CLIENT</span>
+            <WhatsAppMessagePanel contactId={client.contact.id} normalizedPhone={client.contact.normalizedWhatsappPhone} displayName={client.contact.displayName} iconOnly />
+          </div>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <MoreVertical className="h-5 w-5" />
+              <span className="sr-only">Actions</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link href={`/invoices/new?clientId=${client.profile.id}`} className="w-full cursor-pointer">Créer une facture</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/reports/client/${client.profile.id}`} className="w-full cursor-pointer">Générer un relevé</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href={`/follow-ups/new?contactId=${client.contact.id}`} className="w-full cursor-pointer">Relancer</Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </header>
     <section className="grid gap-3 sm:grid-cols-4"><div className="rounded-xl border bg-card text-card-foreground p-4"><p className="text-xs text-muted-foreground">Total facturé</p><strong>{formatMinor(billed, invoiceCurrency, invoiceScale)}</strong></div><div className="rounded-xl border bg-card text-card-foreground p-4"><p className="text-xs text-muted-foreground">Total encaissé</p><strong>{formatMinor(collected, invoiceCurrency, invoiceScale)}</strong></div><div className="rounded-xl border bg-card text-card-foreground p-4"><p className="text-xs text-muted-foreground">Solde dû</p><strong>{formatMinor(balance, invoiceCurrency, invoiceScale)}</strong></div><div className="rounded-xl border bg-card text-card-foreground p-4"><p className="text-xs text-muted-foreground">Créances échues</p><strong>{receivables.filter((item) => item.daysOverdue > 0).length}</strong></div></section>
     <section className="rounded-xl border bg-card text-card-foreground p-5"><h2 className="font-semibold">Coordonnées et intérêts conservés</h2><dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2"><div><dt className="text-muted-foreground">Téléphone</dt><dd>{client.contact.whatsappPhone}</dd></div><div><dt className="text-muted-foreground">Localité</dt><dd>{client.locationName || 'Non renseignée'}</dd></div><div><dt className="text-muted-foreground">Entreprise</dt><dd>{client.contact.companyName || 'Non renseignée'}</dd></div><div><dt className="text-muted-foreground">Produits demandés</dt><dd>{client.productNames.join(', ') || 'Aucun'}</dd></div><div><dt className="text-muted-foreground">Tags</dt><dd>{client.tags.map((tag) => tag.name).join(', ') || 'Aucun'}</dd></div></dl></section>
     <section className="rounded-xl border bg-card text-card-foreground p-5"><h2 className="font-semibold">Relances conservées</h2><p className="mt-2 text-sm"><span className="text-muted-foreground">Prochaine relance : </span>{nextFollowUp ? <Link className="text-blue-800 dark:text-blue-200 underline" href={`/follow-ups/${nextFollowUp.id}`}>{new Date(nextFollowUp.dueAt).toLocaleString('fr-FR')} — {nextFollowUp.reason || nextFollowUp.channel}</Link> : 'Aucune relance future'}</p>{client.followUps.length > 0 ? <ul className="mt-3 space-y-2 text-sm">{client.followUps.map((item) => <li key={item.id} className="rounded-md border p-3"><Link href={`/follow-ups/${item.id}`} className="font-medium text-blue-800 dark:text-blue-200">{new Date(item.dueAt).toLocaleString('fr-FR')} — {item.status}</Link>{item.reason && <p>{item.reason}</p>}{item.resultNote && <p className="text-muted-foreground">Résultat : {item.resultNote}</p>}</li>)}</ul> : <p className="mt-3 text-sm">Aucune relance.</p>}</section>
