@@ -47,7 +47,7 @@ export default function ClientDetailPage() {
             <MoreVertical className="h-5 w-5" />
             <span className="sr-only">Actions</span>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuItem>
               <Link href={`/invoices/new?clientId=${client.profile.id}`} className="w-full">Créer une facture</Link>
             </DropdownMenuItem>
