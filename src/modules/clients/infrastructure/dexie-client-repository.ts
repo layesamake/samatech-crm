@@ -35,25 +35,15 @@ export class DexieClientRepository {
   }
 
   async convert(prospect: ProspectProfileRecord, client: ClientProfileRecord, event: TimelineEventRecord): Promise<void> {
-    await db.transaction('rw', db.prospectProfiles, db.clientProfiles, db.timelineEvents, db.opportunities, async () => {
+    await db.transaction('rw', db.prospectProfiles, db.clientProfiles, db.timelineEvents, async () => {
       const current = await db.prospectProfiles.get(prospect.id);
       if (!current) throw new Error('Prospect introuvable');
       if (current.status === 'CONVERTI' || await db.clientProfiles.where('contactId').equals(client.contactId).first()) throw new Error('Ce prospect est déjà converti');
       await db.prospectProfiles.put(prospect);
       await db.clientProfiles.add(client);
       await db.timelineEvents.add(event);
-
-      // Fermer toutes les opportunités ouvertes en GAGNE
-      const openOpps = await db.opportunities.where('contactId').equals(client.contactId).toArray();
-      const oppsToUpdate = openOpps.filter(opp => opp.status === 'OPEN').map(opp => ({
-        ...opp,
-        status: 'WON',
-        stage: 'GAGNE',
-        updatedAt: event.occurredAt
-      }));
-      if (oppsToUpdate.length > 0) {
-        await db.opportunities.bulkPut(oppsToUpdate as any);
-      }
+      
+      // Note: Les opportunités ouvertes restent ouvertes, elles ne sont plus passées automatiquement en GAGNE.
     });
   }
 }

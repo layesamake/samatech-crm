@@ -150,14 +150,14 @@ describe('MaintenanceService', () => {
     it('supprime une base orpheline légitime', async () => {
       // Mock IDB delete request
       const mockRequest: any = {};
+      Object.defineProperty(mockRequest, 'onsuccess', {
+        set(cb) {
+          setTimeout(() => cb(), 10);
+        }
+      });
       mockIndexedDB.deleteDatabase.mockReturnValue(mockRequest);
 
       const promise = service.deletePhysicalDatabase('SamtechCRMDatabase_orphan');
-      
-      // Simulate success callback
-      setTimeout(() => {
-        if (mockRequest.onsuccess) mockRequest.onsuccess();
-      }, 10);
       
       await expect(promise).resolves.toBeUndefined();
       
