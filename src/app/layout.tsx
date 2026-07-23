@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="fr" className="h-full font-sans" suppressHydrationWarning>
       <body className="h-full antialiased bg-background text-foreground flex flex-col">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem themes={['light', 'dark', 'theme-phantom']} disableTransitionOnChange>
           <NetworkIndicator />
           <PWARegister />
           <PageTitleSync />

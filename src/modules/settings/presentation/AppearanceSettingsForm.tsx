@@ -26,7 +26,7 @@ export default function AppearanceSettingsForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* Light Theme Option */}
           <button
@@ -56,6 +56,22 @@ export default function AppearanceSettingsForm() {
             </div>
             <span className="font-semibold">Sombre</span>
             <span className="text-xs text-muted-foreground mt-1">Salytics Style</span>
+          </button>
+
+          {/* Phantom Theme Option */}
+          <button
+            onClick={() => setTheme('theme-phantom')}
+            className={cn(
+              "flex flex-col items-center justify-center p-6 border-2 rounded-xl transition-all hover:bg-muted",
+              theme === 'theme-phantom' ? "border-primary bg-primary/5" : "border-border"
+            )}
+          >
+            <div className="p-4 bg-[#150000] rounded-full shadow-sm mb-4">
+              {/* Le fond de Phantom est très sombre, presque noir. */}
+              <Moon className="w-8 h-8 text-[#9b6bf3]" />
+            </div>
+            <span className="font-semibold">Phantom</span>
+            <span className="text-xs text-muted-foreground mt-1">Crypto Style</span>
           </button>
 
           {/* System Theme Option */}
