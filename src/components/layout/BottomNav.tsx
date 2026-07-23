@@ -19,7 +19,8 @@ import {
   MessageSquare,
   DollarSign,
   PieChart,
-  X
+  X,
+  UserPlus
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
@@ -34,14 +35,12 @@ const primaryLinks = [
 ];
 
 const moreLinks = [
-  { href: '/invoices', label: 'Factures', icon: FileText },
   { href: '/commercial-documents', label: 'Ventes', icon: FileText },
-  { href: '/prospects', label: 'Prospects', icon: Users },
   { href: '/payments', label: 'Paiements', icon: CreditCard },
   { href: '/expenses', label: 'Dépenses', icon: Receipt },
   { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
   { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
-  { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },
+  { href: '/message-templates', label: 'Modèles', icon: MessageSquare },
   { href: '/statistics', label: 'Statistiques', icon: BarChart },
   { href: '/reports', label: 'Rapports', icon: PieChart },
   { href: '/follow-ups', label: 'Relances', icon: Repeat },
@@ -83,13 +82,13 @@ export function BottomNav() {
           </Link>
           
           <Link href="/prospects" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/prospects') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
-            <Users className={cn("h-5 w-5", pathname?.startsWith('/prospects') ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
+            <UserPlus className={cn("h-5 w-5", pathname?.startsWith('/prospects') ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
             <span className="text-[10px] font-medium">Prospects</span>
           </Link>
 
-          <Link href="/follow-ups" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/follow-ups') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
-            <Repeat className={cn("h-5 w-5", pathname?.startsWith('/follow-ups') ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
-            <span className="text-[10px] font-medium">Relances</span>
+          <Link href="/invoices" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/invoices') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
+            <FileText className={cn("h-5 w-5", pathname?.startsWith('/invoices') ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
+            <span className="text-[10px] font-medium">Factures</span>
           </Link>
 
           <Link href="/clients" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/clients') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>

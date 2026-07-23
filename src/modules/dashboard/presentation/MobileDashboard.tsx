@@ -63,43 +63,28 @@ export function MobileDashboard() {
       {/* Quick Actions Card */}
       <section className="bg-card text-card-foreground rounded-2xl p-5 shadow-sm border border-border flex justify-between items-start gap-2 overflow-x-auto scrollbar-hide">
         <Link href="/invoices/new" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
-          <div className="w-14 h-14 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-sm relative">
+          <div className="w-14 h-14 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 shadow-sm">
              <FileText className="w-6 h-6" />
-             <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
-                <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
-                  <span className="text-[10px] text-white font-bold">+</span>
-                </div>
-             </div>
           </div>
           <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouvelle<br/>facture</span>
         </Link>
         <Link href="/prospects/nouveau" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
-          <div className="w-14 h-14 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 shadow-sm relative">
+          <div className="w-14 h-14 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 shadow-sm">
              <User className="w-6 h-6" />
-             <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
-                <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
-                  <span className="text-[10px] text-white font-bold">+</span>
-                </div>
-             </div>
           </div>
           <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouveau<br/>client</span>
         </Link>
         <Link href="/expenses/new" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
-          <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shadow-sm relative">
+          <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 shadow-sm">
              <ReceiptText className="w-6 h-6" />
-             <div className="absolute bottom-0 right-0 bg-card text-card-foreground rounded-full p-0.5 shadow-sm">
-                <div className="bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">
-                  <span className="text-[10px] text-white font-bold">+</span>
-                </div>
-             </div>
           </div>
           <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouvelle<br/>dépense</span>
         </Link>
         <Link href="/follow-ups" className="shrink-0 flex flex-col items-center gap-2 flex-1 min-w-[70px]">
-          <div className="w-14 h-14 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 shadow-sm relative">
+          <div className="w-14 h-14 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 shadow-sm">
              <Timer className="w-6 h-6" />
           </div>
-          <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Ajouter<br/>l&apos;heure du<br/>journal</span>
+          <span className="text-xs text-center font-medium leading-tight text-muted-foreground">Nouvelle<br/>relance</span>
         </Link>
       </section>
 
@@ -116,17 +101,17 @@ export function MobileDashboard() {
           {formatMinorExact(money.receivableMinor, primary.currency, primary.scale)}
         </p>
         
-        {/* Simple Bar Chart */}
-        <div className="h-40 flex items-end gap-8 border-b border-border pb-2 mb-4 relative">
-          {/* Y-axis labels mockup */}
-          <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-[10px] text-slate-400">
-             <span>{totalReceivable > 0 ? formatMinorExact(money.receivableMinor, primary.currency, primary.scale) : '1000'}</span>
-             <span>0</span>
-          </div>
-          <div className="ml-12 flex-1 flex items-end justify-around h-full">
-            <div className="w-8 bg-blue-500 rounded-t-sm" style={{ height: `${Math.max(currentPct, 5)}%` }}></div>
-            <div className="w-8 bg-amber-500 rounded-t-sm" style={{ height: `${Math.max(overduePct, 5)}%` }}></div>
-          </div>
+        {/* Horizontal Stacked Bar */}
+        <div className="h-6 w-full bg-muted rounded-full overflow-hidden flex mb-6 relative">
+          <div className="bg-blue-500 transition-all duration-500" style={{ width: `${currentPct}%` }}></div>
+          <div className="bg-amber-500 transition-all duration-500" style={{ width: `${overduePct}%` }}></div>
+          
+          {/* Overlay to show 0 if nothing */}
+          {totalReceivable === BigInt(0) && (
+            <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground font-medium">
+              Aucune créance
+            </div>
+          )}
         </div>
 
         <div className="flex justify-between text-sm">
