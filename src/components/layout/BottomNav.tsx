@@ -74,7 +74,7 @@ export function BottomNav() {
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-nav-bg/95 backdrop-blur-xl border-t pb-safe lg:hidden text-nav-fg">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-nav-bg backdrop-blur-xl border-t pb-safe lg:hidden text-nav-fg">
         <div className="flex h-16 items-center justify-around px-2 relative">
           
           <Link href="/" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname === '/' ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
