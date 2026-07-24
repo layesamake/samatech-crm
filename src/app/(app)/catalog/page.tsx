@@ -133,6 +133,7 @@ export default function CatalogPage() {
   const [viewState, setViewState] = useState<'LIST' | 'PRODUCT_FORM' | 'CATEGORY_FORM'>('LIST');
   const [editingProduct, setEditingProduct] = useState<ProductRecord | null>(null);
   const [editingCategory, setEditingCategory] = useState<CategoryRecord | null>(null);
+  const [isFabOpen, setIsFabOpen] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -469,25 +470,29 @@ export default function CatalogPage() {
       </section>
 
       {/* FAB - Actions multiples (Produit / Service / Catégorie) */}
-      <div className="fixed bottom-[84px] lg:bottom-8 right-4 z-40 group">
-        <div className="absolute bottom-16 right-0 flex-col gap-2 items-end mb-2 hidden group-hover:flex">
+      <div className="fixed bottom-[84px] lg:bottom-8 right-4 z-40" onMouseLeave={() => setIsFabOpen(false)}>
+        <div className={cn(
+          "absolute bottom-16 right-0 flex-col gap-2 items-end mb-2 transition-all duration-200 origin-bottom",
+          isFabOpen ? "flex opacity-100 scale-100 pointer-events-auto" : "flex opacity-0 scale-95 pointer-events-none"
+        )}>
           <button 
-            onClick={() => { setEditingCategory(null); setViewState('CATEGORY_FORM'); }}
-            className="flex items-center gap-2 bg-background border shadow-md rounded-full px-4 py-2 text-sm font-medium hover:bg-muted whitespace-nowrap transition-transform translate-y-2 group-hover:translate-y-0"
+            onClick={() => { setEditingCategory(null); setViewState('CATEGORY_FORM'); setIsFabOpen(false); }}
+            className="flex items-center gap-2 bg-background border shadow-md rounded-full px-4 py-2 text-sm font-medium hover:bg-muted whitespace-nowrap"
           >
             Nouvelle Catégorie <FolderOpen className="w-4 h-4 ml-1" />
           </button>
           <button 
-            onClick={() => { setEditingProduct(null); setViewState('PRODUCT_FORM'); }}
-            className="flex items-center gap-2 bg-background border shadow-md rounded-full px-4 py-2 text-sm font-medium hover:bg-muted whitespace-nowrap transition-transform translate-y-4 group-hover:translate-y-0"
+            onClick={() => { setEditingProduct(null); setViewState('PRODUCT_FORM'); setIsFabOpen(false); }}
+            className="flex items-center gap-2 bg-background border shadow-md rounded-full px-4 py-2 text-sm font-medium hover:bg-muted whitespace-nowrap"
           >
             Nouveau Produit / Service <Package className="w-4 h-4 ml-1" />
           </button>
         </div>
         <button 
+          onClick={() => setIsFabOpen(!isFabOpen)}
           className="w-14 h-14 bg-foreground text-background rounded-[20px] flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform"
         >
-          <Plus className="w-6 h-6 stroke-[2.5]" />
+          <Plus className={cn("w-6 h-6 stroke-[2.5] transition-transform duration-200", isFabOpen ? "rotate-45" : "rotate-0")} />
         </button>
       </div>
     </main>
