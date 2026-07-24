@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { ALLOWED_MESSAGE_VARIABLES, MessageTemplateRecord, MessageVariable, buildWhatsAppUrl, extractVariables } from '../domain/message-template';
+import { ALLOWED_MESSAGE_VARIABLES, MESSAGE_CATEGORY_LABELS, MessageTemplateRecord, MessageVariable, buildWhatsAppUrl, extractVariables } from '../domain/message-template';
 import { ManageMessageTemplatesUseCase } from '../application/manage-message-templates';
 import { ResolveProspectMessageUseCase } from '../application/resolve-prospect-message';
 import { MessageCircle, ChevronDown, Send, X, Edit3 } from 'lucide-react';
@@ -148,7 +148,7 @@ export function WhatsAppMessagePanel({ contactId, normalizedPhone, displayName, 
                         className={`w-full text-left p-3 rounded-lg border transition-colors text-sm ${selectedTemplate?.id === t.id ? 'border-[#0B6B2D] bg-[#0B6B2D]/5 ring-1 ring-[#0B6B2D]/20' : 'hover:bg-muted/50'}`}
                       >
                         <span className="font-medium">{t.name}</span>
-                        <span className="ml-2 text-xs text-muted-foreground">{t.category}</span>
+                        <span className="ml-2 text-xs text-muted-foreground">{MESSAGE_CATEGORY_LABELS[t.category]}</span>
                       </button>
                     ))}
                   </div>
@@ -165,13 +165,24 @@ export function WhatsAppMessagePanel({ contactId, normalizedPhone, displayName, 
                         Résolution des variables...
                       </div>
                     ) : (
-                      <textarea
-                        value={resolvedText}
-                        onChange={(e) => updateResolvedText(e.target.value)}
-                        aria-label={`Message WhatsApp pour ${displayName}`}
-                        rows={4}
-                        className="w-full rounded-lg border p-3 text-sm bg-background resize-none"
-                      />
+                      <>
+                        <textarea
+                          value={resolvedText}
+                          onChange={(e) => updateResolvedText(e.target.value)}
+                          aria-label={`Message WhatsApp pour ${displayName}`}
+                          rows={4}
+                          className="w-full rounded-lg border p-3 text-sm bg-background resize-none"
+                        />
+                        {selectedTemplate.attachment && (
+                          <div className="flex flex-col gap-2 p-3 mt-2 rounded-lg bg-blue-50/50 border border-blue-100 dark:bg-blue-950/20 dark:border-blue-900">
+                            <span className="text-sm font-medium text-blue-800 dark:text-blue-300">📎 {selectedTemplate.attachment.name}</span>
+                            <a href={selectedTemplate.attachment.data} download={selectedTemplate.attachment.name} className="text-xs inline-flex items-center justify-center px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 w-fit transition-colors">
+                              Télécharger la pièce jointe
+                            </a>
+                            <p className="text-[10px] text-muted-foreground leading-tight">Téléchargez le fichier avant d'ouvrir WhatsApp, puis joignez-le manuellement à votre message.</p>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}

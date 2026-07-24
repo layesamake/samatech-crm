@@ -4,8 +4,19 @@ export const MESSAGE_CATEGORIES = ['FIRST_CONTACT', 'FOLLOW_UP', 'QUOTE', 'PROMO
 export const ALLOWED_MESSAGE_VARIABLES = ['prenom', 'nom', 'contact', 'entreprise', 'produit', 'localite', 'nom_entreprise'] as const;
 export type MessageVariable = typeof ALLOWED_MESSAGE_VARIABLES[number];
 
+export const MESSAGE_CATEGORY_LABELS: Record<typeof MESSAGE_CATEGORIES[number], string> = {
+  FIRST_CONTACT: 'Premier contact',
+  FOLLOW_UP: 'Relance',
+  QUOTE: 'Devis',
+  PROMOTION: 'Promotion',
+  LOYALTY: 'Fidélisation',
+  PAYMENT: 'Paiement',
+  OTHER: 'Autre',
+};
+
 export interface MessageTemplateRecord {
   id: string; name: string; category: typeof MESSAGE_CATEGORIES[number]; content: string; variables: string[];
+  attachment?: { name: string; type: string; data: string };
   isActive: boolean; createdAt: string; updatedAt: string; archivedAt?: string;
 }
 
@@ -16,6 +27,11 @@ export const MessageTemplateInputSchema = z.object({
   name: z.string().trim().min(1, 'Le nom est obligatoire'),
   category: z.enum(MESSAGE_CATEGORIES),
   content: z.string().trim().min(1, 'Le contenu est obligatoire'),
+  attachment: z.object({
+    name: z.string(),
+    type: z.string(),
+    data: z.string() // base64 string
+  }).optional(),
 }).superRefine((value, context) => {
   const unknownVariables = extractVariables(value.content).filter((variable) => !ALLOWED_MESSAGE_VARIABLES.includes(variable as MessageVariable));
   if (unknownVariables.length) context.addIssue({ code: 'custom', path: ['content'], message: `Variables inconnues : ${unknownVariables.join(', ')}` });

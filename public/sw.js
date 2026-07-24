@@ -1,4 +1,4 @@
-const CACHE_NAME = 'samtech-crm-cache-v1-6c98e61a';
+const CACHE_NAME = 'samtech-crm-cache-v1-76b6683d';
 const PRECACHE_URLS = [
   '/',
   '/offline',
@@ -7,6 +7,9 @@ const PRECACHE_URLS = [
   '/icon-512.png',
   '/icon-192.svg',
   '/icon-512.svg',
+  '/_next/static/-62kIzzu_O08aS0xHmudy/_buildManifest.js',
+  '/_next/static/-62kIzzu_O08aS0xHmudy/_clientMiddlewareManifest.js',
+  '/_next/static/-62kIzzu_O08aS0xHmudy/_ssgManifest.js',
   '/_next/static/chunks/0-7h4boq0luvn.js',
   '/_next/static/chunks/00t2fx8_tapv3.js',
   '/_next/static/chunks/00wdic6zuunv_.js',
@@ -95,9 +98,6 @@ const PRECACHE_URLS = [
   '/_next/static/chunks/43q72lp0k6oy5.js',
   '/_next/static/chunks/44pg3x2veghlp.js',
   '/_next/static/chunks/turbopack-3snus3mpjpivz.js',
-  '/_next/static/jSN41jCCzriqH0_vymYR3/_buildManifest.js',
-  '/_next/static/jSN41jCCzriqH0_vymYR3/_clientMiddlewareManifest.js',
-  '/_next/static/jSN41jCCzriqH0_vymYR3/_ssgManifest.js',
   '/_next/static/media/favicon.2vob68tjqpejf.ico'
 ];
 

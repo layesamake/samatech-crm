@@ -14,7 +14,7 @@ export class ManageLocationsUseCase {
     if (normalizedParentId === currentId) throw new Error('Une localité ne peut pas être son propre parent.');
     const parent = await this.repository.getById(normalizedParentId);
     if (!parent || parent.archivedAt) throw new Error('Localité parente introuvable ou archivée.');
-    const expectedParent = { REGION: 'COUNTRY', CITY: 'REGION', DISTRICT: 'CITY' }[level];
+    const expectedParent = { REGION: 'COUNTRY', DEPARTMENT: 'REGION', CITY: 'DEPARTMENT', DISTRICT: 'CITY' }[level];
     if (parent.level !== expectedParent) throw new Error(`Parent invalide : le niveau attendu est ${expectedParent}.`);
   }
 

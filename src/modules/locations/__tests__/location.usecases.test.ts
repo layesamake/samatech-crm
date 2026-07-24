@@ -17,28 +17,31 @@ describe('Locations UseCases', () => {
   it('crée une localité et la récupère', async () => {
     const country = await useCase.createLocation({ name: 'Sénégal', level: 'COUNTRY' });
     const region = await useCase.createLocation({ name: 'Dakar', level: 'REGION', parentId: country.id });
-    const created = await useCase.createLocation({ name: 'Dakar', level: 'CITY', parentId: region.id });
+    const dept = await useCase.createLocation({ name: 'Dakar Dept', level: 'DEPARTMENT', parentId: region.id });
+    const created = await useCase.createLocation({ name: 'Dakar', level: 'CITY', parentId: dept.id });
     const loc = await repository.getById(created.id);
     expect(loc).toBeDefined();
     expect(loc?.name).toBe('Dakar');
     expect(loc?.normalizedName).toBe('dakar');
     expect(loc?.level).toBe('CITY');
-    expect(loc?.parentId).toBe(region.id);
+    expect(loc?.parentId).toBe(dept.id);
   });
 
   it('empêche la création d\'un doublon (même nom normalisé, même niveau, même parent)', async () => {
     const country = await useCase.createLocation({ name: 'Sénégal', level: 'COUNTRY' });
     const region = await useCase.createLocation({ name: 'Dakar', level: 'REGION', parentId: country.id });
-    await useCase.createLocation({ name: 'Dakar', level: 'CITY', parentId: region.id });
+    const dept = await useCase.createLocation({ name: 'Dakar Dept', level: 'DEPARTMENT', parentId: region.id });
+    await useCase.createLocation({ name: 'Dakar', level: 'CITY', parentId: dept.id });
     await expect(
-      useCase.createLocation({ name: 'dakar', level: 'CITY', parentId: region.id })
+      useCase.createLocation({ name: 'dakar', level: 'CITY', parentId: dept.id })
     ).rejects.toThrow(/existe déjà/);
   });
 
   it('autorise des localités de même nom si le niveau est différent', async () => {
     const country = await useCase.createLocation({ name: 'Sénégal', level: 'COUNTRY' });
     const region = await useCase.createLocation({ name: 'Dakar', level: 'REGION', parentId: country.id });
-    const created = await useCase.createLocation({ name: 'Dakar', level: 'CITY', parentId: region.id });
+    const dept = await useCase.createLocation({ name: 'Dakar Dept', level: 'DEPARTMENT', parentId: region.id });
+    const created = await useCase.createLocation({ name: 'Dakar', level: 'CITY', parentId: dept.id });
     const loc = await repository.getById(created.id);
     expect(loc).toBeDefined();
   });

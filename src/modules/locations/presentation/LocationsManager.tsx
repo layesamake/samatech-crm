@@ -102,7 +102,8 @@ export default function LocationsManager() {
               >
                 <option value="COUNTRY">Pays</option>
                 <option value="REGION">Région</option>
-                <option value="CITY">Ville</option>
+                <option value="DEPARTMENT">Département</option>
+                <option value="CITY">Commune / Ville</option>
                 <option value="DISTRICT">Quartier</option>
               </select>
             </div>
@@ -111,7 +112,7 @@ export default function LocationsManager() {
               <label className="text-sm font-medium">Parent *</label>
               <select {...register('parentId')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 <option value="">Sélectionnez...</option>
-                {locations.filter((l) => !l.archivedAt && l.level === ({ REGION: 'COUNTRY', CITY: 'REGION', DISTRICT: 'CITY' } as const)[selectedLevel]).map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+                {locations.filter((l) => !l.archivedAt && l.level === ({ REGION: 'COUNTRY', DEPARTMENT: 'REGION', CITY: 'DEPARTMENT', DISTRICT: 'CITY' } as const)[selectedLevel]).map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
               </select>
               {errors.parentId && <p className="text-xs text-red-500">{errors.parentId.message}</p>}
             </div>}

@@ -4,18 +4,20 @@ import { DexieMessageTemplateRepository } from '../infrastructure/dexie-message-
 export class ManageMessageTemplatesUseCase {
   constructor(private readonly repository = new DexieMessageTemplateRepository()) {}
   async create(input: MessageTemplateInput): Promise<MessageTemplateRecord> {
-    const value = MessageTemplateInputSchema.parse(input); const now = new Date().toISOString();
-    const item: MessageTemplateRecord = { ...value, id: crypto.randomUUID(), variables: extractVariables(value.content), isActive: true, createdAt: now, updatedAt: now };
+    const value = MessageTemplateInputSchema.parse(input);
+    const now = new Date().toISOString();
+    const item: MessageTemplateRecord = { ...value, id: crypto.randomUUID(), variables: extractVariables(value.content), attachment: value.attachment, isActive: true, createdAt: now, updatedAt: now };
     await this.repository.save(item); return item;
   }
   async update(id: string, input: MessageTemplateInput): Promise<MessageTemplateRecord> {
     const item = await this.repository.getById(id); if (!item) throw new Error('Modèle introuvable');
-    const value = MessageTemplateInputSchema.parse(input); const updated = { ...item, ...value, variables: extractVariables(value.content), updatedAt: new Date().toISOString() };
+    const value = MessageTemplateInputSchema.parse(input);
+    const updated: MessageTemplateRecord = { ...item, ...value, variables: extractVariables(value.content), attachment: value.attachment, updatedAt: new Date().toISOString() };
     await this.repository.save(updated); return updated;
   }
   async duplicate(id: string): Promise<MessageTemplateRecord> {
     const item = await this.repository.getById(id); if (!item) throw new Error('Modèle introuvable');
-    return this.create({ name: `${item.name} — copie`, category: item.category, content: item.content });
+    return this.create({ name: `${item.name} — copie`, category: item.category, content: item.content, attachment: item.attachment });
   }
   async archive(id: string): Promise<void> {
     const item = await this.repository.getById(id); if (!item) throw new Error('Modèle introuvable');
