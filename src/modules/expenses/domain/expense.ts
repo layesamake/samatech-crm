@@ -26,6 +26,11 @@ export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
   OTHER: 'Autre',
 };
 
+export function formatExpenseCategory(category: ExpenseCategory, customCategory?: string): string {
+  const customLabel = customCategory?.trim();
+  return category === 'OTHER' && customLabel ? customLabel : EXPENSE_CATEGORY_LABELS[category];
+}
+
 export const EXPENSE_PAYMENT_METHODS = ['CASH', 'WAVE', 'ORANGE_MONEY', 'BANK_TRANSFER', 'CARD', 'OTHER'] as const;
 export type ExpensePaymentMethod = typeof EXPENSE_PAYMENT_METHODS[number];
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const MESSAGE_CATEGORIES = ['FIRST_CONTACT', 'FOLLOW_UP', 'QUOTE', 'PROMOTION', 'LOYALTY', 'PAYMENT', 'OTHER'] as const;
+export const MESSAGE_CATEGORIES = ['FIRST_CONTACT', 'FOLLOW_UP', 'QUOTE', 'PROMOTION', 'LOYALTY', 'THANK_YOU', 'PAYMENT', 'OTHER'] as const;
 export const ALLOWED_MESSAGE_VARIABLES = ['prenom', 'nom', 'contact', 'entreprise', 'produit', 'localite', 'nom_entreprise'] as const;
 export type MessageVariable = typeof ALLOWED_MESSAGE_VARIABLES[number];
 
@@ -10,6 +10,7 @@ export const MESSAGE_CATEGORY_LABELS: Record<typeof MESSAGE_CATEGORIES[number], 
   QUOTE: 'Devis',
   PROMOTION: 'Promotion',
   LOYALTY: 'Fidélisation',
+  THANK_YOU: 'Remerciement',
   PAYMENT: 'Paiement',
   OTHER: 'Autre',
 };

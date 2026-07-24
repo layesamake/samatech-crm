@@ -15,6 +15,7 @@ export const CONTACT_SOURCES = [
   'WHATSAPP',
   'FACEBOOK',
   'INSTAGRAM',
+  'TIKTOK',
   'LINKEDIN',
   'WEBSITE',
   'REFERRAL',
@@ -23,7 +24,7 @@ export const CONTACT_SOURCES = [
   'OTHER',
 ] as const;
 export type ContactSource = (typeof CONTACT_SOURCES)[number];
-export const CONTACT_SOURCE_LABELS: Record<ContactSource, string> = { WHATSAPP: 'WhatsApp', FACEBOOK: 'Facebook', INSTAGRAM: 'Instagram', LINKEDIN: 'LinkedIn', WEBSITE: 'Site web', REFERRAL: 'Recommandation', EVENT: 'Événement', MANUAL: 'Saisie manuelle', OTHER: 'Autre' };
+export const CONTACT_SOURCE_LABELS: Record<ContactSource, string> = { WHATSAPP: 'WhatsApp', FACEBOOK: 'Facebook', INSTAGRAM: 'Instagram', TIKTOK: 'TikTok', LINKEDIN: 'LinkedIn', WEBSITE: 'Site web', REFERRAL: 'Recommandation', EVENT: 'Événement', MANUAL: 'Saisie manuelle', OTHER: 'Autre' };
 
 export interface ContactRecord extends AuditFields {
   id: UUID;

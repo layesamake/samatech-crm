@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -55,6 +55,13 @@ export default function NouveauProspectPage() {
       interestLevel: "NON_QUALIFIE",
     },
   });
+
+  const [firstName = "", lastName = ""] = useWatch({ control, name: ["firstName", "lastName"] });
+  const displayName = [firstName.trim(), lastName.trim()].filter(Boolean).join(" ");
+
+  useEffect(() => {
+    setValue("displayName", displayName);
+  }, [displayName, setValue]);
 
   const handleCreateProduct = async (name: string) => {
     const catRepo = new DexieCatalogRepository();
@@ -146,12 +153,6 @@ export default function NouveauProspectPage() {
             </div>
           )}
 
-          <div className="space-y-1">
-            <Label htmlFor="displayName">Nom d&apos;affichage *</Label>
-            <Input id="displayName" placeholder="Ex: Jean Dupont, Entreprise X..." {...register("displayName")} />
-            {errors.displayName && <p className="text-xs text-red-500">{errors.displayName.message as string}</p>}
-          </div>
-
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label htmlFor="title">Titre</Label>
@@ -170,6 +171,13 @@ export default function NouveauProspectPage() {
               <Label htmlFor="lastName">Nom</Label>
               <Input id="lastName" placeholder="Ex: Dupont" {...register("lastName")} />
             </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label htmlFor="displayName">Nom d&apos;affichage *</Label>
+            <Input id="displayName" placeholder="Renseigné à partir du prénom et du nom" readOnly {...register("displayName")} />
+            <p className="text-xs text-muted-foreground">Prénom suivi du nom.</p>
+            {errors.displayName && <p className="text-xs text-red-500">{errors.displayName.message as string}</p>}
           </div>
 
           <div className="space-y-1">

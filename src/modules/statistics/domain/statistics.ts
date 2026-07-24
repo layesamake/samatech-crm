@@ -5,7 +5,7 @@ import type { FollowUpRecord } from '@/modules/follow-ups/domain/follow-up';
 import type { InvoiceLineRecord, InvoiceRecord } from '@/modules/invoices/domain/invoice';
 import type { LocationRecord } from '@/modules/locations/domain/location';
 import type { PaymentRecord } from '@/modules/payments/domain/payment';
-import type { ContactRecord, ProspectInterestRecord, ProspectProfileRecord } from '@/modules/prospects/domain/prospect';
+import { CONTACT_SOURCE_LABELS, type ContactRecord, type ProspectInterestRecord, type ProspectProfileRecord } from '@/modules/prospects/domain/prospect';
 import type { ExpenseRecord } from '@/modules/expenses/domain/expense';
 
 export const STATISTICS_TIMEZONE = 'Africa/Dakar';
@@ -255,7 +255,7 @@ export function calculateStatistics(data: StatisticsData, options: StatisticsOpt
   }
   const locationPath = (id: string): string => { if (id === '__NONE__') return 'Sans localité'; const names: string[] = []; const seen = new Set<string>(); let current = locationById.get(id); while (current && !seen.has(current.id)) { seen.add(current.id); names.unshift(current.name); current = current.parentId ? locationById.get(current.parentId) : undefined; } return names.join(' › ') || 'Localité supprimée'; };
   const localities = [...localityAcc.entries()].map(([id, value]) => segmentRow(id, locationPath(id), value)).sort((a, b) => b.prospects - a.prospects || a.label.localeCompare(b.label));
-  const sourceLabels: Record<string, string> = { WHATSAPP: 'WhatsApp', FACEBOOK: 'Facebook', INSTAGRAM: 'Instagram', LINKEDIN: 'LinkedIn', WEBSITE: 'Site web', REFERRAL: 'Recommandation', EVENT: 'Événement', MANUAL: 'Saisie manuelle', OTHER: 'Autre', __NONE__: 'Source non renseignée' };
+  const sourceLabels: Record<string, string> = { ...CONTACT_SOURCE_LABELS, __NONE__: 'Source non renseignée' };
   const sources = [...sourceAcc.entries()].map(([id, value]) => segmentRow(id, sourceLabels[id] ?? id, value)).sort((a, b) => b.prospects - a.prospects || a.label.localeCompare(b.label));
   const statusCount = new Map<string, number>(); const interestCount = new Map<string, number>();
   for (const profile of data.prospectProfiles) { const contact = contactById.get(profile.contactId); if (profile.archivedAt || contact?.archivedAt || profile.status === 'CONVERTI') continue; increment(statusCount, profile.status); increment(interestCount, profile.interestLevel); }

@@ -48,9 +48,11 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
 
   const [accountId, setAccountId] = useState('');
   const [accounts, setAccounts] = useState<TreasuryAccountWithBalance[]>([]);
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
 
   useEffect(() => {
     accountUseCase.listAccountsWithBalance().then(setAccounts).catch(console.error);
+    manage.listCustomCategories().then(setCustomCategories).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -164,16 +166,24 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
 
         <div className="grid sm:grid-cols-2 gap-4">
           <label className="text-sm font-medium">Catégorie
-            <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={category} onChange={e => setCategory(e.target.value as ExpenseInput['category'])}>
-              {EXPENSE_CATEGORIES.map(c => (
+            <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={category} onChange={e => {
+              const nextCategory = e.target.value as ExpenseInput['category'];
+              setCategory(nextCategory);
+              if (nextCategory !== 'OTHER') setCustomCategory('');
+            }}>
+              {EXPENSE_CATEGORIES.filter((item) => item !== 'OTHER').map(c => (
                 <option key={c} value={c}>{EXPENSE_CATEGORY_LABELS[c]}</option>
               ))}
+              <option value="OTHER">+ Ajouter une nouvelle catégorie…</option>
             </select>
           </label>
 
           {category === 'OTHER' && (
-            <label className="text-sm font-medium">Précisez la catégorie
-              <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={customCategory} onChange={e => setCustomCategory(e.target.value)} />
+            <label className="text-sm font-medium">Nouvelle catégorie
+              <input disabled={status === 'CANCELLED'} list="expense-custom-categories" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={customCategory} onChange={e => setCustomCategory(e.target.value)} placeholder="Ex. Assurance ou maintenance" />
+              <datalist id="expense-custom-categories">
+                {customCategories.map((name) => <option key={name} value={name} />)}
+              </datalist>
             </label>
           )}
         </div>

@@ -26,6 +26,16 @@ export class DexieExpenseRepository {
     }).sort((a, b) => b.expenseDate.localeCompare(a.expenseDate) || b.createdAt.localeCompare(a.createdAt));
   }
 
+  async listCustomCategories(): Promise<string[]> {
+    const expenses = await db.expenses.filter((expense) => !expense.archivedAt && expense.category === 'OTHER' && Boolean(expense.customCategory?.trim())).toArray();
+    const categories = new Map<string, string>();
+    for (const expense of expenses) {
+      const name = expense.customCategory!.trim();
+      categories.set(name.toLocaleLowerCase('fr'), name);
+    }
+    return [...categories.values()].sort((left, right) => left.localeCompare(right, 'fr'));
+  }
+
   async save(expense: ExpenseRecord): Promise<void> {
     await db.expenses.put(expense);
   }

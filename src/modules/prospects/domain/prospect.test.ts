@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizePhoneNumber, CreateProspectSchema, UpdateProspectSchema } from './prospect';
+import { CONTACT_SOURCE_LABELS, CreateProspectSchema, normalizePhoneNumber, UpdateProspectSchema } from './prospect';
 
 describe('Prospect Domain', () => {
   describe('normalizePhoneNumber', () => {
@@ -22,6 +22,12 @@ describe('Prospect Domain', () => {
   });
 
   describe('CreateProspectSchema', () => {
+    it('devrait accepter TikTok comme source et exposer son libellé', () => {
+      const result = CreateProspectSchema.safeParse({ displayName: 'Awa', whatsappPhone: '77', source: 'TIKTOK' });
+      expect(result.success).toBe(true);
+      expect(CONTACT_SOURCE_LABELS.TIKTOK).toBe('TikTok');
+    });
+
     it('devrait valider un prospect valide', () => {
       const input = {
         displayName: 'Jean Dupont',

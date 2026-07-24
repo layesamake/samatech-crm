@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *, .theme-phantom *, .theme-emerald-night *));
 
 @theme inline {
   --color-background: var(--background);
@@ -167,6 +167,44 @@
   --nav-active: var(--primary);
 }
 
+.theme-emerald-night {
+  --background: oklch(0.11 0.005 285);
+  --foreground: oklch(0.96 0.005 285);
+  --card: oklch(0.16 0.01 285);
+  --card-foreground: oklch(0.96 0.005 285);
+  --popover: oklch(0.18 0.01 285);
+  --popover-foreground: oklch(0.96 0.005 285);
+  --primary: oklch(0.74 0.17 158);
+  --primary-foreground: oklch(0.12 0.015 158);
+  --secondary: oklch(0.21 0.012 285);
+  --secondary-foreground: oklch(0.96 0.005 285);
+  --muted: oklch(0.21 0.012 285);
+  --muted-foreground: oklch(0.7 0.01 285);
+  --accent: oklch(0.23 0.025 158);
+  --accent-foreground: oklch(0.96 0.005 285);
+  --destructive: oklch(0.68 0.2 25);
+  --border: oklch(0.28 0.012 285);
+  --input: oklch(0.28 0.012 285);
+  --ring: oklch(0.74 0.17 158);
+  --chart-1: oklch(0.74 0.17 158);
+  --chart-2: oklch(0.66 0.13 175);
+  --chart-3: oklch(0.58 0.1 195);
+  --chart-4: oklch(0.52 0.08 220);
+  --chart-5: oklch(0.45 0.06 245);
+  --sidebar: oklch(0.11 0.005 285);
+  --sidebar-foreground: oklch(0.96 0.005 285);
+  --sidebar-primary: oklch(0.74 0.17 158);
+  --sidebar-primary-foreground: oklch(0.12 0.015 158);
+  --sidebar-accent: oklch(0.21 0.012 285);
+  --sidebar-accent-foreground: oklch(0.96 0.005 285);
+  --sidebar-border: oklch(0.28 0.012 285);
+  --sidebar-ring: oklch(0.74 0.17 158);
+  --nav-bg: var(--background);
+  --nav-fg: var(--foreground);
+  --nav-muted: var(--muted-foreground);
+  --nav-active: var(--primary);
+}
+
 .theme-chase {
   --background: oklch(0.97 0.01 260); /* Chase light grayish blue bg */
   --foreground: oklch(0.15 0 0); /* Dark text */
@@ -221,6 +259,15 @@
   }
   button, a, input, select, textarea {
     scroll-margin: 5rem;
+  }
+  select {
+    color: var(--foreground);
+    background-color: var(--background);
+  }
+  select option,
+  select optgroup {
+    color: var(--popover-foreground);
+    background-color: var(--popover);
   }
 }
 

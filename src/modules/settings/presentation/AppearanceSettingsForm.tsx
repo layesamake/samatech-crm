@@ -2,7 +2,7 @@
 
 import { useTheme } from 'next-themes';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { Activity, Monitor, Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
@@ -11,7 +11,6 @@ export default function AppearanceSettingsForm() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -26,7 +25,7 @@ export default function AppearanceSettingsForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           
           {/* Light Theme Option */}
           <button
@@ -56,6 +55,21 @@ export default function AppearanceSettingsForm() {
             </div>
             <span className="font-semibold">Sombre</span>
             <span className="text-xs text-muted-foreground mt-1">Salytics Style</span>
+          </button>
+
+          {/* Emerald night Theme Option */}
+          <button
+            onClick={() => setTheme('theme-emerald-night')}
+            className={cn(
+              "flex flex-col items-center justify-center p-6 border-2 rounded-xl transition-all hover:bg-muted",
+              theme === 'theme-emerald-night' ? "border-primary bg-primary/5" : "border-border"
+            )}
+          >
+            <div className="mb-4 rounded-full bg-[#111216] p-4 shadow-sm ring-1 ring-[#2a2d34]">
+              <Activity className="h-8 w-8 text-[#3ecf8e]" />
+            </div>
+            <span className="font-semibold">Émeraude nuit</span>
+            <span className="mt-1 text-xs text-muted-foreground">Noir & vert émeraude</span>
           </button>
 
           {/* Phantom Theme Option */}

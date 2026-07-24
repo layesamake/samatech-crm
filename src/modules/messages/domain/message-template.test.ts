@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { MessageTemplateInputSchema, buildWhatsAppUrl, extractVariables, resolveMessage } from './message-template';
+import { MESSAGE_CATEGORY_LABELS, MessageTemplateInputSchema, buildWhatsAppUrl, extractVariables, resolveMessage } from './message-template';
 
 describe('Modèles et WhatsApp BR-080 à BR-084', () => {
   it('valide le nom, contenu, catégorie et extrait les variables sans doublon', () => {
     expect(MessageTemplateInputSchema.safeParse({ name: '', category: 'FOLLOW_UP', content: 'Bonjour' }).success).toBe(false);
     expect(MessageTemplateInputSchema.safeParse({ name: 'R', category: 'FOLLOW_UP', content: '' }).success).toBe(false);
     expect(extractVariables('{{prenom}} {{produit}} {{prenom}}')).toEqual(['prenom', 'produit']);
+  });
+  it('accepte la catégorie Remerciement', () => {
+    expect(MessageTemplateInputSchema.safeParse({ name: 'Merci', category: 'THANK_YOU', content: 'Merci {{prenom}}' }).success).toBe(true);
+    expect(MESSAGE_CATEGORY_LABELS.THANK_YOU).toBe('Remerciement');
   });
   it('refuse une variable inconnue et signale une valeur absente', () => {
     expect(MessageTemplateInputSchema.safeParse({ name: 'R', category: 'FOLLOW_UP', content: '{{inconnue}}' }).success).toBe(false);

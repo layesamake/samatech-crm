@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/infrastructure/database/db';
 import { formatMinor } from '@/modules/invoices/domain/invoice';
-import { EXPENSE_CATEGORY_LABELS, EXPENSE_PAYMENT_METHOD_LABELS, ExpenseRecord } from '@/modules/expenses/domain/expense';
+import { EXPENSE_CATEGORY_LABELS, EXPENSE_PAYMENT_METHOD_LABELS, ExpenseRecord, formatExpenseCategory } from '@/modules/expenses/domain/expense';
 
 export default function ExpensesPage() {
   const [filterDateFrom, setFilterDateFrom] = useState('');
@@ -113,8 +113,7 @@ export default function ExpensesPage() {
                       {expense.supplier && <div className="text-xs text-muted-foreground">Bénéficiaire: {expense.supplier}</div>}
                     </td>
                     <td className="p-4 align-middle">
-                      {EXPENSE_CATEGORY_LABELS[expense.category]}
-                      {expense.category === 'OTHER' && expense.customCategory && ` (${expense.customCategory})`}
+                      {formatExpenseCategory(expense.category, expense.customCategory)}
                     </td>
                     <td className="p-4 align-middle">{EXPENSE_PAYMENT_METHOD_LABELS[expense.paymentMethod]}</td>
                     <td className="p-4 align-middle text-right font-semibold">

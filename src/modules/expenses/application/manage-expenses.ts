@@ -16,6 +16,10 @@ export class ManageExpensesUseCase {
     return this.repository.get(id);
   }
 
+  async listCustomCategories(): Promise<string[]> {
+    return this.repository.listCustomCategories();
+  }
+
   async create(input: ExpenseInput): Promise<ExpenseRecord> {
     const value = ExpenseInputSchema.parse(input);
     const now = this.clock.now().toISOString();

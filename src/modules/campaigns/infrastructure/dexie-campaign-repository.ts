@@ -2,7 +2,7 @@ import Dexie from 'dexie';
 import { db } from '@/infrastructure/database/db';
 import type { TimelineEventRecord } from '@/modules/follow-ups/domain/follow-up';
 import { buildWhatsAppUrl, MessageTemplateRecord } from '@/modules/messages/domain/message-template';
-import type { ContactSource, InterestLevel, ProspectStatus } from '@/modules/prospects/domain/prospect';
+import { CONTACT_SOURCES, type ContactSource, type InterestLevel, type ProspectStatus } from '@/modules/prospects/domain/prospect';
 import {
   assertCampaignCanBeReady,
   buildCampaignPreview,
@@ -54,7 +54,7 @@ export class DexieCampaignRepository {
     ]);
     return {
       locations: locations.map(({ id, name, level }) => ({ id, name, level })), products: products.map(({ id, name }) => ({ id, name })), tags: tags.map(({ id, name }) => ({ id, name })), templates,
-      prospectStatuses: ['NOUVEAU', 'CONTACTE', 'INTERESSE', 'A_RELANCER', 'NEGOCIATION', 'CONVERTI', 'PERDU'], interestLevels: ['NON_QUALIFIE', 'FROID', 'TIEDE', 'CHAUD'], sources: ['WHATSAPP', 'FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'WEBSITE', 'REFERRAL', 'EVENT', 'MANUAL', 'OTHER'],
+      prospectStatuses: ['NOUVEAU', 'CONTACTE', 'INTERESSE', 'A_RELANCER', 'NEGOCIATION', 'CONVERTI', 'PERDU'], interestLevels: ['NON_QUALIFIE', 'FROID', 'TIEDE', 'CHAUD'], sources: [...CONTACT_SOURCES],
     };
   }
 

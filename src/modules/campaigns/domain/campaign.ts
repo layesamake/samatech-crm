@@ -3,7 +3,7 @@ import type { ClientProfileRecord } from '@/modules/clients/domain/client';
 import type { InvoiceLineRecord, InvoiceRecord } from '@/modules/invoices/domain/invoice';
 import type { LocationRecord } from '@/modules/locations/domain/location';
 import { ALLOWED_MESSAGE_VARIABLES, extractVariables, MessageVariable, resolveMessage } from '@/modules/messages/domain/message-template';
-import type { ContactRecord, ContactSource, ContactTagRecord, InterestLevel, ProspectInterestRecord, ProspectProfileRecord, ProspectStatus, TagRecord } from '@/modules/prospects/domain/prospect';
+import { CONTACT_SOURCES, type ContactRecord, type ContactSource, type ContactTagRecord, type InterestLevel, type ProspectInterestRecord, type ProspectProfileRecord, type ProspectStatus, type TagRecord } from '@/modules/prospects/domain/prospect';
 import type { ProductRecord } from '@/modules/catalog/domain/catalog';
 import type { TimelineEventRecord } from '@/modules/follow-ups/domain/follow-up';
 
@@ -76,7 +76,7 @@ export const CampaignCriteriaSchema = z.object({
   prospectStatuses: z.array(z.enum(['NOUVEAU', 'CONTACTE', 'INTERESSE', 'A_RELANCER', 'NEGOCIATION', 'CONVERTI', 'PERDU'])).optional(),
   interestLevels: z.array(z.enum(['NON_QUALIFIE', 'FROID', 'TIEDE', 'CHAUD'])).optional(),
   tagIds: OptionalIdArray,
-  sources: z.array(z.enum(['WHATSAPP', 'FACEBOOK', 'INSTAGRAM', 'LINKEDIN', 'WEBSITE', 'REFERRAL', 'EVENT', 'MANUAL', 'OTHER'])).optional(),
+  sources: z.array(z.enum(CONTACT_SOURCES)).optional(),
   createdFrom: OptionalDate,
   createdTo: OptionalDate,
   inactiveSince: OptionalDate,
