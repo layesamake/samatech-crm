@@ -3,7 +3,6 @@
 import { Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { usePathname } from 'next/navigation'
-import { BusinessSwitcher } from '@/components/providers/BusinessSwitcher'
 
 const routeTitles: Record<string, string> = {
   '/': 'Tableau de bord',
@@ -50,8 +49,6 @@ export function Topbar() {
           {/* Separator */}
           <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-border" aria-hidden="true" />
 
-          {/* Business Switcher */}
-          <BusinessSwitcher />
         </div>
       </div>
     </header>

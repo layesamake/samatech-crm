@@ -21,13 +21,17 @@ import {
   PieChart,
   X,
   UserPlus,
-  Briefcase
+  Briefcase,
+  ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/components/ui/sheet';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { useBusiness } from '@/components/providers/BusinessProvider';
 
 const primaryLinks = [
   { href: '/', label: 'Accueil', icon: Home },
@@ -49,6 +53,68 @@ const moreLinks = [
   { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
   { href: '/settings', label: 'Paramètres', icon: Settings },
 ];
+
+function BusinessSwitcherMobile({ onClose }: { onClose: () => void }) {
+  const { activeBusiness, businesses, switchBusiness } = useBusiness();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger className="flex items-center space-x-3 outline-none text-left flex-1 min-w-0">
+        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-xl shrink-0">
+          {activeBusiness?.logoBase64 ? (
+            <img src={activeBusiness.logoBase64} alt={activeBusiness.name} className="w-full h-full object-cover rounded-full" />
+          ) : (
+            activeBusiness?.name?.substring(0, 2).toUpperCase() || 'AS'
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm truncate uppercase">{activeBusiness?.name || 'Espace'}</p>
+          <p className="text-xs text-muted-foreground truncate">admin@samatech.com</p>
+        </div>
+        <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0 mr-2" />
+      </PopoverTrigger>
+      <PopoverContent className="w-[280px] p-2 z-[100]" align="start">
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-muted-foreground px-2 pt-1 uppercase">Espaces disponibles</p>
+          <div className="space-y-1">
+            {businesses.filter(b => b.status !== 'archived').map(b => (
+              <Button 
+                key={b.id} 
+                variant={b.id === activeBusiness?.id ? 'secondary' : 'ghost'} 
+                className="w-full justify-start font-normal h-10 px-2"
+                onClick={() => {
+                  setOpen(false);
+                  if (b.id !== activeBusiness?.id) {
+                    switchBusiness(b.id);
+                    onClose();
+                  }
+                }}
+              >
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium text-xs flex-shrink-0 mr-3">
+                  {b.logoBase64 ? (
+                    <img src={b.logoBase64} alt={b.name} className="w-full h-full object-cover rounded-full" />
+                  ) : (
+                    b.name.substring(0, 2).toUpperCase()
+                  )}
+                </div>
+                <span className="truncate">{b.name}</span>
+              </Button>
+            ))}
+          </div>
+          
+          <div className="h-px bg-border my-2" />
+          
+          <Button variant="ghost" className="w-full justify-start text-sm h-9 px-2 text-muted-foreground" onClick={() => { setOpen(false); router.push('/settings'); onClose(); }}>
+            <Settings className="h-4 w-4 mr-2" />
+            Gérer mes espaces
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -104,29 +170,36 @@ export function BottomNav() {
               <span className="text-[10px] font-medium">Plus</span>
             </SheetTrigger>
             <SheetContent side="left" showCloseButton={false} className="w-[75vw] max-w-[75vw] sm:w-[75vw] sm:max-w-[75vw] rounded-r-3xl border-r h-full flex flex-col p-0 bg-background/95 backdrop-blur-xl">
-              <SheetHeader className="px-6 py-4 border-b">
-                <div className="flex items-center justify-between">
-                  <SheetTitle className="text-left font-bold text-lg">Menu</SheetTitle>
-                  <div className="flex items-center gap-2">
-                    {mounted && (
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+              <SheetHeader className="px-4 py-4 border-b">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between">
+                    <SheetTitle className="text-left font-bold text-lg">Menu</SheetTitle>
+                    <div className="flex items-center gap-2">
+                      {mounted && (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="rounded-full bg-muted/50"
+                          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                        >
+                          {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                        </Button>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="rounded-full bg-muted/50"
-                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                        onClick={() => setOpen(false)}
+                        aria-label="Fermer le menu"
                       >
-                        {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                        <X className="h-5 w-5" />
                       </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="rounded-full bg-muted/50"
-                      onClick={() => setOpen(false)}
-                      aria-label="Fermer le menu"
-                    >
-                      <X className="h-5 w-5" />
-                    </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Business Switcher Mobile Header */}
+                  <div className="flex items-center">
+                    <BusinessSwitcherMobile onClose={() => setOpen(false)} />
                   </div>
                 </div>
               </SheetHeader>
