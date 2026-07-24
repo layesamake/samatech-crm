@@ -9,6 +9,7 @@ import type { TimelineEventRecord } from '@/modules/follow-ups/domain/follow-up'
 
 export const CAMPAIGN_STATUSES = ['BROUILLON', 'PRETE', 'EN_COURS', 'TERMINEE', 'ANNULEE'] as const;
 export const CAMPAIGN_AUDIENCES = ['PROSPECTS', 'CLIENTS', 'ALL_CONTACTS'] as const;
+export const CAMPAIGN_AUDIENCE_LABELS: Record<typeof CAMPAIGN_AUDIENCES[number], string> = { PROSPECTS: 'Prospects', CLIENTS: 'Clients', ALL_CONTACTS: 'Tous les contacts' };
 export const CAMPAIGN_RECIPIENT_STATUSES = ['A_TRAITER', 'OUVERT_DANS_WHATSAPP', 'CONFIRME_CONTACTE', 'IGNORE', 'ERREUR'] as const;
 export const CAMPAIGN_ERROR_CODES = ['NUMERO_INJOIGNABLE', 'WHATSAPP_INDISPONIBLE', 'CONTACT_INDISPONIBLE', 'AUTRE'] as const;
 

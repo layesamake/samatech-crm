@@ -41,29 +41,29 @@ export default function SecuritySettings() {
   return (
     <div className="p-4 md:p-8 max-w-3xl mx-auto space-y-6">
       <div><h1 className="text-2xl font-bold">Sécurité locale</h1><p className="text-muted-foreground">Le PIN masque l’application sur cet appareil. Il ne chiffre pas IndexedDB.</p></div>
-      {message && <p role="status" className="rounded-md border p-3 text-sm">{message}</p>}
-      <section className="rounded-xl border p-5 space-y-4">
+      {message && <p role="status" className="rounded-md border p-3 text-sm bg-background text-foreground">{message}</p>}
+      <section className="rounded-xl border p-5 space-y-4 bg-background text-foreground">
         <h2 className="text-lg font-semibold">État du PIN</h2>
         <p data-testid="pin-status" className="font-medium">{settings?.pinEnabled ? 'PIN actif' : 'PIN inactif'}</p>
         {!settings?.pinEnabled ? (
           <form onSubmit={activate} className="space-y-3 max-w-sm">
             <p className="text-sm text-muted-foreground">Activation recommandée : choisissez 4 à 6 chiffres.</p>
-            <label className="block text-sm font-medium">Nouveau PIN<input data-testid="enable-pin" type="password" inputMode="numeric" maxLength={6} value={pin} onChange={(event) => setPin(event.target.value)} className="mt-1 h-10 w-full rounded-md border px-3" /></label>
-            <label className="block text-sm font-medium">Confirmer le PIN<input data-testid="enable-pin-confirm" type="password" inputMode="numeric" maxLength={6} value={confirmation} onChange={(event) => setConfirmation(event.target.value)} className="mt-1 h-10 w-full rounded-md border px-3" /></label>
+            <label className="block text-sm font-medium">Nouveau PIN<input data-testid="enable-pin" type="password" inputMode="numeric" maxLength={6} value={pin} onChange={(event) => setPin(event.target.value)} className="mt-1 h-10 w-full rounded-md border px-3 bg-background text-foreground" /></label>
+            <label className="block text-sm font-medium">Confirmer le PIN<input data-testid="enable-pin-confirm" type="password" inputMode="numeric" maxLength={6} value={confirmation} onChange={(event) => setConfirmation(event.target.value)} className="mt-1 h-10 w-full rounded-md border px-3 bg-background text-foreground" /></label>
             <button data-testid="enable-pin-submit" disabled={busy} className="h-10 rounded-md bg-primary px-4 text-primary-foreground disabled:opacity-50">Activer le PIN</button>
           </form>
         ) : (
           <div className="space-y-6">
             <form onSubmit={change} className="space-y-3 max-w-sm">
               <h3 className="font-semibold">Modifier le PIN</h3>
-              <input aria-label="PIN actuel" type="password" inputMode="numeric" placeholder="PIN actuel" value={currentPin} onChange={(event) => setCurrentPin(event.target.value)} className="h-10 w-full rounded-md border px-3" />
-              <input aria-label="Nouveau PIN" type="password" inputMode="numeric" placeholder="Nouveau PIN" value={newPin} onChange={(event) => setNewPin(event.target.value)} className="h-10 w-full rounded-md border px-3" />
-              <input aria-label="Confirmation du nouveau PIN" type="password" inputMode="numeric" placeholder="Confirmer le nouveau PIN" value={newConfirmation} onChange={(event) => setNewConfirmation(event.target.value)} className="h-10 w-full rounded-md border px-3" />
-              <button disabled={busy} className="h-10 rounded-md border px-4">Modifier</button>
+              <input aria-label="PIN actuel" type="password" inputMode="numeric" placeholder="PIN actuel" value={currentPin} onChange={(event) => setCurrentPin(event.target.value)} className="h-10 w-full rounded-md border px-3 bg-background text-foreground" />
+              <input aria-label="Nouveau PIN" type="password" inputMode="numeric" placeholder="Nouveau PIN" value={newPin} onChange={(event) => setNewPin(event.target.value)} className="h-10 w-full rounded-md border px-3 bg-background text-foreground" />
+              <input aria-label="Confirmation du nouveau PIN" type="password" inputMode="numeric" placeholder="Confirmer le nouveau PIN" value={newConfirmation} onChange={(event) => setNewConfirmation(event.target.value)} className="h-10 w-full rounded-md border px-3 bg-background text-foreground" />
+              <button disabled={busy} className="h-10 rounded-md border px-4 bg-background text-foreground">Modifier</button>
             </form>
             <div className="space-y-2 max-w-sm">
               <label className="block text-sm font-medium">Verrouillage automatique</label>
-              <select data-testid="auto-lock" value={settings.autoLockMinutes} onChange={(event) => void run(() => useCase.setAutoLockMinutes(Number(event.target.value)), 'Délai enregistré.')} className="h-10 w-full rounded-md border px-3">
+              <select data-testid="auto-lock" value={settings.autoLockMinutes} onChange={(event) => void run(() => useCase.setAutoLockMinutes(Number(event.target.value)), 'Délai enregistré.')} className="h-10 w-full rounded-md border px-3 bg-background text-foreground">
                 {AUTO_LOCK_OPTIONS.map((minutes) => <option key={minutes} value={minutes}>{minutes === 0 ? 'Jamais automatiquement' : `${minutes} minute${minutes > 1 ? 's' : ''}`}</option>)}
               </select>
             </div>
@@ -74,7 +74,7 @@ export default function SecuritySettings() {
           </div>
         )}
       </section>
-      <section className="rounded-xl border p-5 text-sm text-muted-foreground space-y-2"><h2 className="text-base font-semibold text-foreground">Limites</h2><p>Cette protection est locale et peut être contournée par une personne contrôlant entièrement le stockage du navigateur. Aucun compte, PIN maître ou récupération par e-mail n’existe.</p></section>
+      <section className="rounded-xl border p-5 text-sm text-muted-foreground space-y-2 bg-background text-foreground"><h2 className="text-base font-semibold text-foreground">Limites</h2><p>Cette protection est locale et peut être contournée par une personne contrôlant entièrement le stockage du navigateur. Aucun compte, PIN maître ou récupération par e-mail n’existe.</p></section>
     </div>
   );
 }

@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 export const FOLLOW_UP_CHANNELS = ['WHATSAPP', 'PHONE', 'EMAIL', 'OTHER'] as const;
+export const FOLLOW_UP_CHANNEL_LABELS: Record<typeof FOLLOW_UP_CHANNELS[number], string> = { WHATSAPP: 'WhatsApp', PHONE: 'Téléphone', EMAIL: 'E-mail', OTHER: 'Autre' };
 export const FOLLOW_UP_PRIORITIES = ['LOW', 'NORMAL', 'HIGH'] as const;
+export const FOLLOW_UP_PRIORITY_LABELS: Record<typeof FOLLOW_UP_PRIORITIES[number], string> = { LOW: 'Basse', NORMAL: 'Normale', HIGH: 'Haute' };
 export const FOLLOW_UP_STATUSES = ['PLANIFIEE', 'REALISEE', 'REPORTEE', 'ANNULEE'] as const;
 export type FollowUpStatus = typeof FOLLOW_UP_STATUSES[number];
 

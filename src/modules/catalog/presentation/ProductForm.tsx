@@ -124,7 +124,7 @@ export function ProductForm({
   return (
     <div className="bg-slate-50 min-h-screen pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b px-2 py-3 flex items-center justify-between shadow-sm">
+      <div className="sticky top-0 z-10 bg-white border-b px-2 py-3 flex items-center justify-between shadow-sm bg-background text-foreground">
         <div className="flex items-center gap-2">
           <button type="button" onClick={onCancel} className="p-2 hover:bg-muted rounded-full">
             <ArrowLeft className="w-6 h-6 text-gray-800" />
@@ -144,7 +144,7 @@ export function ProductForm({
         {error && <div className="p-3 bg-red-50 text-red-800 rounded-md text-sm">{error}</div>}
 
         {/* Card 1: Informations Générales */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-5 space-y-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-5 space-y-6 bg-background text-foreground">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 space-y-3">
               <label className="text-xs font-medium text-blue-600">Type de l'article</label>
@@ -166,7 +166,7 @@ export function ProductForm({
               </div>
             </div>
             <div 
-              className="relative w-24 h-24 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100 overflow-hidden"
+              className="relative w-24 h-24 border-2 border-dashed border-gray-300 flex flex-col items-center justify-center rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100 overflow-hidden bg-background text-foreground"
               onClick={() => fileInputRef.current?.click()}
             >
               {imageBase64 ? (
@@ -217,7 +217,7 @@ export function ProductForm({
                     setValue('categoryId', e.target.value || undefined);
                   }
                 }}
-                className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base text-gray-900 focus:border-blue-600 focus:ring-0"
+                className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base text-gray-900 focus:border-blue-600 focus:ring-0 bg-background text-foreground"
               >
                 <option value="">Aucune</option>
                 {categories.map(c => (
@@ -226,8 +226,8 @@ export function ProductForm({
                 <option value="NEW">+ Nouvelle catégorie...</option>
               </select>
             ) : (
-              <div className="flex gap-2 pt-2 border-b border-gray-300 pb-1">
-                <input autoFocus placeholder="Nom catégorie" className="flex-1 bg-transparent border-none px-0 text-base text-gray-900 placeholder:text-gray-400 focus:ring-0" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} />
+              <div className="flex gap-2 pt-2 border-b border-gray-300 pb-1 bg-background text-foreground">
+                <input autoFocus placeholder="Nom catégorie" className="flex-1 bg-transparent border-none px-0 text-base text-gray-900 placeholder:text-gray-400 focus:ring-0 bg-background text-foreground" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} />
                 <button type="button" className="text-sm font-semibold text-blue-600" onClick={handleCreateCategory}>Créer</button>
                 <button type="button" className="text-sm font-semibold text-gray-500" onClick={() => { setCategoryMode('SELECT'); setNewCategoryName(''); }}>X</button>
               </div>
@@ -250,7 +250,7 @@ export function ProductForm({
         </div>
 
         {/* Card 2: Informations sur les ventes */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-5 space-y-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-5 space-y-6 bg-background text-foreground">
           <h3 className="font-semibold text-gray-900 text-base">Informations sur les ventes</h3>
 
           <InputField 
@@ -272,7 +272,7 @@ export function ProductForm({
             <label htmlFor="catalog-tax" className="absolute top-0 left-0 text-xs font-medium text-blue-600 transition-all">Taxe</label>
             <select 
               id="catalog-tax"
-              className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base text-gray-900 focus:border-blue-600 focus:ring-0"
+              className="flex w-full border-0 border-b border-gray-300 bg-transparent px-0 py-2 text-base text-gray-900 focus:border-blue-600 focus:ring-0 bg-background text-foreground"
               defaultValue=""
             >
               <option value="" disabled className="text-gray-400">Sélectionnez une Taxe</option>
@@ -287,7 +287,7 @@ export function ProductForm({
                   id="catalog-active"
                   type="checkbox"
                   {...register('isActive')} 
-                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-600"
+                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-600 bg-background text-foreground"
                 />
              </div>
              <div>

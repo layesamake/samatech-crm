@@ -56,32 +56,32 @@ export default function NewBudgetPage() {
 
       {error && <div className="p-4 bg-red-100 text-red-800 rounded-xl text-sm">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="bg-card p-5 rounded-2xl shadow-sm border border-border flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="bg-card p-5 rounded-2xl shadow-sm border border-border flex flex-col gap-4 bg-background text-foreground">
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Nom du budget</label>
-          <input type="text" name="name" required placeholder="Ex: Marketing Mensuel" className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none" />
+          <input type="text" name="name" required placeholder="Ex: Marketing Mensuel" className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground" />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Devise</label>
-          <select name="currency" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none">
+          <select name="currency" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground">
             <option value="XOF">XOF (FCFA)</option>
           </select>
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Montant alloué</label>
-          <input type="number" name="amount" required min="1" step="1" className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none" />
+          <input type="number" name="amount" required min="1" step="1" className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground" />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Date de début</label>
-          <input type="date" name="startDate" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none" />
+          <input type="date" name="startDate" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground" />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Date de fin</label>
-          <input type="date" name="endDate" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none" />
+          <input type="date" name="endDate" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground" />
         </div>
 
         <button type="submit" disabled={loading} className="w-full py-3.5 mt-2 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 disabled:opacity-50">

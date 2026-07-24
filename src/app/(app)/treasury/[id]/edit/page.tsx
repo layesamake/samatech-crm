@@ -104,14 +104,14 @@ export default function EditTreasuryAccountPage() {
       {error && <div className="p-4 bg-red-100 text-red-800 rounded-xl text-sm">{error}</div>}
 
       {account && (
-        <form onSubmit={handleSubmit} className="bg-card p-5 rounded-2xl shadow-sm border border-border flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="bg-card p-5 rounded-2xl shadow-sm border border-border flex flex-col gap-4 bg-background text-foreground">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium">Type de compte</label>
             <select 
               name="type" 
               required 
               defaultValue={account.type}
-              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none"
+              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground"
             >
               <option value="CASH">Caisse (Espèces)</option>
               <option value="BANK">Banque</option>
@@ -127,7 +127,7 @@ export default function EditTreasuryAccountPage() {
               required 
               defaultValue={account.name}
               placeholder="Ex: Caisse Principale" 
-              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none" 
+              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground" 
             />
           </div>
 
@@ -137,7 +137,7 @@ export default function EditTreasuryAccountPage() {
               name="currency" 
               required 
               defaultValue={account.currency}
-              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none"
+              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground"
             >
               <option value="XOF">XOF (FCFA)</option>
             </select>
@@ -152,7 +152,7 @@ export default function EditTreasuryAccountPage() {
               min="0" 
               step="1" 
               defaultValue={account.openingBalanceMinor}
-              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none" 
+              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground" 
             />
           </div>
 
@@ -163,7 +163,7 @@ export default function EditTreasuryAccountPage() {
               rows={3} 
               defaultValue={account.note}
               placeholder="Informations complémentaires" 
-              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none"
+              className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground"
             ></textarea>
           </div>
 

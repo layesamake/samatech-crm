@@ -133,28 +133,28 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
       {error && <p role="alert" className="rounded-md bg-red-500/10 p-3 text-red-800 dark:text-red-200">{error}</p>}
       
       {status === 'CANCELLED' && (
-        <div className="rounded-md bg-amber-500/10 p-4 text-amber-800 dark:text-amber-200 border border-amber-500/20">
+        <div className="rounded-md bg-amber-500/10 p-4 text-amber-800 dark:text-amber-200 border border-amber-500/20 bg-background text-foreground">
           <p className="font-bold">Cette dépense a été annulée.</p>
           <p className="text-sm mt-1">Motif: {cancellationReason}</p>
         </div>
       )}
 
-      <section className="grid gap-4 rounded-xl border bg-card text-card-foreground p-4">
+      <section className="grid gap-4 rounded-xl border bg-card text-card-foreground p-4 bg-background text-foreground">
         <label className="text-sm font-medium">Date de dépense
-          <input disabled={status === 'CANCELLED'} type="date" className="mt-1 h-11 w-full rounded-md border px-3" value={expenseDate} onChange={e => setExpenseDate(e.target.value)} />
+          <input disabled={status === 'CANCELLED'} type="date" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={expenseDate} onChange={e => setExpenseDate(e.target.value)} />
         </label>
         
         <label className="text-sm font-medium">Description
-          <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={description} onChange={e => setDescription(e.target.value)} placeholder="Achat de fournitures..." />
+          <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={description} onChange={e => setDescription(e.target.value)} placeholder="Achat de fournitures..." />
         </label>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <label className="text-sm font-medium">Montant ({currency})
-            <input disabled={status === 'CANCELLED'} inputMode="decimal" type="number" step={scale === 0 ? "1" : "0.01"} min="0" className="mt-1 h-11 w-full rounded-md border px-3" value={amountText} onChange={e => setAmountText(e.target.value)} />
+            <input disabled={status === 'CANCELLED'} inputMode="decimal" type="number" step={scale === 0 ? "1" : "0.01"} min="0" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={amountText} onChange={e => setAmountText(e.target.value)} />
           </label>
 
           <label className="text-sm font-medium">Mode de règlement
-            <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value as ExpenseInput['paymentMethod'])}>
+            <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value as ExpenseInput['paymentMethod'])}>
               {EXPENSE_PAYMENT_METHODS.map(m => (
                 <option key={m} value={m}>{EXPENSE_PAYMENT_METHOD_LABELS[m]}</option>
               ))}
@@ -164,7 +164,7 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
 
         <div className="grid sm:grid-cols-2 gap-4">
           <label className="text-sm font-medium">Catégorie
-            <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={category} onChange={e => setCategory(e.target.value as ExpenseInput['category'])}>
+            <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={category} onChange={e => setCategory(e.target.value as ExpenseInput['category'])}>
               {EXPENSE_CATEGORIES.map(c => (
                 <option key={c} value={c}>{EXPENSE_CATEGORY_LABELS[c]}</option>
               ))}
@@ -173,13 +173,13 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
 
           {category === 'OTHER' && (
             <label className="text-sm font-medium">Précisez la catégorie
-              <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={customCategory} onChange={e => setCustomCategory(e.target.value)} />
+              <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={customCategory} onChange={e => setCustomCategory(e.target.value)} />
             </label>
           )}
         </div>
 
         <label className="text-sm font-medium">Compte de trésorerie (Optionnel)
-          <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={accountId} onChange={e => setAccountId(e.target.value)}>
+          <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={accountId} onChange={e => setAccountId(e.target.value)}>
             <option value="">Aucun compte affecté</option>
             {accounts.map(acc => (
               <option key={acc.id} value={acc.id}>{acc.name}</option>
@@ -188,15 +188,15 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
         </label>
 
         <label className="text-sm font-medium text-muted-foreground">Fournisseur / Bénéficiaire (Optionnel)
-          <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={supplier} onChange={e => setSupplier(e.target.value)} placeholder="Nom de l'entreprise..." />
+          <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={supplier} onChange={e => setSupplier(e.target.value)} placeholder="Nom de l'entreprise..." />
         </label>
 
         <label className="text-sm font-medium text-muted-foreground">Référence (Optionnel)
-          <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3" value={reference} onChange={e => setReference(e.target.value)} />
+          <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={reference} onChange={e => setReference(e.target.value)} />
         </label>
 
         <label className="text-sm font-medium text-muted-foreground">Notes (Optionnel)
-          <textarea disabled={status === 'CANCELLED'} className="mt-1 w-full rounded-md border p-3 min-h-[80px]" value={note} onChange={e => setNote(e.target.value)} />
+          <textarea disabled={status === 'CANCELLED'} className="mt-1 w-full rounded-md border p-3 min-h-[80px] bg-background text-foreground" value={note} onChange={e => setNote(e.target.value)} />
         </label>
       </section>
 
@@ -207,16 +207,16 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
           </button>
           
           {expenseId && (
-            <div className="mt-8 p-4 border border-red-500/20 rounded-xl bg-red-500/5">
+            <div className="mt-8 p-4 border border-red-500/20 rounded-xl bg-red-500/5 bg-background text-foreground">
               <h3 className="text-red-700 font-bold mb-2">Annuler cette dépense</h3>
               <p className="text-sm text-red-700/80 mb-3">Si cette dépense est une erreur, vous pouvez l&apos;annuler. Elle sera conservée dans l&apos;historique mais ne sera plus comptabilisée.</p>
               <input 
-                className="h-11 w-full rounded-md border border-red-500/30 px-3 mb-3 bg-white" 
+                className="h-11 w-full rounded-md border border-red-500/30 px-3 mb-3 bg-white bg-background text-foreground" 
                 placeholder="Motif de l'annulation obligatoire" 
                 value={cancellationReason} 
                 onChange={e => setCancellationReason(e.target.value)} 
               />
-              <button type="button" disabled={pending || !cancellationReason.trim()} onClick={() => void cancel()} className="h-11 px-4 rounded-md border border-red-500/50 text-red-700 font-medium hover:bg-red-500/10 transition-colors">
+              <button type="button" disabled={pending || !cancellationReason.trim()} onClick={() => void cancel()} className="h-11 px-4 rounded-md border border-red-500/50 text-red-700 font-medium hover:bg-red-500/10 transition-colors bg-background text-foreground">
                 Annuler la dépense
               </button>
             </div>

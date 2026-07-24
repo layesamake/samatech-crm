@@ -212,11 +212,11 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
       
       {error && <div className="rounded-xl bg-red-100 p-4 text-red-800 dark:bg-red-900/30 dark:text-red-200">{error}</div>}
       
-      <section className="grid gap-4 rounded-xl border bg-card text-card-foreground p-6 sm:grid-cols-2">
+      <section className="grid gap-4 rounded-xl border bg-card text-card-foreground p-6 sm:grid-cols-2 bg-background text-foreground">
         {!documentId && (
           <label className="text-sm sm:col-span-2">
             Type de document
-            <select className="mt-1 h-11 w-full rounded-md border px-3" value={docType} onChange={(e) => setDocType(e.target.value as any)}>
+            <select className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={docType} onChange={(e) => setDocType(e.target.value as any)}>
               <option value="QUOTE">Devis</option>
               <option value="PROFORMA">Facture Proforma</option>
               <option value="DELIVERY_NOTE">Bon de Livraison</option>
@@ -227,7 +227,7 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
         <div className="sm:col-span-2">
           <label className="text-sm">Client</label>
           {clientMode === 'SELECT' ? (
-            <select aria-label="Client" className="mt-1 h-11 w-full rounded-md border px-3" value={clientId} onChange={(event) => {
+            <select aria-label="Client" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={clientId} onChange={(event) => {
               if (event.target.value === 'NEW') setClientMode('NEW');
               else setClientId(event.target.value);
             }}>
@@ -237,32 +237,32 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
             </select>
           ) : (
             <div className="mt-1 flex flex-col sm:flex-row gap-2">
-              <input aria-label="Nom" placeholder="Nom du client" autoFocus className="h-11 flex-1 rounded-md border px-3" value={newClientName} onChange={e => setNewClientName(e.target.value)} />
-              <input aria-label="WhatsApp" placeholder="WhatsApp (ex: +22177...)" className="h-11 flex-1 rounded-md border px-3" value={newClientPhone} onChange={e => setNewClientPhone(e.target.value)} />
+              <input aria-label="Nom" placeholder="Nom du client" autoFocus className="h-11 flex-1 rounded-md border px-3 bg-background text-foreground" value={newClientName} onChange={e => setNewClientName(e.target.value)} />
+              <input aria-label="WhatsApp" placeholder="WhatsApp (ex: +22177...)" className="h-11 flex-1 rounded-md border px-3 bg-background text-foreground" value={newClientPhone} onChange={e => setNewClientPhone(e.target.value)} />
               <div className="flex gap-2">
-                <button type="button" className="rounded-md border px-2 py-1 text-sm bg-secondary text-secondary-foreground" onClick={handleCreateClient}>Créer</button>
-                <button type="button" className="rounded-md border px-2 py-1 text-sm" onClick={() => { setClientMode('SELECT'); setNewClientName(''); setNewClientPhone(''); }}>Annuler</button>
+                <button type="button" className="rounded-md border px-2 py-1 text-sm bg-secondary text-secondary-foreground bg-background text-foreground" onClick={handleCreateClient}>Créer</button>
+                <button type="button" className="rounded-md border px-2 py-1 text-sm bg-background text-foreground" onClick={() => { setClientMode('SELECT'); setNewClientName(''); setNewClientPhone(''); }}>Annuler</button>
               </div>
             </div>
           )}
         </div>
         
-        <label className="text-sm">Date d’émission<input type="date" className="mt-1 h-11 w-full rounded-md border px-3" value={issueDate} onChange={(event) => setIssueDate(event.target.value)}/></label>
+        <label className="text-sm">Date d’émission<input type="date" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={issueDate} onChange={(event) => setIssueDate(event.target.value)}/></label>
         
         {docType !== 'DELIVERY_NOTE' && (
-          <label className="text-sm">Valable jusqu'au<input type="date" className="mt-1 h-11 w-full rounded-md border px-3" value={validUntil} onChange={(event) => setValidUntil(event.target.value)}/></label>
+          <label className="text-sm">Valable jusqu'au<input type="date" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={validUntil} onChange={(event) => setValidUntil(event.target.value)}/></label>
         )}
         
         {docType === 'DELIVERY_NOTE' && (
-          <label className="text-sm">Date de livraison<input type="date" className="mt-1 h-11 w-full rounded-md border px-3" value={deliveryDate} onChange={(event) => setDeliveryDate(event.target.value)}/></label>
+          <label className="text-sm">Date de livraison<input type="date" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={deliveryDate} onChange={(event) => setDeliveryDate(event.target.value)}/></label>
         )}
         
-        <label className="text-sm sm:col-span-2">Référence client<input type="text" placeholder="Numéro BC, référence projet..." className="mt-1 h-11 w-full rounded-md border px-3" value={customerReference} onChange={(event) => setCustomerReference(event.target.value)}/></label>
+        <label className="text-sm sm:col-span-2">Référence client<input type="text" placeholder="Numéro BC, référence projet..." className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={customerReference} onChange={(event) => setCustomerReference(event.target.value)}/></label>
         
         {docType === 'DELIVERY_NOTE' && (
           <>
-            <label className="text-sm">Destinataire<input type="text" className="mt-1 h-11 w-full rounded-md border px-3" value={recipientName} onChange={(event) => setRecipientName(event.target.value)}/></label>
-            <label className="text-sm">Adresse de livraison<textarea className="mt-1 w-full rounded-md border p-3" value={deliveryAddress} onChange={(event) => setDeliveryAddress(event.target.value)}/></label>
+            <label className="text-sm">Destinataire<input type="text" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={recipientName} onChange={(event) => setRecipientName(event.target.value)}/></label>
+            <label className="text-sm">Adresse de livraison<textarea className="mt-1 w-full rounded-md border p-3 bg-background text-foreground" value={deliveryAddress} onChange={(event) => setDeliveryAddress(event.target.value)}/></label>
           </>
         )}
       </section>
@@ -270,7 +270,7 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
       <section className="space-y-3">
         <div className="flex flex-wrap gap-2">
           {productMode === 'SELECT' ? (
-            <select aria-label="Produit à ajouter" className="h-11 flex-1 rounded-md border px-3" value={selectedProduct} onChange={(event) => {
+            <select aria-label="Produit à ajouter" className="h-11 flex-1 rounded-md border px-3 bg-background text-foreground" value={selectedProduct} onChange={(event) => {
               if (event.target.value === 'NEW') { setProductMode('NEW'); setSelectedProduct(''); } 
               else { setSelectedProduct(event.target.value); }
             }}>
@@ -280,35 +280,35 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
             </select>
           ) : (
             <div className="flex gap-2 flex-1">
-              <input aria-label="Nom du nouveau produit" autoFocus placeholder="Nom du nouveau produit..." className="h-11 flex-1 rounded-md border px-3" value={newProductName} onChange={e => setNewProductName(e.target.value)} />
-              <button type="button" className="rounded-md border px-4 whitespace-nowrap bg-secondary text-secondary-foreground" onClick={handleCreateProduct}>Créer & Ajouter</button>
-              <button type="button" className="rounded-md border px-4 whitespace-nowrap" onClick={() => { setProductMode('SELECT'); setNewProductName(''); }}>Annuler</button>
+              <input aria-label="Nom du nouveau produit" autoFocus placeholder="Nom du nouveau produit..." className="h-11 flex-1 rounded-md border px-3 bg-background text-foreground" value={newProductName} onChange={e => setNewProductName(e.target.value)} />
+              <button type="button" className="rounded-md border px-4 whitespace-nowrap bg-secondary text-secondary-foreground bg-background text-foreground" onClick={handleCreateProduct}>Créer & Ajouter</button>
+              <button type="button" className="rounded-md border px-4 whitespace-nowrap bg-background text-foreground" onClick={() => { setProductMode('SELECT'); setNewProductName(''); }}>Annuler</button>
             </div>
           )}
-          {productMode === 'SELECT' && <button type="button" className="rounded-md border px-4" onClick={addProduct}>Ajouter</button>}
-          <button type="button" className="rounded-md border px-4 flex items-center gap-2" onClick={() => { setScanning(true); setScanMessage(''); }}><ScanBarcode className="w-5 h-5" /> Scanner</button>
-          <button type="button" className="rounded-md border px-4" onClick={() => setLines((current) => [...current, { ...blankLine(), position: current.length }])}>Ligne libre</button>
+          {productMode === 'SELECT' && <button type="button" className="rounded-md border px-4 bg-background text-foreground" onClick={addProduct}>Ajouter</button>}
+          <button type="button" className="rounded-md border px-4 flex items-center gap-2 bg-background text-foreground" onClick={() => { setScanning(true); setScanMessage(''); }}><ScanBarcode className="w-5 h-5" /> Scanner</button>
+          <button type="button" className="rounded-md border px-4 bg-background text-foreground" onClick={() => setLines((current) => [...current, { ...blankLine(), position: current.length }])}>Ligne libre</button>
         </div>
 
-        {lines.length === 0 ? <p className="rounded-xl border border-dashed p-6 text-center">Le brouillon ne contient aucune ligne.</p> : lines.map((line, index) => 
-          <article key={line.id} className="space-y-3 rounded-xl border bg-card text-card-foreground p-4">
+        {lines.length === 0 ? <p className="rounded-xl border border-dashed p-6 text-center bg-background text-foreground">Le brouillon ne contient aucune ligne.</p> : lines.map((line, index) => 
+          <article key={line.id} className="space-y-3 rounded-xl border bg-card text-card-foreground p-4 bg-background text-foreground">
             <div className="flex justify-between">
               <strong>Ligne {index + 1}</strong>
               <div className="flex gap-2">
-                <button type="button" className="min-h-11 border px-3" onClick={() => move(index, -1)}>↑</button>
-                <button type="button" className="min-h-11 border px-3" onClick={() => move(index, 1)}>↓</button>
-                <button type="button" className="min-h-11 border px-3 text-red-800 dark:text-red-200" onClick={() => { if (confirm('Retirer cette ligne ?')) setLines((current) => current.filter((item) => item.id !== line.id)); }}>Retirer</button>
+                <button type="button" className="min-h-11 border px-3 bg-background text-foreground" onClick={() => move(index, -1)}>↑</button>
+                <button type="button" className="min-h-11 border px-3 bg-background text-foreground" onClick={() => move(index, 1)}>↓</button>
+                <button type="button" className="min-h-11 border px-3 text-red-800 dark:text-red-200 bg-background text-foreground" onClick={() => { if (confirm('Retirer cette ligne ?')) setLines((current) => current.filter((item) => item.id !== line.id)); }}>Retirer</button>
               </div>
             </div>
-            <input aria-label="Désignation" className="h-11 w-full rounded-md border px-3" value={line.designation} onChange={(event) => updateLine(line.id!, { designation: event.target.value })}/>
-            <textarea aria-label="Description" className="w-full rounded-md border px-3 py-2" value={line.description ?? ''} onChange={(event) => updateLine(line.id!, { description: event.target.value })}/>
+            <input aria-label="Désignation" className="h-11 w-full rounded-md border px-3 bg-background text-foreground" value={line.designation} onChange={(event) => updateLine(line.id!, { designation: event.target.value })}/>
+            <textarea aria-label="Description" className="w-full rounded-md border px-3 py-2 bg-background text-foreground" value={line.description ?? ''} onChange={(event) => updateLine(line.id!, { description: event.target.value })}/>
             <div className="grid gap-3 sm:grid-cols-3">
-              <label className="text-sm">Quantité<input inputMode="decimal" className="mt-1 h-11 w-full rounded-md border px-3" value={line.quantityText} onChange={(event) => updateLine(line.id!, { quantityText: event.target.value })}/></label>
+              <label className="text-sm">Quantité<input inputMode="decimal" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={line.quantityText} onChange={(event) => updateLine(line.id!, { quantityText: event.target.value })}/></label>
               {docType !== 'DELIVERY_NOTE' && (
                 <>
-                  <label className="text-sm">Prix unitaire ({currency})<input type="number" min="0" inputMode="numeric" className="mt-1 h-11 w-full rounded-md border px-3" value={line.unitPriceMinor} onChange={(event) => updateLine(line.id!, { unitPriceMinor: Number(event.target.value) })}/></label>
+                  <label className="text-sm">Prix unitaire ({currency})<input type="number" min="0" inputMode="numeric" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={line.unitPriceMinor} onChange={(event) => updateLine(line.id!, { unitPriceMinor: Number(event.target.value) })}/></label>
                   <label className="text-sm">Remise
-                    <select className="mt-1 h-11 w-full rounded-md border px-3" value={line.discountType} onChange={(event) => updateLine(line.id!, { discountType: event.target.value as EditableLine['discountType'], discountValue: 0 })}>
+                    <select className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={line.discountType} onChange={(event) => updateLine(line.id!, { discountType: event.target.value as EditableLine['discountType'], discountValue: 0 })}>
                       <option value="NONE">Aucune</option>
                       <option value="PERCENT">Pourcentage</option>
                       <option value="AMOUNT">Montant</option>
@@ -319,12 +319,12 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
             </div>
             {docType !== 'DELIVERY_NOTE' && line.discountType !== 'NONE' && (
               <label className="block text-sm">{line.discountType === 'PERCENT' ? 'Pourcentage (points de base, 100 = 1 %)' : `Montant (${currency})`}
-                <input type="number" min="0" className="mt-1 h-11 w-full rounded-md border px-3" value={line.discountValue} onChange={(event) => updateLine(line.id!, { discountValue: Number(event.target.value) })}/>
+                <input type="number" min="0" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={line.discountValue} onChange={(event) => updateLine(line.id!, { discountValue: Number(event.target.value) })}/>
               </label>
             )}
             {docType !== 'DELIVERY_NOTE' && taxesEnabled && (
               <label className="block text-sm">Taxe (points de base)
-                <input type="number" min="0" max="10000" className="mt-1 h-11 w-full rounded-md border px-3" value={line.taxRateBasisPoints} onChange={(event) => updateLine(line.id!, { taxRateBasisPoints: Number(event.target.value) })}/>
+                <input type="number" min="0" max="10000" className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={line.taxRateBasisPoints} onChange={(event) => updateLine(line.id!, { taxRateBasisPoints: Number(event.target.value) })}/>
               </label>
             )}
             {docType !== 'DELIVERY_NOTE' && (
@@ -334,9 +334,9 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
         )}
       </section>
 
-      <section className="grid gap-3 rounded-xl border bg-muted/50 p-4 sm:grid-cols-2">
-        <label>Notes<textarea className="mt-1 w-full rounded-md border p-3" value={notes} onChange={(event) => setNotes(event.target.value)}/></label>
-        <label>Conditions<textarea className="mt-1 w-full rounded-md border p-3" value={terms} onChange={(event) => setTerms(event.target.value)}/></label>
+      <section className="grid gap-3 rounded-xl border bg-muted/50 p-4 sm:grid-cols-2 bg-background text-foreground">
+        <label>Notes<textarea className="mt-1 w-full rounded-md border p-3 bg-background text-foreground" value={notes} onChange={(event) => setNotes(event.target.value)}/></label>
+        <label>Conditions<textarea className="mt-1 w-full rounded-md border p-3 bg-background text-foreground" value={terms} onChange={(event) => setTerms(event.target.value)}/></label>
         {docType !== 'DELIVERY_NOTE' && (
           <div className="sm:col-span-2 space-y-1 text-right">
             <p>Sous-total : {formatMinor(calculated.totals.subtotalMinor, currency, scale)}</p>
@@ -354,7 +354,7 @@ export default function CommercialDocumentForm({ documentId }: { documentId?: st
       {scanning && (
         <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-card w-full max-w-sm rounded-2xl shadow-xl overflow-hidden relative">
-            <div className="p-4 flex justify-between items-center border-b">
+            <div className="p-4 flex justify-between items-center border-b bg-background text-foreground">
               <h2 className="font-bold">Scanner un code-barres</h2>
               <button onClick={() => setScanning(false)} className="p-1"><X className="w-5 h-5" /></button>
             </div>

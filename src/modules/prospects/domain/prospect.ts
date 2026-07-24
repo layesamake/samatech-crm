@@ -23,6 +23,7 @@ export const CONTACT_SOURCES = [
   'OTHER',
 ] as const;
 export type ContactSource = (typeof CONTACT_SOURCES)[number];
+export const CONTACT_SOURCE_LABELS: Record<ContactSource, string> = { WHATSAPP: 'WhatsApp', FACEBOOK: 'Facebook', INSTAGRAM: 'Instagram', LINKEDIN: 'LinkedIn', WEBSITE: 'Site web', REFERRAL: 'Recommandation', EVENT: 'Événement', MANUAL: 'Saisie manuelle', OTHER: 'Autre' };
 
 export interface ContactRecord extends AuditFields {
   id: UUID;
@@ -53,6 +54,7 @@ export const PROSPECT_STATUSES = [
   'PERDU',
 ] as const;
 export type ProspectStatus = (typeof PROSPECT_STATUSES)[number];
+export const PROSPECT_STATUS_LABELS: Record<ProspectStatus, string> = { NOUVEAU: 'Nouveau', CONTACTE: 'Contacté', INTERESSE: 'Intéressé', A_RELANCER: 'À relancer', NEGOCIATION: 'Négociation', CONVERTI: 'Converti', PERDU: 'Perdu' };
 
 export const INTEREST_LEVELS = [
   'NON_QUALIFIE',
@@ -61,6 +63,7 @@ export const INTEREST_LEVELS = [
   'CHAUD',
 ] as const;
 export type InterestLevel = (typeof INTEREST_LEVELS)[number];
+export const INTEREST_LEVEL_LABELS: Record<InterestLevel, string> = { NON_QUALIFIE: 'Non qualifié', FROID: 'Froid', TIEDE: 'Tiède', CHAUD: 'Chaud' };
 
 export interface ProspectProfileRecord extends AuditFields {
   id: UUID;

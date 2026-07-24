@@ -49,18 +49,18 @@ export default function ExpensesPage() {
         </Link>
       </header>
 
-      <section className="bg-card text-card-foreground rounded-xl border p-4 shadow-sm flex flex-wrap gap-4">
+      <section className="bg-card text-card-foreground rounded-xl border p-4 shadow-sm flex flex-wrap gap-4 bg-background text-foreground">
         <label className="flex flex-col gap-1 text-sm">
           <span>Du</span>
-          <input type="date" className="h-9 rounded-md border px-3" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} />
+          <input type="date" className="h-9 rounded-md border px-3 bg-background text-foreground" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} />
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>Au</span>
-          <input type="date" className="h-9 rounded-md border px-3" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} />
+          <input type="date" className="h-9 rounded-md border px-3 bg-background text-foreground" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} />
         </label>
         <label className="flex flex-col gap-1 text-sm">
           <span>Catégorie</span>
-          <select className="h-9 rounded-md border px-3" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
+          <select className="h-9 rounded-md border px-3 bg-background text-foreground" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
             <option value="">Toutes les catégories</option>
             {Object.entries(EXPENSE_CATEGORY_LABELS).map(([key, label]) => (
               <option key={key} value={key}>{label}</option>
@@ -73,7 +73,7 @@ export default function ExpensesPage() {
       </section>
 
       {Object.keys(totalsByCurrency).length > 0 && (
-        <section className="bg-blue-50/50 dark:bg-blue-950/20 text-card-foreground rounded-xl border border-blue-100 dark:border-blue-900 p-4 shadow-sm">
+        <section className="bg-blue-50/50 dark:bg-blue-950/20 text-card-foreground rounded-xl border border-blue-100 dark:border-blue-900 p-4 shadow-sm bg-background text-foreground">
           <h2 className="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-2">Total des dépenses actives (période sélectionnée)</h2>
           <div className="flex gap-4">
             {Object.entries(totalsByCurrency).map(([currency, data]) => (
@@ -85,10 +85,10 @@ export default function ExpensesPage() {
         </section>
       )}
 
-      <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden">
+      <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden bg-background text-foreground">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-muted/50 border-b">
+            <thead className="bg-muted/50 border-b bg-background text-foreground">
               <tr>
                 <th className="h-10 px-4 text-left font-medium text-muted-foreground">Date</th>
                 <th className="h-10 px-4 text-left font-medium text-muted-foreground">Description</th>
@@ -106,7 +106,7 @@ export default function ExpensesPage() {
                 <tr><td colSpan={7} className="p-8 text-center text-muted-foreground">Aucune dépense trouvée.</td></tr>
               ) : (
                 expenses.map((expense) => (
-                  <tr key={expense.id} className="border-b transition-colors hover:bg-muted/50">
+                  <tr key={expense.id} className="border-b transition-colors hover:bg-muted/50 bg-background text-foreground">
                     <td className="p-4 align-middle">{expense.expenseDate}</td>
                     <td className="p-4 align-middle">
                       <div className="font-medium">{expense.description}</div>
@@ -126,8 +126,8 @@ export default function ExpensesPage() {
                     </td>
                     <td className="p-4 align-middle text-center">
                       {expense.status === 'ACTIVE' 
-                        ? <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-green-500/10 text-green-700 border-green-500/20">Active</span>
-                        : <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-amber-500/10 text-amber-700 border-amber-500/20" title={expense.cancellationReason}>Annulée</span>
+                        ? <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-green-500/10 text-green-700 border-green-500/20 bg-background text-foreground">Active</span>
+                        : <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-amber-500/10 text-amber-700 border-amber-500/20 bg-background text-foreground" title={expense.cancellationReason}>Annulée</span>
                       }
                     </td>
                     <td className="p-4 align-middle text-right">

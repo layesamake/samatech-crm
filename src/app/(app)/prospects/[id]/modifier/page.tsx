@@ -10,7 +10,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 
 import { DexieLocationRepository } from "@/modules/locations/infrastructure/dexie-location-repository";
 import { DexieCatalogRepository } from "@/modules/catalog/infrastructure/dexie-catalog-repository";
-import { UpdateProspectSchema, UpdateProspectInput, UpdateProspectFormInput, PROSPECT_STATUSES, INTEREST_LEVELS } from "@/modules/prospects/domain/prospect";
+import { UpdateProspectSchema, UpdateProspectInput, UpdateProspectFormInput, PROSPECT_STATUSES, PROSPECT_STATUS_LABELS, INTEREST_LEVELS, INTEREST_LEVEL_LABELS } from "@/modules/prospects/domain/prospect";
 import { DexieProspectRepository } from "@/modules/prospects/infrastructure/dexie-prospect-repository";
 import { UpdateProspectUseCase } from "@/modules/prospects/application/update-prospect";
 
@@ -101,7 +101,7 @@ export default function ModifierProspectPage() {
 
   return (
     <div className="flex flex-col bg-muted/50 min-h-screen">
-      <header className="sticky top-0 z-10 bg-card text-card-foreground border-b px-4 py-3 flex items-center gap-3">
+      <header className="sticky top-0 z-10 bg-card text-card-foreground border-b px-4 py-3 flex items-center gap-3 bg-background text-foreground">
         <Link href={`/prospects/${id}`} aria-label="Retour à la fiche prospect" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-muted-foreground active:bg-muted">
           <ArrowLeft className="h-5 w-5" />
         </Link>
@@ -109,21 +109,21 @@ export default function ModifierProspectPage() {
       </header>
 
       <main className="flex-1 p-4 pb-12">
-        <form onSubmit={handleSubmit((data) => onSubmit(data))} className="max-w-md mx-auto space-y-5 bg-card text-card-foreground p-5 rounded-xl shadow-sm border border-border">
+        <form onSubmit={handleSubmit((data) => onSubmit(data))} className="max-w-md mx-auto space-y-5 bg-card text-card-foreground p-5 rounded-xl shadow-sm border border-border bg-background text-foreground">
           
           {error && (
-            <div className="p-3 bg-red-500/10 text-red-800 dark:text-red-200 text-sm rounded-lg border border-red-500/20">
+            <div className="p-3 bg-red-500/10 text-red-800 dark:text-red-200 text-sm rounded-lg border border-red-500/20 bg-background text-foreground">
               {error}
             </div>
           )}
 
           {warning && (
-            <div className="p-3 bg-amber-500/10 text-amber-800 dark:text-amber-200 text-sm rounded-lg border border-amber-500/20">
+            <div className="p-3 bg-amber-500/10 text-amber-800 dark:text-amber-200 text-sm rounded-lg border border-amber-500/20 bg-background text-foreground">
               <p className="mb-2">{warning}</p>
               <Button 
                 type="button" 
                 variant="outline" 
-                className="w-full border-amber-500/20 text-amber-800 dark:text-amber-200 hover:bg-amber-100"
+                className="w-full border-amber-500/20 text-amber-800 dark:text-amber-200 hover:bg-amber-100 bg-background text-foreground"
                 onClick={handleSubmit((data) => onSubmit(data, true))}
               >
                 Confirmer quand même
@@ -140,7 +140,7 @@ export default function ModifierProspectPage() {
           <div className="grid grid-cols-3 gap-3">
             <div className="space-y-1">
               <Label htmlFor="title">Titre</Label>
-              <select id="title" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" {...register("title")}>
+              <select id="title" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("title")}>
                 <option value="">Sélectionnez...</option>
                 <option value="M.">M.</option>
                 <option value="Mme">Mme</option>
@@ -177,22 +177,22 @@ export default function ModifierProspectPage() {
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="status">Statut</Label>
-              <select id="status" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" {...register("status")}>
-                {PROSPECT_STATUSES.filter((status) => status !== 'CONVERTI' || prospect.profile.status === 'CONVERTI').map(s => <option key={s} value={s}>{s}</option>)}
+              <select id="status" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("status")}>
+                {PROSPECT_STATUSES.filter((status) => status !== 'CONVERTI' || prospect.profile.status === 'CONVERTI').map(s => <option key={s} value={s}>{PROSPECT_STATUS_LABELS[s]}</option>)}
               </select>
             </div>
 
             <div className="space-y-1">
               <Label htmlFor="interestLevel">Intérêt</Label>
-              <select id="interestLevel" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" {...register("interestLevel")}>
-                {INTEREST_LEVELS.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
+              <select id="interestLevel" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("interestLevel")}>
+                {INTEREST_LEVELS.map(s => <option key={s} value={s}>{INTEREST_LEVEL_LABELS[s]}</option>)}
               </select>
             </div>
           </div>
 
           <div className="space-y-1">
             <Label htmlFor="locationId">Localité</Label>
-            <select id="locationId" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" {...register("locationId")}>
+            <select id="locationId" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("locationId")}>
               <option value="">Sélectionnez...</option>
               {locations.filter((loc) => !loc.archived || loc.id === prospect.contact.locationId).map(loc => <option key={loc.id} value={loc.id}>{loc.name}{loc.archived ? ' (Archivée)' : ''}</option>)}
             </select>

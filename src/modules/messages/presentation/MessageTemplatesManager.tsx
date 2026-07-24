@@ -64,11 +64,11 @@ export default function MessageTemplatesManager() {
     produits: ['Conseil', 'Formation'], localite: 'Dakar', nomEntreprise: 'SAMTECH',
   }, true).text;
   return <div className="grid gap-6 lg:grid-cols-[minmax(280px,360px)_1fr]">
-    <form onSubmit={submit} className="space-y-4 rounded-xl border bg-card text-card-foreground p-4">
+    <form onSubmit={submit} className="space-y-4 rounded-xl border bg-card text-card-foreground p-4 bg-background text-foreground">
       <h2 className="text-lg font-semibold">{editingId ? 'Modifier le modèle' : 'Nouveau modèle'}</h2>
       {message && <p role="status" className={message.includes('succès') ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}>{message}</p>}
-      <label className="block text-sm font-medium">Nom<input aria-label="Nom du modèle" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="mt-1 h-11 w-full rounded-md border px-3" /></label>
-      <label className="block text-sm font-medium">Catégorie<select aria-label="Catégorie du modèle" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as MessageTemplateInput['category'] })} className="mt-1 h-11 w-full rounded-md border px-3">{MESSAGE_CATEGORIES.map((category) => <option value={category} key={category}>{MESSAGE_CATEGORY_LABELS[category]}</option>)}</select></label>
+      <label className="block text-sm font-medium">Nom<input aria-label="Nom du modèle" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" /></label>
+      <label className="block text-sm font-medium">Catégorie<select aria-label="Catégorie du modèle" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value as MessageTemplateInput['category'] })} className="mt-1 h-11 w-full rounded-md border bg-background text-foreground px-3">{MESSAGE_CATEGORIES.map((category) => <option value={category} key={category}>{MESSAGE_CATEGORY_LABELS[category]}</option>)}</select></label>
       <div className="space-y-2">
         <span className="block text-sm font-medium">Personnaliser le message</span>
         <p className="text-xs text-muted-foreground">Placez le curseur dans le message, puis choisissez une information à insérer.</p>
@@ -76,24 +76,24 @@ export default function MessageTemplatesManager() {
           {PERSONALIZATION_VARIABLES.map((item) => <button key={item.variable} type="button" onClick={() => insertVariable(item.variable)} className="min-h-9 rounded-full border bg-background px-3 py-1 text-xs font-medium hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950" title={`Exemple : ${item.example}`}>+ {item.label}</button>)}
         </div>
       </div>
-      <label className="block text-sm font-medium">Contenu<textarea ref={contentRef} aria-label="Contenu du modèle" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Bonjour {{prenom}}, merci pour votre confiance." rows={7} className="mt-1 w-full rounded-md border p-3" /></label>
-      <div className="rounded-md border border-blue-200 bg-blue-50/60 p-3 dark:border-blue-900 dark:bg-blue-950/30"><strong>Aperçu personnalisé</strong><p className="mt-2 whitespace-pre-wrap">{personalizedPreview || 'Votre message personnalisé apparaîtra ici.'}</p><p className="mt-2 text-xs text-muted-foreground">Variables utilisées : {extractVariables(form.content).map((variable) => PERSONALIZATION_VARIABLES.find((item) => item.variable === variable)?.label ?? variable).join(', ') || 'aucune'}</p></div>
+      <label className="block text-sm font-medium">Contenu<textarea ref={contentRef} aria-label="Contenu du modèle" value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Bonjour {{prenom}}, merci pour votre confiance." rows={7} className="mt-1 w-full rounded-md border p-3 bg-background text-foreground" /></label>
+      <div className="rounded-md border border-blue-200 bg-blue-50/60 p-3 dark:border-blue-900 dark:bg-blue-950/30 bg-background text-foreground"><strong>Aperçu personnalisé</strong><p className="mt-2 whitespace-pre-wrap">{personalizedPreview || 'Votre message personnalisé apparaîtra ici.'}</p><p className="mt-2 text-xs text-muted-foreground">Variables utilisées : {extractVariables(form.content).map((variable) => PERSONALIZATION_VARIABLES.find((item) => item.variable === variable)?.label ?? variable).join(', ') || 'aucune'}</p></div>
       <div className="space-y-2">
         <span className="block text-sm font-medium">Pièce jointe (optionnelle)</span>
         {form.attachment ? (
-          <div className="flex items-center gap-2 rounded-md border p-2 text-sm">
+          <div className="flex items-center gap-2 rounded-md border p-2 text-sm bg-background text-foreground">
             <span className="truncate flex-1">{form.attachment.name}</span>
             <button type="button" onClick={() => setForm({ ...form, attachment: undefined })} className="text-red-600 px-2 py-1 hover:bg-red-50 rounded dark:hover:bg-red-950">Retirer</button>
           </div>
         ) : (
-          <input type="file" onChange={handleFileChange} className="block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-950 dark:file:text-blue-200" />
+          <input type="file" onChange={handleFileChange} className="block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-950 dark:file:text-blue-200 bg-background text-foreground" />
         )}
       </div>
       <button className="h-11 w-full rounded-md bg-blue-600 text-white" type="submit">{editingId ? 'Enregistrer les modifications' : 'Créer le modèle'}</button>
     </form>
     <section className="space-y-3"><div className="flex items-center justify-between"><h2 className="text-lg font-semibold">Modèles</h2><label className="flex gap-2 text-sm"><input type="checkbox" checked={showArchived} onChange={(e) => setShowArchived(e.target.checked)} /> Archives</label></div>
-      {items.length === 0 && <p className="rounded-xl border border-dashed p-6 text-center">Aucun modèle.</p>}
-      {items.map((item) => <article key={item.id} className="rounded-xl border bg-card text-card-foreground p-4"><div className="flex justify-between gap-3"><div><h3 className="font-semibold">{item.name} {item.archivedAt && <span className="text-amber-800 dark:text-amber-200">(Archivé)</span>}</h3><p className="text-xs text-muted-foreground">{MESSAGE_CATEGORY_LABELS[item.category]}</p></div>{!item.archivedAt && <div className="flex flex-wrap gap-2"><button onClick={() => { setEditingId(item.id); setForm({ name: item.name, category: item.category, content: item.content, attachment: item.attachment }); }} className="text-blue-800 dark:text-blue-200">Modifier</button><button onClick={async () => { await useCase.duplicate(item.id); await load(); }} className="text-blue-800 dark:text-blue-200">Dupliquer</button><button onClick={async () => { if (confirm('Archiver ce modèle ?')) { await useCase.archive(item.id); await load(); } }} className="text-red-800 dark:text-red-200">Archiver</button></div>}</div><p className="mt-3 whitespace-pre-wrap text-sm">{item.content}</p>{item.attachment && <p className="mt-2 text-xs font-medium text-blue-600 dark:text-blue-400">📎 {item.attachment.name}</p>}</article>)}
+      {items.length === 0 && <p className="rounded-xl border border-dashed p-6 text-center bg-background text-foreground">Aucun modèle.</p>}
+      {items.map((item) => <article key={item.id} className="rounded-xl border bg-card text-card-foreground p-4 bg-background text-foreground"><div className="flex justify-between gap-3"><div><h3 className="font-semibold">{item.name} {item.archivedAt && <span className="text-amber-800 dark:text-amber-200">(Archivé)</span>}</h3><p className="text-xs text-muted-foreground">{MESSAGE_CATEGORY_LABELS[item.category]}</p></div>{!item.archivedAt && <div className="flex flex-wrap gap-2"><button onClick={() => { setEditingId(item.id); setForm({ name: item.name, category: item.category, content: item.content, attachment: item.attachment }); }} className="text-blue-800 dark:text-blue-200">Modifier</button><button onClick={async () => { await useCase.duplicate(item.id); await load(); }} className="text-blue-800 dark:text-blue-200">Dupliquer</button><button onClick={async () => { if (confirm('Archiver ce modèle ?')) { await useCase.archive(item.id); await load(); } }} className="text-red-800 dark:text-red-200">Archiver</button></div>}</div><p className="mt-3 whitespace-pre-wrap text-sm">{item.content}</p>{item.attachment && <p className="mt-2 text-xs font-medium text-blue-600 dark:text-blue-400">📎 {item.attachment.name}</p>}</article>)}
     </section>
   </div>;
 }

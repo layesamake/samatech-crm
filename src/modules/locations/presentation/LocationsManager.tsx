@@ -81,7 +81,7 @@ export default function LocationsManager() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1 border rounded-md p-4 space-y-4">
+        <div className="md:col-span-1 border rounded-md p-4 space-y-4 bg-background text-foreground">
           <h3 className="font-semibold text-lg">{editingId ? 'Modifier' : 'Ajouter'} une localité</h3>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
@@ -127,15 +127,15 @@ export default function LocationsManager() {
           </form>
         </div>
 
-        <div className="md:col-span-2 border rounded-md p-4">
-          <div className="mb-4 flex flex-wrap gap-2"><input aria-label="Rechercher une localité" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher..." className="h-10 flex-1 rounded-md border px-3" /><label className="flex items-center gap-2"><input type="checkbox" checked={showArchived} onChange={(e) => setShowArchived(e.target.checked)} /> Archives</label></div>
+        <div className="md:col-span-2 border rounded-md p-4 bg-background text-foreground">
+          <div className="mb-4 flex flex-wrap gap-2"><input aria-label="Rechercher une localité" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher..." className="h-10 flex-1 rounded-md border px-3 bg-background text-foreground" /><label className="flex items-center gap-2"><input type="checkbox" checked={showArchived} onChange={(e) => setShowArchived(e.target.checked)} /> Archives</label></div>
           <h3 className="font-semibold text-lg mb-4">Liste des localités</h3>
           {locations.length === 0 ? (
             <p className="text-sm text-muted-foreground">Aucune localité définie.</p>
           ) : (
-            <div className="rounded-md border">
+            <div className="rounded-md border bg-background text-foreground">
               <table className="w-full text-sm text-left">
-                <thead className="bg-muted text-muted-foreground border-b">
+                <thead className="bg-muted text-muted-foreground border-b bg-background text-foreground">
                   <tr>
                     <th className="px-4 py-3 font-medium">Nom</th>
                     <th className="px-4 py-3 font-medium">Niveau</th>

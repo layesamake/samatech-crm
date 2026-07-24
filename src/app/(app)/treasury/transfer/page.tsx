@@ -67,10 +67,10 @@ export default function TreasuryTransferPage() {
 
       {error && <div className="p-4 bg-red-100 text-red-800 rounded-xl text-sm">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="bg-card p-5 rounded-2xl shadow-sm border border-border flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="bg-card p-5 rounded-2xl shadow-sm border border-border flex flex-col gap-4 bg-background text-foreground">
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Depuis le compte</label>
-          <select name="sourceAccountId" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none">
+          <select name="sourceAccountId" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground">
             <option value="">Sélectionner un compte source...</option>
             {accounts.map(acc => (
               <option key={acc.id} value={acc.id}>
@@ -82,7 +82,7 @@ export default function TreasuryTransferPage() {
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Vers le compte</label>
-          <select name="destinationAccountId" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none">
+          <select name="destinationAccountId" required className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground">
             <option value="">Sélectionner un compte destination...</option>
             {accounts.map(acc => (
               <option key={acc.id} value={acc.id}>
@@ -94,17 +94,17 @@ export default function TreasuryTransferPage() {
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Montant à transférer</label>
-          <input type="number" name="amount" required min="1" step="1" className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none" />
+          <input type="number" name="amount" required min="1" step="1" className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground" />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Date d&apos;opération</label>
-          <input type="date" name="operationDate" required defaultValue={new Date().toISOString().split('T')[0]} className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none" />
+          <input type="date" name="operationDate" required defaultValue={new Date().toISOString().split('T')[0]} className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground" />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium">Motif / Libellé</label>
-          <input type="text" name="label" required placeholder="Ex: Alimentation caisse" className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none" />
+          <input type="text" name="label" required placeholder="Ex: Alimentation caisse" className="w-full p-3 bg-muted rounded-xl border-transparent focus:ring-2 focus:ring-primary outline-none bg-background text-foreground" />
         </div>
 
         <button type="submit" disabled={loading} className="w-full py-3.5 mt-2 bg-primary text-primary-foreground font-semibold rounded-xl hover:opacity-90 disabled:opacity-50">

@@ -318,7 +318,7 @@ export default function CatalogPage() {
           </div>
         )}
 
-        <div className="flex overflow-x-auto no-scrollbar border-b px-2">
+        <div className="flex overflow-x-auto no-scrollbar border-b px-2 bg-background text-foreground">
           {(['Tous', 'Produits', 'Services', 'Catégories', 'Archives'] as TabType[]).map((tab) => (
             <button
               key={tab}
@@ -337,7 +337,7 @@ export default function CatalogPage() {
         </div>
         
         {showFilters && activeTab !== 'Catégories' && activeTab !== 'Archives' && (
-          <div className="px-4 py-3 bg-muted/10 border-b animate-in slide-in-from-top-2">
+          <div className="px-4 py-3 bg-muted/10 border-b animate-in slide-in-from-top-2 bg-background text-foreground">
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Filtrer par catégorie</label>
               <select 
@@ -422,7 +422,7 @@ export default function CatalogPage() {
                         const cat = activeCategories.find(c => c.id === catId);
                         return (
                           <div key={catId}>
-                            <div className="bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground border-y">{cat?.name || 'Catégorie inconnue'}</div>
+                            <div className="bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground border-y bg-background text-foreground">{cat?.name || 'Catégorie inconnue'}</div>
                             {prods.map(p => (
                               <CatalogCard 
                                 key={p.id} 
@@ -438,7 +438,7 @@ export default function CatalogPage() {
                       
                       {uncategorized.length > 0 && (
                          <div>
-                            <div className="bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground border-y">Sans catégorie</div>
+                            <div className="bg-muted px-4 py-2 text-sm font-semibold text-muted-foreground border-y bg-background text-foreground">Sans catégorie</div>
                             {uncategorized.map(p => (
                               <CatalogCard 
                                 key={p.id} 

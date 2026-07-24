@@ -130,7 +130,7 @@ export default function ProductsManager() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 border rounded-md p-4 space-y-4">
+        <div className="lg:col-span-1 border rounded-md p-4 space-y-4 bg-background text-foreground">
           <h3 className="font-semibold text-lg">{editingId ? 'Modifier' : 'Ajouter'} au catalogue</h3>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             
@@ -194,10 +194,10 @@ export default function ProductsManager() {
                     <option value="NEW">+ Nouvelle catégorie...</option>
                   </select>
                 ) : (
-                  <div className="flex gap-2 rounded-md border p-2 bg-muted/30">
-                    <input autoFocus placeholder="Nom catégorie" className="h-9 flex-1 rounded-md border px-2 text-sm" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} />
-                    <button type="button" className="rounded-md border px-2 py-1 text-sm bg-secondary text-secondary-foreground" onClick={handleCreateCategory}>Créer</button>
-                    <button type="button" className="rounded-md border px-2 py-1 text-sm" onClick={() => { setCategoryMode('SELECT'); setNewCategoryName(''); }}>Annuler</button>
+                  <div className="flex gap-2 rounded-md border p-2 bg-muted/30 bg-background text-foreground">
+                    <input autoFocus placeholder="Nom catégorie" className="h-9 flex-1 rounded-md border px-2 text-sm bg-background text-foreground" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} />
+                    <button type="button" className="rounded-md border px-2 py-1 text-sm bg-secondary text-secondary-foreground bg-background text-foreground" onClick={handleCreateCategory}>Créer</button>
+                    <button type="button" className="rounded-md border px-2 py-1 text-sm bg-background text-foreground" onClick={() => { setCategoryMode('SELECT'); setNewCategoryName(''); }}>Annuler</button>
                   </div>
                 )}
               </div>
@@ -245,7 +245,7 @@ export default function ProductsManager() {
                   id="catalog-active"
                   type="checkbox"
                   {...register('isActive')} 
-                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary bg-background text-foreground"
                 />
                 <label htmlFor="catalog-active" className="text-sm font-medium">Élément actif (visible dans les ventes et factures)</label>
               </div>
@@ -287,15 +287,15 @@ export default function ProductsManager() {
           </form>
         </div>
 
-        <div className="lg:col-span-2 border rounded-md p-4">
-          <div className="mb-4 grid gap-2 sm:grid-cols-4"><input aria-label="Rechercher dans le catalogue" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher..." className="h-10 rounded-md border px-3" /><select aria-label="Filtrer par catégorie" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="h-10 rounded-md border px-2"><option value="">Toutes catégories</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select><select aria-label="Filtrer par type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="h-10 rounded-md border px-2"><option value="">Tous types</option><option value="PRODUCT">Produits</option><option value="SERVICE">Services</option></select><select aria-label="Filtrer par statut" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)} className="h-10 rounded-md border px-2"><option value="">Actifs</option><option value="INACTIVE">Inactifs</option><option value="ARCHIVED">Archivés</option></select></div>
+        <div className="lg:col-span-2 border rounded-md p-4 bg-background text-foreground">
+          <div className="mb-4 grid gap-2 sm:grid-cols-4"><input aria-label="Rechercher dans le catalogue" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Rechercher..." className="h-10 rounded-md border px-3 bg-background text-foreground" /><select aria-label="Filtrer par catégorie" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="h-10 rounded-md border px-2 bg-background text-foreground"><option value="">Toutes catégories</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select><select aria-label="Filtrer par type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="h-10 rounded-md border px-2 bg-background text-foreground"><option value="">Tous types</option><option value="PRODUCT">Produits</option><option value="SERVICE">Services</option></select><select aria-label="Filtrer par statut" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)} className="h-10 rounded-md border px-2 bg-background text-foreground"><option value="">Actifs</option><option value="INACTIVE">Inactifs</option><option value="ARCHIVED">Archivés</option></select></div>
           <h3 className="font-semibold text-lg mb-4">Liste des éléments</h3>
           {products.length === 0 ? (
             <p className="text-sm text-muted-foreground">Aucun produit ou service défini.</p>
           ) : (
-            <div className="rounded-md border overflow-x-auto">
+            <div className="rounded-md border overflow-x-auto bg-background text-foreground">
               <table className="w-full text-sm text-left">
-                <thead className="bg-muted text-foreground border-b">
+                <thead className="bg-muted text-foreground border-b bg-background text-foreground">
                   <tr>
                     <th className="px-4 py-3 font-medium">Réf</th>
                     <th className="px-4 py-3 font-medium">Nom</th>

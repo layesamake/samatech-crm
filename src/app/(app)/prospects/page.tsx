@@ -19,7 +19,7 @@ const catalogRepository = new DexieCatalogRepository();
 
 const ProspectCard = memo(({ p }: { p: Prospect }) => (
   <Link href={`/prospects/${p.contact.id}`}>
-    <div className="bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-border active:scale-[0.98] transition-transform">
+    <div className="bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-border active:scale-[0.98] transition-transform bg-background text-foreground">
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold text-foreground line-clamp-1">{p.contact.displayName}</h3>
         <span className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-800 dark:text-blue-200">
@@ -86,7 +86,7 @@ export default function ProspectsPage() {
     >
       {filtersOpen ? <X className="h-5 w-5" /> : <Filter className="h-5 w-5" />}
       {hasActiveFilters && !filtersOpen && (
-        <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-blue-600 border border-nav-bg" />
+        <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-blue-600 border border-nav-bg bg-background text-foreground" />
       )}
     </button>
   );
@@ -108,7 +108,7 @@ export default function ProspectsPage() {
         >
           <div className="overflow-hidden">
             <section
-              className="space-y-3 rounded-xl border bg-card p-4"
+              className="space-y-3 rounded-xl border bg-card p-4 bg-background text-foreground"
               aria-label="Filtres de prospects"
             >
               <div className="flex items-center justify-between">
@@ -128,7 +128,7 @@ export default function ProspectsPage() {
                 aria-label="Rechercher un prospect par nom ou numéro"
                 type="text"
                 placeholder="Rechercher par nom, numéro..."
-                className="w-full h-11 bg-transparent border rounded-md px-3 text-sm outline-none transition-all"
+                className="w-full h-11 bg-transparent border rounded-md px-3 text-sm outline-none transition-all bg-background text-foreground"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
@@ -136,7 +136,7 @@ export default function ProspectsPage() {
               <div className="grid gap-2 sm:grid-cols-2">
                 <select 
                   aria-label="Filtrer par statut"
-                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm outline-none"
+                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm outline-none bg-background text-foreground"
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
                 >
@@ -149,7 +149,7 @@ export default function ProspectsPage() {
                 </select>
                 <select 
                   aria-label="Filtrer par localité" 
-                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm" 
+                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm bg-background text-foreground" 
                   value={locationId} 
                   onChange={(e) => setLocationId(e.target.value)}
                 >
@@ -161,7 +161,7 @@ export default function ProspectsPage() {
               <div className="grid gap-2 sm:grid-cols-2">
                 <select 
                   aria-label="Filtrer par produit" 
-                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm" 
+                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm bg-background text-foreground" 
                   value={productId} 
                   onChange={(e) => setProductId(e.target.value)}
                 >
@@ -169,7 +169,7 @@ export default function ProspectsPage() {
                   {products.map((product) => <option key={product.id} value={product.id}>{product.name}</option>)}
                 </select>
                 
-                <label className="flex items-center gap-2 h-11 text-sm text-foreground bg-transparent border px-3 rounded-md cursor-pointer">
+                <label className="flex items-center gap-2 h-11 text-sm text-foreground bg-transparent border px-3 rounded-md cursor-pointer bg-background text-foreground">
                   <input 
                     type="checkbox" 
                     checked={showArchived} 
@@ -188,7 +188,7 @@ export default function ProspectsPage() {
           {!prospects ? (
             <div className="flex justify-center p-8 text-slate-400">Chargement...</div>
           ) : prospects.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center bg-card text-card-foreground rounded-xl border border-dashed border-border">
+            <div className="flex flex-col items-center justify-center p-8 text-center bg-card text-card-foreground rounded-xl border border-dashed border-border bg-background text-foreground">
               <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mb-3">
                 <Plus className="h-6 w-6 text-blue-500" />
               </div>
