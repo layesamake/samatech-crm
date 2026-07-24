@@ -29,9 +29,11 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from '@/co
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useBusiness } from '@/components/providers/BusinessProvider';
+import { ManageFollowUpsUseCase } from '@/modules/follow-ups/application/manage-follow-ups';
 
 const primaryLinks = [
   { href: '/', label: 'Accueil', icon: Home },
@@ -42,6 +44,7 @@ const primaryLinks = [
 const moreLinks = [
   { href: '/pipeline', label: 'Pipeline', icon: Briefcase },
   { href: '/commercial-documents', label: 'Ventes', icon: FileText },
+  { href: '/invoices', label: 'Factures', icon: FileText },
   { href: '/payments', label: 'Paiements', icon: CreditCard },
   { href: '/expenses', label: 'Dépenses', icon: Receipt },
   { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
@@ -53,6 +56,8 @@ const moreLinks = [
   { href: '/catalog', label: 'Catalogue', icon: FolderOpen },
   { href: '/settings', label: 'Paramètres', icon: Settings },
 ];
+
+const followUpsUseCase = new ManageFollowUpsUseCase();
 
 function BusinessSwitcherMobile({ onClose }: { onClose: () => void }) {
   const { activeBusiness, businesses, switchBusiness } = useBusiness();
@@ -122,6 +127,7 @@ export function BottomNav() {
   const { theme, setTheme } = useTheme();
   const [fabOpen, setFabOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const overdueFollowUps = useLiveQuery(() => followUpsUseCase.list('OVERDUE'))?.length ?? 0;
 
   // Fermer le FAB si on clique ailleurs
   useEffect(() => {
@@ -154,9 +160,14 @@ export function BottomNav() {
             <span className="text-[10px] font-medium">Prospects</span>
           </Link>
 
-          <Link href="/invoices" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/invoices') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
-            <FileText className={cn("h-5 w-5", pathname?.startsWith('/invoices') ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
-            <span className="text-[10px] font-medium">Factures</span>
+          <Link href="/follow-ups" className={cn("relative flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/follow-ups') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>
+            <Repeat className={cn("h-5 w-5", pathname?.startsWith('/follow-ups') ? "fill-nav-active/20 stroke-[2.5]" : "stroke-2")} />
+            <span className="text-[10px] font-medium">Relances</span>
+            {overdueFollowUps > 0 && (
+              <span aria-label={`${overdueFollowUps} relance${overdueFollowUps > 1 ? 's' : ''} en retard`} className="absolute top-1 right-2 min-w-4 h-4 rounded-full bg-destructive px-1 text-[10px] leading-4 text-destructive-foreground">
+                {overdueFollowUps > 9 ? '9+' : overdueFollowUps}
+              </span>
+            )}
           </Link>
 
           <Link href="/clients" className={cn("flex flex-col items-center justify-center w-16 h-full gap-1 transition-transform active:scale-95", pathname?.startsWith('/clients') ? "text-nav-active" : "text-nav-muted hover:text-nav-fg")}>

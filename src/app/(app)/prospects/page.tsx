@@ -1,41 +1,64 @@
 "use client";
 
-import { useState, useDeferredValue, memo, useEffect } from "react";
+import { useState, useDeferredValue, memo, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import Link from "next/link";
-import { Plus, Filter, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Plus, Filter, X, MessageCircle, MapPin, CalendarClock } from "lucide-react";
 import { DexieProspectRepository } from "@/modules/prospects/infrastructure/dexie-prospect-repository";
 import { ListProspectsUseCase } from "@/modules/prospects/application/list-prospects";
 import { Prospect } from "@/modules/prospects/domain/prospect";
 import { Button } from "@/components/ui/button";
 import { DexieLocationRepository } from "@/modules/locations/infrastructure/dexie-location-repository";
 import { DexieCatalogRepository } from "@/modules/catalog/infrastructure/dexie-catalog-repository";
+import { ManageFollowUpsUseCase } from "@/modules/follow-ups/application/manage-follow-ups";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const repository = new DexieProspectRepository();
 const listUseCase = new ListProspectsUseCase(repository);
 const locationRepository = new DexieLocationRepository();
 const catalogRepository = new DexieCatalogRepository();
+const followUpsUseCase = new ManageFollowUpsUseCase();
 
-const ProspectCard = memo(({ p }: { p: Prospect }) => (
-  <Link href={`/prospects/${p.contact.id}`}>
-    <div className="bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-border active:scale-[0.98] transition-transform bg-background text-foreground">
+const ProspectCard = memo(({ p, onOpen, locationName, nextFollowUp }: { p: Prospect; onOpen: () => void; locationName?: string; nextFollowUp?: string }) => (
+  <article
+    role="link"
+    tabIndex={0}
+    onClick={onOpen}
+    onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onOpen(); } }}
+    className="cursor-pointer bg-card text-card-foreground p-4 rounded-xl shadow-sm border border-border active:scale-[0.98] transition-transform bg-background text-foreground"
+  >
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold text-foreground line-clamp-1">{p.contact.displayName}</h3>
         <span className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-800 dark:text-blue-200">
           {p.profile.status}
         </span>
       </div>
-      <div className="text-sm text-muted-foreground mb-1">{p.contact.whatsappPhone}</div>
-      <div className="text-xs text-slate-400">
-        Niveau: {p.profile.interestLevel.replace('_', ' ')}
+      <div className="text-sm text-muted-foreground mb-2">{p.contact.companyName || p.contact.whatsappPhone}</div>
+      <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+        {locationName && <span className="inline-flex items-center gap-1"><MapPin className="size-3.5" />{locationName}</span>}
+        {nextFollowUp && <span className="inline-flex items-center gap-1"><CalendarClock className="size-3.5" />{nextFollowUp}</span>}
+        <span>Niveau : {p.profile.interestLevel.replace('_', ' ')}</span>
       </div>
-    </div>
-  </Link>
+      <div className="mt-3 flex gap-2 border-t pt-3">
+        <a
+          href={`https://wa.me/${p.contact.normalizedWhatsappPhone.replace(/\D/g, '')}`}
+          onClick={(event) => event.stopPropagation()}
+          className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary/10 px-3 text-sm font-semibold text-primary"
+        >
+          <MessageCircle className="size-4" /> WhatsApp
+        </a>
+        <button type="button" onClick={(event) => { event.stopPropagation(); onOpen(); }} className="min-h-11 rounded-lg px-3 text-sm font-semibold text-muted-foreground hover:bg-muted">
+          Détails
+        </button>
+      </div>
+  </article>
 ));
 ProspectCard.displayName = 'ProspectCard';
 
 export default function ProspectsPage() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
   const [limit, setLimit] = useState(50);
@@ -47,6 +70,17 @@ export default function ProspectsPage() {
 
   const locations = useLiveQuery(() => locationRepository.getAllActive(), []) ?? [];
   const products = useLiveQuery(() => catalogRepository.getAllProductsActive(), []) ?? [];
+  const followUps = useLiveQuery(() => followUpsUseCase.list(), []) ?? [];
+
+  const locationById = useMemo(() => new Map(locations.map((location) => [location.id, location.name])), [locations]);
+  const nextFollowUpByContact = useMemo(() => {
+    const next = new Map<string, string>();
+    for (const followUp of followUps) {
+      if (followUp.status !== 'PLANIFIEE' || next.has(followUp.contactId)) continue;
+      next.set(followUp.contactId, new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(new Date(followUp.dueAt)));
+    }
+    return next;
+  }, [followUps]);
 
   const prospects = useLiveQuery(
     () => listUseCase.execute({ 
@@ -61,6 +95,7 @@ export default function ProspectsPage() {
   );
 
   const hasActiveFilters = Boolean(search || filterStatus || locationId || productId || showArchived);
+  const activeFilterCount = [filterStatus, locationId, productId, showArchived ? 'archived' : ''].filter(Boolean).length;
 
   const clearFilters = () => {
     setSearch("");
@@ -77,21 +112,20 @@ export default function ProspectsPage() {
   }, []);
 
   const actionButtons = (
-    <button
-      type="button"
-      onClick={() => setFiltersOpen((prev) => !prev)}
+    <SheetTrigger
       aria-label={filtersOpen ? 'Fermer les filtres' : 'Ouvrir les filtres'}
       aria-expanded={filtersOpen}
       className="relative flex h-10 w-10 items-center justify-center rounded-full text-nav-muted hover:text-nav-fg hover:bg-white/10"
     >
       {filtersOpen ? <X className="h-5 w-5" /> : <Filter className="h-5 w-5" />}
       {hasActiveFilters && !filtersOpen && (
-        <span className="absolute right-1 top-1 h-2.5 w-2.5 rounded-full bg-blue-600 border border-nav-bg bg-background text-foreground" />
+        <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">{activeFilterCount || '•'}</span>
       )}
-    </button>
+    </SheetTrigger>
   );
 
   return (
+    <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
     <div className="relative flex flex-col h-full bg-muted/50 min-h-screen">
       <div className="flex-1 max-w-6xl w-full mx-auto p-4 pb-24 md:p-8 space-y-5">
         {/* Header Mobile-First */}
@@ -100,9 +134,20 @@ export default function ProspectsPage() {
           {portalContainer ? createPortal(actionButtons, portalContainer) : <div className="ml-auto">{actionButtons}</div>}
         </header>
 
+        {hasActiveFilters && (
+          <div className="flex flex-wrap gap-2" aria-label="Filtres actifs">
+            {filterStatus && <button type="button" onClick={() => setFilterStatus('')} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">{filterStatus.replace('_', ' ')} ×</button>}
+            {locationId && <button type="button" onClick={() => setLocationId('')} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">{locationById.get(locationId)} ×</button>}
+            {productId && <button type="button" onClick={() => setProductId('')} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">{products.find((product) => product.id === productId)?.name} ×</button>}
+            {showArchived && <button type="button" onClick={() => setShowArchived(false)} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">Archives ×</button>}
+            {search && <button type="button" onClick={() => setSearch('')} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">Recherche ×</button>}
+            <button type="button" onClick={clearFilters} className="px-2 py-1 text-xs font-semibold text-muted-foreground underline">Tout effacer</button>
+          </div>
+        )}
+
         {/* Collapsible filters panel */}
         <div
-          className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${
+          className={`hidden transition-[grid-template-rows] duration-300 ease-in-out ${
             filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
           }`}
         >
@@ -203,7 +248,7 @@ export default function ProspectsPage() {
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {prospects.map((p: Prospect) => (
-                <ProspectCard key={p.contact.id} p={p} />
+                <ProspectCard key={p.contact.id} p={p} locationName={p.contact.locationId ? locationById.get(p.contact.locationId) : undefined} nextFollowUp={nextFollowUpByContact.get(p.contact.id)} onOpen={() => router.push(`/prospects/${p.contact.id}`)} />
               ))}
             </div>
           )}
@@ -220,10 +265,25 @@ export default function ProspectsPage() {
       <Link 
         href="/prospects/nouveau" 
         aria-label="Créer un prospect" 
-        className="fixed bottom-20 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-transform hover:scale-110 active:scale-95 md:bottom-8 md:right-8"
+        className="fixed bottom-20 right-5 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-105 active:scale-95 md:bottom-8 md:right-8"
       >
         <Plus className="h-6 w-6" />
       </Link>
     </div>
+    <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto rounded-t-3xl">
+      <SheetHeader className="border-b">
+        <SheetTitle>Filtrer les prospects</SheetTitle>
+        <p className="text-sm text-muted-foreground">Affinez la liste sans perdre votre recherche.</p>
+      </SheetHeader>
+      <section className="space-y-4 p-4" aria-label="Filtres de prospects">
+        <input aria-label="Rechercher un prospect par nom ou numéro" type="search" placeholder="Rechercher par nom, numéro ou entreprise" className="h-11 w-full rounded-md border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <div className="space-y-2"><label className="text-sm font-medium" htmlFor="prospect-filter-status">Statut</label><select id="prospect-filter-status" className="h-11 w-full rounded-md border bg-background px-3 text-sm" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}><option value="">Tous les statuts</option><option value="NOUVEAU">Nouveaux</option><option value="CONTACTE">Contactés</option><option value="INTERESSE">Intéressés</option><option value="A_RELANCER">À relancer</option><option value="NEGOCIATION">Négociation</option></select></div>
+        <div className="space-y-2"><label className="text-sm font-medium" htmlFor="prospect-filter-location">Localité</label><select id="prospect-filter-location" className="h-11 w-full rounded-md border bg-background px-3 text-sm" value={locationId} onChange={(e) => setLocationId(e.target.value)}><option value="">Toutes les localités</option>{locations.map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}</select></div>
+        <div className="space-y-2"><label className="text-sm font-medium" htmlFor="prospect-filter-product">Produit ou service</label><select id="prospect-filter-product" className="h-11 w-full rounded-md border bg-background px-3 text-sm" value={productId} onChange={(e) => setProductId(e.target.value)}><option value="">Tous les produits</option>{products.map((product) => <option key={product.id} value={product.id}>{product.name}</option>)}</select></div>
+        <label className="flex min-h-11 items-center gap-3 rounded-lg border px-3 text-sm font-medium"><input type="checkbox" checked={showArchived} onChange={(e) => setShowArchived(e.target.checked)} className="size-4 accent-primary" />Afficher les archives</label>
+        <div className="flex gap-3 pt-2"><Button type="button" variant="outline" className="min-h-11 flex-1" onClick={clearFilters}>Réinitialiser</Button><Button type="button" className="min-h-11 flex-1" onClick={() => setFiltersOpen(false)}>Afficher les résultats</Button></div>
+      </section>
+    </SheetContent>
+    </Sheet>
   );
 }

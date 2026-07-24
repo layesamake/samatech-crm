@@ -130,8 +130,8 @@ export default function NouveauProspectPage() {
         <h1 className="text-xl font-bold text-foreground">Nouveau Prospect</h1>
       </header>
 
-      <main className="flex-1 p-4 pb-12">
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto space-y-5 bg-card text-card-foreground p-5 rounded-xl shadow-sm border border-border bg-background text-foreground">
+      <main className="flex-1 p-4 pb-28">
+        <form id="prospect-form" onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto space-y-5 bg-card text-card-foreground p-5 rounded-xl shadow-sm border border-border bg-background text-foreground">
           
           {error && (
             <div className="p-3 bg-red-500/10 text-red-800 dark:text-red-200 text-sm rounded-lg border border-red-500/20 bg-background text-foreground">
@@ -153,61 +153,56 @@ export default function NouveauProspectPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-3">
-            <div className="space-y-1">
+          <section className="space-y-3" aria-labelledby="prospect-identity">
+            <div className="flex items-baseline justify-between">
+              <h2 id="prospect-identity" className="text-sm font-semibold">Identité</h2>
+              <span className="text-xs text-muted-foreground">Champs requis *</span>
+            </div>
+            <div className="w-28 space-y-1">
               <Label htmlFor="title">Titre</Label>
-              <select id="title" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("title")}>
+              <select id="title" className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("title")}>
                 <option value="">Sélectionnez...</option>
                 <option value="M.">M.</option>
                 <option value="Mme">Mme</option>
                 <option value="Mlle">Mlle</option>
               </select>
             </div>
+            <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="firstName">Prénom</Label>
-              <Input id="firstName" placeholder="Ex: Jean" {...register("firstName")} />
+              <Input id="firstName" className="h-11" placeholder="Ex: Jean" autoComplete="given-name" {...register("firstName")} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="lastName">Nom</Label>
-              <Input id="lastName" placeholder="Ex: Dupont" {...register("lastName")} />
+              <Input id="lastName" className="h-11" placeholder="Ex: Dupont" autoComplete="family-name" {...register("lastName")} />
             </div>
           </div>
+          </section>
 
           <div className="space-y-1">
             <Label htmlFor="displayName">Nom d&apos;affichage *</Label>
-            <Input id="displayName" placeholder="Renseigné à partir du prénom et du nom" readOnly {...register("displayName")} />
+            <Input id="displayName" className="h-11 bg-muted/40" placeholder="Renseigné à partir du prénom et du nom" readOnly {...register("displayName")} />
             <p className="text-xs text-muted-foreground">Prénom suivi du nom.</p>
             {errors.displayName && <p className="text-xs text-red-500">{errors.displayName.message as string}</p>}
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="Ex: jean.dupont@email.com" {...register("email")} />
-            {errors.email && <p className="text-xs text-red-500">{errors.email.message as string}</p>}
-          </div>
-
-          <div className="space-y-1">
             <Label htmlFor="whatsappPhone">Numéro WhatsApp *</Label>
-            <Input id="whatsappPhone" type="tel" placeholder="Ex: +221 77 123 45 67" {...register("whatsappPhone")} />
+            <Input id="whatsappPhone" className="h-11" type="tel" inputMode="tel" autoComplete="tel" placeholder="Ex: +221 77 123 45 67" {...register("whatsappPhone")} />
             {errors.whatsappPhone && <p className="text-xs text-red-500">{errors.whatsappPhone.message as string}</p>}
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="companyName">Entreprise</Label>
-            <Input id="companyName" placeholder="Ex: Samatech..." {...register("companyName")} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
               <Label htmlFor="status">Statut</Label>
-              <select id="status" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("status")}>
+              <select id="status" className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("status")}>
                 {PROSPECT_STATUSES.filter((status) => status !== 'CONVERTI').map(s => <option key={s} value={s}>{PROSPECT_STATUS_LABELS[s]}</option>)}
               </select>
             </div>
 
             <div className="space-y-1">
               <Label htmlFor="interestLevel">Intérêt</Label>
-              <select id="interestLevel" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("interestLevel")}>
+              <select id="interestLevel" className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("interestLevel")}>
                 {INTEREST_LEVELS.map(s => <option key={s} value={s}>{INTEREST_LEVEL_LABELS[s]}</option>)}
               </select>
             </div>
@@ -225,7 +220,7 @@ export default function NouveauProspectPage() {
               </button>
             </div>
             {locationMode === 'SELECT' ? (
-              <select id="locationId" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("locationId")}>
+              <select id="locationId" className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("locationId")}>
                 <option value="">Sélectionnez...</option>
                 {locations.map(loc => <option key={loc.id} value={loc.id}>{loc.name}</option>)}
               </select>
@@ -234,7 +229,7 @@ export default function NouveauProspectPage() {
                 placeholder="Nom de la nouvelle localité..." 
                 value={newLocationName} 
                 onChange={e => setNewLocationName(e.target.value)} 
-                className="h-9"
+                className="h-11"
               />
             )}
           </div>
@@ -248,24 +243,39 @@ export default function NouveauProspectPage() {
             />
           )} />
 
-          <div className="space-y-1">
-            <Label htmlFor="notes">Note commerciale</Label>
-            <textarea id="notes" rows={4} className="w-full rounded-md border px-3 py-2 text-sm bg-background text-foreground" placeholder="Contexte, besoin ou prochaine étape…" {...register("notes")} />
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="source">Source</Label>
-            <select id="source" className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("source")}>
-              <option value="">Sélectionnez...</option>
-              {CONTACT_SOURCES.map(s => <option key={s} value={s}>{CONTACT_SOURCE_LABELS[s]}</option>)}
-            </select>
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Création..." : "Enregistrer"}
-          </Button>
+          <details className="rounded-xl border bg-muted/20 p-4">
+            <summary className="cursor-pointer text-sm font-semibold text-foreground">Plus de détails</summary>
+            <p className="mt-1 text-xs text-muted-foreground">Ajoutez ces informations si elles sont déjà disponibles.</p>
+            <div className="mt-4 space-y-4">
+              <div className="space-y-1">
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" className="h-11" type="email" autoComplete="email" placeholder="Ex: jean.dupont@email.com" {...register("email")} />
+                {errors.email && <p className="text-xs text-red-500">{errors.email.message as string}</p>}
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="companyName">Entreprise</Label>
+                <Input id="companyName" className="h-11" placeholder="Ex: Samatech..." autoComplete="organization" {...register("companyName")} />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="notes">Note commerciale</Label>
+                <textarea id="notes" rows={4} className="w-full rounded-md border px-3 py-2 text-sm bg-background text-foreground" placeholder="Contexte, besoin ou prochaine étape…" {...register("notes")} />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="source">Source</Label>
+                <select id="source" className="flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-background text-foreground" {...register("source")}>
+                  <option value="">Sélectionnez...</option>
+                  {CONTACT_SOURCES.map(s => <option key={s} value={s}>{CONTACT_SOURCE_LABELS[s]}</option>)}
+                </select>
+              </div>
+            </div>
+          </details>
 
         </form>
+        <div className="fixed inset-x-0 bottom-16 z-20 border-t bg-background/95 p-3 backdrop-blur lg:static lg:mx-auto lg:mt-4 lg:max-w-md lg:border lg:rounded-xl">
+          <Button form="prospect-form" type="submit" className="min-h-11 w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Création..." : "Enregistrer le prospect"}
+          </Button>
+        </div>
       </main>
     </div>
   );

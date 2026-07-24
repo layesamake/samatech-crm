@@ -10,8 +10,15 @@ describe('Tableau de bord', () => {
     await db.delete(); await db.open();
   });
 
-  it('affiche le tableau de bord', async () => {
+  it('guide une nouvelle entreprise vers son premier prospect', async () => {
     render(<Home />);
-    expect(await screen.findByText('Bienvenue sur SAMTECH CRM', {}, { timeout: 3000 })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Commencez votre suivi commercial' }, { timeout: 3000 })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Ajouter un prospect' })).toHaveAttribute('href', '/prospects/nouveau');
+  });
+
+  it('évite les indicateurs financiers vides sur un nouvel espace', async () => {
+    render(<Home />);
+    await screen.findByRole('heading', { name: 'Commencez votre suivi commercial' }, { timeout: 3000 });
+    expect(document.body).not.toHaveTextContent('0 XOF');
   });
 });

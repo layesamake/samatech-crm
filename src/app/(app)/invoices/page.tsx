@@ -46,9 +46,25 @@ const InvoiceCard = memo(({ invoiceAggr, router }: { invoiceAggr: InvoiceAggrega
               {formatMinor(invoice.grandTotalMinor, invoice.currency, invoice.currencyScale)}
             </strong>
             <span className="text-sm text-muted-foreground">
-              Échéance : {formatMinor(invoice.balanceMinor, invoice.currency, invoice.currencyScale)}
+              Solde : {formatMinor(invoice.balanceMinor, invoice.currency, invoice.currencyScale)}
             </span>
           </div>
+        </div>
+        <div className="mt-4 flex gap-2 border-t pt-3">
+          <button
+            type="button"
+            onClick={(event) => { event.stopPropagation(); router.push(`/payments?invoiceId=${invoice.id}`); }}
+            className="min-h-11 flex-1 rounded-lg bg-primary/10 px-3 text-sm font-semibold text-primary"
+          >
+            Enregistrer un paiement
+          </button>
+          <button
+            type="button"
+            onClick={(event) => { event.stopPropagation(); router.push(`/invoices/${invoice.id}`); }}
+            className="min-h-11 rounded-lg px-3 text-sm font-semibold text-muted-foreground hover:bg-muted"
+          >
+            Détails
+          </button>
         </div>
       </div>
     </SwipeableActionItem>
@@ -216,7 +232,7 @@ export default function InvoicesPage() {
 
       <Link 
         href="/invoices/new" 
-        className="fixed bottom-[84px] lg:bottom-8 right-4 w-14 h-14 bg-foreground text-background rounded-[20px] flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform z-40"
+        className="fixed bottom-[84px] lg:bottom-8 right-4 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-105 active:scale-95 z-40"
       >
         <Plus className="w-6 h-6 stroke-[2.5]" />
       </Link>
