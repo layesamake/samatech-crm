@@ -1,7 +1,7 @@
 'use client';
 
 import { ChangeEvent, useEffect, useState } from 'react';
-import { ManageBackupsUseCase, PreparedBackup } from '../application/manage-backups';
+import { ManageBackupsUseCase } from '../application/manage-backups';
 import { BackupEnvelope, BackupPreview, MAX_BACKUP_BYTES } from '../domain/backup';
 import { DexieBackupRepository } from '../infrastructure/dexie-backup-repository';
 import { ManageSecurityUseCase } from '@/modules/security/application/manage-security';
@@ -57,7 +57,7 @@ export default function BackupSettings() {
   const [googleDriveBusy, setGoogleDriveBusy] = useState(false);
 
   useEffect(() => { 
-    void backupUseCase.getLastExportedAt().then(setLastExportedAt); 
+    void backupUseCase.getLastEncryptedExportedAt().then(setLastExportedAt);
     void loadGoogleIdentityClient().catch((err) => console.warn(err));
   }, []);
 
@@ -70,7 +70,7 @@ export default function BackupSettings() {
     try {
       const prepared = await backupUseCase.prepareEncryptedExport(exportPassword, activeBusiness?.id, activeBusiness?.name);
       triggerDownload(prepared.text, prepared.filename);
-      await backupUseCase.confirmExported(prepared as unknown as PreparedBackup); // using envelope structure
+      await backupUseCase.confirmEncryptedExported(prepared);
       setLastExportedAt(prepared.envelope.exportedAt);
       setMessage('Sauvegarde chiffrée créée et téléchargée avec succès.');
       setExportPassword(''); // clear state
@@ -97,7 +97,7 @@ export default function BackupSettings() {
       const prepared = await backupUseCase.prepareEncryptedExport(exportPassword, activeBusiness?.id, activeBusiness?.name);
       await uploadFileToGoogleDrive(token, prepared.text, prepared.filename);
       
-      await backupUseCase.confirmExported(prepared as unknown as PreparedBackup);
+      await backupUseCase.confirmEncryptedExported(prepared);
       setLastExportedAt(prepared.envelope.exportedAt);
       setMessage('Sauvegarde chiffrée uploadée avec succès sur votre Google Drive.');
       setExportPassword('');

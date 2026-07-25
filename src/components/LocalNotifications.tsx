@@ -1,13 +1,18 @@
 'use client';
 
 import { Bell, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { GetStatisticsUseCase } from '@/modules/statistics/application/get-statistics';
 import type { PeriodPreset, StatisticsReport } from '@/modules/statistics/domain/statistics';
 import { Button } from '@/components/ui/button';
+import { ManageBackupsUseCase } from '@/modules/backup/application/manage-backups';
+import { DexieBackupRepository } from '@/modules/backup/infrastructure/dexie-backup-repository';
 
 const statistics = new GetStatisticsUseCase();
+const backups = new ManageBackupsUseCase(new DexieBackupRepository());
 const CHECK_INTERVAL_MS = 15 * 60 * 1000;
+const BACKUP_REMINDER_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000;
 
 function summary(report: StatisticsReport) {
   const parts: string[] = [];
@@ -66,4 +71,24 @@ export function LocalNotifications() {
   if (permission === 'granted') return <p className="flex items-center gap-2 text-xs text-muted-foreground"><CheckCircle2 className="size-4 text-emerald-600" aria-hidden="true" />Alertes locales activées lorsque l’application est ouverte.</p>;
   if (permission === 'denied') return <p className="text-xs text-muted-foreground">Les alertes locales sont bloquées dans le navigateur.</p>;
   return <div className="rounded-xl border border-dashed bg-card p-4"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-medium">Recevoir les rappels locaux</p><p className="mt-1 text-xs text-muted-foreground">Relances et paiements attendus, lorsque l’application est ouverte.</p></div><Button type="button" variant="outline" className="gap-2" onClick={() => void enable()}><Bell className="size-4" aria-hidden="true" />Activer</Button></div></div>;
+}
+
+export function EncryptedBackupReminder() {
+  const [lastExportedAt, setLastExportedAt] = useState<string | null | undefined>(undefined);
+  const [needsReminder, setNeedsReminder] = useState(false);
+
+  useEffect(() => {
+    void backups.getLastEncryptedExportedAt().then((value) => {
+      setLastExportedAt(value);
+      setNeedsReminder(!value || Date.now() - new Date(value).getTime() >= BACKUP_REMINDER_INTERVAL_MS);
+    }).catch(() => {
+      setLastExportedAt(null);
+      setNeedsReminder(true);
+    });
+  }, []);
+
+  if (lastExportedAt === undefined) return null;
+  if (!needsReminder) return null;
+
+  return <section className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4" aria-label="Rappel de sauvegarde"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="font-medium text-amber-950 dark:text-amber-100">Sauvegarde chiffree recommandee</p><p className="mt-1 text-xs text-amber-900 dark:text-amber-200">{lastExportedAt ? `Votre derniere sauvegarde chiffree date du ${new Date(lastExportedAt).toLocaleDateString('fr-FR')}.` : 'Aucune sauvegarde chiffree confirmee pour cet espace.'}</p></div><Link href="/settings/backup" className="inline-flex h-10 items-center justify-center rounded-md bg-amber-700 px-4 text-sm font-medium text-white hover:bg-amber-800">Sauvegarder</Link></div></section>;
 }

@@ -67,6 +67,15 @@ export class ManageBackupsUseCase {
     return this.repository.getLastExportedAt();
   }
 
+  async confirmEncryptedExported(prepared: PreparedEncryptedBackup): Promise<void> {
+    await this.repository.markExportedAt(prepared.envelope.exportedAt);
+    await this.repository.markEncryptedExportedAt(prepared.envelope.exportedAt);
+  }
+
+  async getLastEncryptedExportedAt(): Promise<string | null> {
+    return this.repository.getLastEncryptedExportedAt();
+  }
+
   async inspect(text: string): Promise<{ envelope: BackupEnvelope; preview: BackupPreview }> {
     let parsed: any;
     try {

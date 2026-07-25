@@ -78,6 +78,13 @@ describe('Sauvegarde et restauration', () => {
     expect(await useCase.getLastExportedAt()).toBe(prepared.envelope.exportedAt);
   });
 
+  it('tracks the latest confirmed encrypted export separately', async () => {
+    const prepared = await useCase.prepareEncryptedExport('une phrase de passe longue');
+    expect(await useCase.getLastEncryptedExportedAt()).toBeNull();
+    await useCase.confirmEncryptedExported(prepared);
+    expect(await useCase.getLastEncryptedExportedAt()).toBe(prepared.envelope.exportedAt);
+  });
+
   it('remplace atomiquement les données métier et conserve la sécurité locale', async () => {
     await seedRepresentativeData();
     const prepared = await useCase.prepareExport();

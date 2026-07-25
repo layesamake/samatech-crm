@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { AlertTriangle, CalendarClock, ChevronRight, FileWarning, UserPlus, UsersRound } from 'lucide-react';
 import { GetStatisticsUseCase } from '@/modules/statistics/application/get-statistics';
 import { formatMinorExact, PeriodPreset, StatisticsReport } from '@/modules/statistics/domain/statistics';
-import { LocalNotifications } from '@/components/LocalNotifications';
+import { EncryptedBackupReminder, LocalNotifications } from '@/components/LocalNotifications';
 
 const getStatistics = new GetStatisticsUseCase();
 
@@ -82,6 +82,7 @@ export function MobileDashboard() {
         </section>
 
         <LocalNotifications />
+        <EncryptedBackupReminder />
 
         <section className="rounded-2xl border bg-card p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between gap-3">

@@ -42,6 +42,16 @@ export class DexieBackupRepository {
     await this.targetDb.settings.put(record);
   }
 
+  async getLastEncryptedExportedAt(): Promise<string | null> {
+    const record = await this.targetDb.settings.get('backup.lastEncryptedExportedAt');
+    return typeof record?.value === 'string' ? record.value : null;
+  }
+
+  async markEncryptedExportedAt(exportedAt: string): Promise<void> {
+    const record: SettingsRecord = { key: 'backup.lastEncryptedExportedAt', value: exportedAt, schemaVersion: 1, updatedAt: exportedAt };
+    await this.targetDb.settings.put(record);
+  }
+
   async counts(): Promise<Record<BusinessCollectionName, number>> {
     const pairs = await Promise.all(BUSINESS_COLLECTIONS.map(async (name) => [name, await this.targetDb.table(name).count()] as const));
     return Object.fromEntries(pairs) as Record<BusinessCollectionName, number>;
