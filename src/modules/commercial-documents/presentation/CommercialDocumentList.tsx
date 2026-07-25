@@ -229,7 +229,7 @@ export default function CommercialDocumentList() {
         />
       )}
 
-      <div className="fixed bottom-20 right-5 z-50 flex flex-col items-end gap-2 md:bottom-8 md:right-8">
+      <div className="fixed bottom-24 lg:bottom-12 right-6 lg:right-10 z-40 flex flex-col items-end gap-2">
         {/* Mini FABs */}
         <div
           className={`flex flex-col items-end gap-2 transition-all duration-200 ${
@@ -273,11 +273,11 @@ export default function CommercialDocumentList() {
           type="button"
           onClick={() => setFabOpen((prev) => !prev)}
           aria-label={fabOpen ? 'Fermer le menu' : 'Nouveau document'}
-          className={`flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-transform duration-200 hover:scale-110 active:scale-95 ${
+          className={`flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform duration-200 hover:scale-105 active:scale-95 ${
             fabOpen ? 'rotate-45' : ''
           }`}
         >
-          <Plus className="h-6 w-6" />
+          <Plus className="w-8 h-8" />
         </button>
       </div>
     </div>

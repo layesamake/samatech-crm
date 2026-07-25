@@ -228,9 +228,9 @@ export default function CampaignsPage() {
       <Link
         href="/campaigns/new"
         aria-label="Nouvelle campagne"
-        className="fixed bottom-20 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/30 transition-transform hover:scale-110 active:scale-95 md:bottom-8 md:right-8"
+        className="fixed bottom-24 lg:bottom-12 right-6 lg:right-10 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-105 active:scale-95"
       >
-        <Plus className="h-6 w-6" />
+        <Plus className="w-8 h-8" />
       </Link>
     </main>
   );

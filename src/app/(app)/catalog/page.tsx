@@ -470,7 +470,7 @@ export default function CatalogPage() {
       </section>
 
       {/* FAB - Actions multiples (Produit / Service / Catégorie) */}
-      <div className="fixed bottom-[84px] lg:bottom-8 right-4 z-40">
+      <div className="fixed bottom-24 lg:bottom-12 right-6 lg:right-10 z-40">
         <div className={cn(
           "absolute bottom-16 right-0 flex-col gap-2 items-end mb-2 transition-all duration-200 origin-bottom",
           isFabOpen ? "flex opacity-100 scale-100 pointer-events-auto" : "flex opacity-0 scale-95 pointer-events-none"
@@ -492,9 +492,9 @@ export default function CatalogPage() {
           onClick={() => setIsFabOpen(!isFabOpen)}
           aria-label={isFabOpen ? 'Fermer les actions du catalogue' : 'Ouvrir les actions du catalogue'}
           aria-expanded={isFabOpen}
-          className="w-14 h-14 bg-foreground text-background rounded-[20px] flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform"
+          className="flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-105 active:scale-95"
         >
-          <Plus className={cn("w-6 h-6 stroke-[2.5] transition-transform duration-200", isFabOpen ? "rotate-45" : "rotate-0")} />
+          <Plus className={cn("w-8 h-8 transition-transform duration-200", isFabOpen ? "rotate-45" : "rotate-0")} />
         </button>
       </div>
     </main>

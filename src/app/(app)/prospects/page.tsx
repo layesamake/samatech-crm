@@ -285,9 +285,9 @@ export default function ProspectsPage() {
       <Link 
         href="/prospects/nouveau" 
         aria-label="Créer un prospect" 
-        className="fixed bottom-20 right-5 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-105 active:scale-95 md:bottom-8 md:right-8"
+        className="fixed bottom-24 lg:bottom-12 right-6 lg:right-10 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-105 active:scale-95"
       >
-        <Plus className="h-6 w-6" />
+        <Plus className="w-8 h-8" />
       </Link>
     </div>
     <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto rounded-t-3xl">
