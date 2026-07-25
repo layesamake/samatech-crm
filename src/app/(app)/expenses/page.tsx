@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/infrastructure/database/db';
@@ -13,6 +14,27 @@ export default function ExpensesPage() {
   const [filterCategory, setFilterCategory] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const hasActiveFilters = Boolean(filterDateFrom || filterDateTo || filterCategory);
+
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalContainer(document.getElementById('topbar-actions'));
+  }, []);
+
+  const actionButtons = (
+    <button 
+      type="button"
+      className="relative flex h-10 w-10 items-center justify-center rounded-full text-nav-muted hover:text-nav-fg hover:bg-white/10 transition-colors"
+      onClick={() => setShowFilters(!showFilters)}
+      aria-label={showFilters ? "Fermer les filtres" : "Afficher les filtres"}
+      title="Filtrer les dépenses"
+    >
+      {showFilters ? <X className="w-5 h-5" /> : <Filter className="w-5 h-5" />}
+      {hasActiveFilters && !showFilters && (
+        <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">•</span>
+      )}
+    </button>
+  );
 
   const expenses = useLiveQuery(async () => {
     let collection = db.expenses.filter((e) => !e.archivedAt);
@@ -42,24 +64,12 @@ export default function ExpensesPage() {
 
   return (
     <main className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
-      <header className="flex items-center justify-between gap-4">
+      {portalContainer ? createPortal(actionButtons, portalContainer) : <div className="hidden md:flex justify-end">{actionButtons}</div>}
+
+      <header className="hidden md:flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dépenses</h1>
           <p className="text-muted-foreground">Suivez les sorties d'argent de votre entreprise.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button 
-            type="button"
-            className={`relative flex items-center justify-center h-11 w-11 rounded-md border hover:bg-muted transition-colors ${showFilters || hasActiveFilters ? 'bg-primary/10 border-primary text-primary' : 'bg-card'}`}
-            onClick={() => setShowFilters(!showFilters)}
-            aria-label={showFilters ? "Fermer les filtres" : "Afficher les filtres"}
-            title="Filtrer les dépenses"
-          >
-            {showFilters ? <X className="w-5 h-5" /> : <Filter className="w-5 h-5" />}
-            {hasActiveFilters && !showFilters && (
-              <span className="absolute -right-1 -top-1 flex size-3 rounded-full bg-primary" />
-            )}
-          </button>
         </div>
       </header>
 
@@ -101,7 +111,54 @@ export default function ExpensesPage() {
         </section>
       )}
 
-      <div className="rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden bg-background text-foreground">
+      {/* Vue mobile : cartes */}
+      <div className="grid gap-3 md:hidden">
+        {!expenses ? (
+          <p className="p-4 text-center">Chargement...</p>
+        ) : expenses.length === 0 ? (
+          <p className="rounded-xl border border-dashed p-8 text-center text-muted-foreground bg-background">Aucune dépense trouvée.</p>
+        ) : (
+          expenses.map((expense) => (
+            <article key={expense.id} className={`rounded-xl border p-4 shadow-sm transition-colors ${expense.status === 'CANCELLED' ? 'bg-muted/50 text-muted-foreground' : 'bg-card text-card-foreground'}`}>
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div>
+                  <div className="font-semibold text-base">{expense.description}</div>
+                  {expense.supplier && <div className="text-xs text-muted-foreground">Bénéficiaire : {expense.supplier}</div>}
+                </div>
+                <div className="text-right shrink-0">
+                  <div className={`font-bold text-base ${expense.status === 'CANCELLED' ? 'line-through text-muted-foreground' : ''}`}>
+                    {formatMinor(expense.amountMinor, expense.currency, expense.currencyScale)}
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center justify-between text-xs text-muted-foreground border-t pt-2.5 mt-2.5 gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span>{expense.expenseDate}</span>
+                  <span>•</span>
+                  <span className="font-medium">{formatExpenseCategory(expense.category, expense.customCategory)}</span>
+                </div>
+                <div>
+                  <span>{EXPENSE_PAYMENT_METHOD_LABELS[expense.paymentMethod]}</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between border-t pt-2.5 mt-2.5">
+                <div>
+                  {expense.status === 'ACTIVE' 
+                    ? <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-green-500/10 text-green-700 border-green-500/20">Active</span>
+                    : <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-amber-500/10 text-amber-700 border-amber-500/20" title={expense.cancellationReason}>Annulée</span>
+                  }
+                </div>
+                <Link href={`/expenses/${expense.id}`} className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline">
+                  Ouvrir →
+                </Link>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+
+      {/* Vue bureau : tableau */}
+      <div className="hidden md:block rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden bg-background text-foreground">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 border-b bg-background text-foreground">

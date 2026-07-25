@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { formatMinor } from '@/modules/invoices/domain/invoice';
 import { ManagePaymentsUseCase } from '@/modules/payments/application/manage-payments';
 import { PAYMENT_METHOD_LABELS, PAYMENT_METHODS, PAYMENT_STATUSES, PaymentAggregate, PaymentMethod, PaymentStatus, sumActivePayments } from '@/modules/payments/domain/payment';
@@ -19,6 +20,27 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true); const [error, setError] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const hasActiveFilters = Boolean(query || from || to || method || status || clientId || invoiceId);
+
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalContainer(document.getElementById('topbar-actions'));
+  }, []);
+
+  const actionButtons = (
+    <button 
+      type="button"
+      className="relative flex h-10 w-10 items-center justify-center rounded-full text-nav-muted hover:text-nav-fg hover:bg-white/10 transition-colors"
+      onClick={() => setShowFilters(!showFilters)}
+      aria-label={showFilters ? "Fermer les filtres" : "Afficher les filtres"}
+      title="Filtrer les paiements"
+    >
+      {showFilters ? <X className="w-5 h-5" /> : <Filter className="w-5 h-5" />}
+      {hasActiveFilters && !showFilters && (
+        <span className="absolute right-0 top-0 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">•</span>
+      )}
+    </button>
+  );
 
   useEffect(() => { void manage.list().then(setAllItems).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')); }, []);
   useEffect(() => { void manage.list({ query, from: from || undefined, to: to || undefined, method: method ? method as PaymentMethod : undefined, status: status ? status as PaymentStatus : undefined, clientProfileId: clientId || undefined, invoiceId: invoiceId || undefined }).then(setItems).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')).finally(() => setLoading(false)); }, [query, from, to, method, status, clientId, invoiceId]);
@@ -48,27 +70,17 @@ export default function PaymentsPage() {
   };
 
   return <main className="mx-auto max-w-6xl space-y-5 p-4 md:p-8">
-    <div className="flex justify-between items-center gap-2">
+    {portalContainer ? createPortal(actionButtons, portalContainer) : <div className="hidden md:flex justify-end">{actionButtons}</div>}
+
+    <div className="hidden md:flex justify-between items-center gap-2">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Paiements</h1>
         <p className="text-muted-foreground">Suivez les encaissements de votre entreprise.</p>
       </div>
       <div className="flex items-center gap-2">
-        <button onClick={exportToCsv} className="flex items-center justify-center gap-2 h-11 w-11 md:w-auto rounded-md border bg-card md:px-4 hover:bg-muted bg-background text-foreground" aria-label="Exporter CSV">
-          <Download className="w-5 h-5 md:w-4 md:h-4" />
-          <span className="hidden md:inline">Exporter CSV</span>
-        </button>
-        <button 
-          type="button"
-          className={`relative flex items-center justify-center h-11 w-11 rounded-md border hover:bg-muted transition-colors ${showFilters || hasActiveFilters ? 'bg-primary/10 border-primary text-primary' : 'bg-card'}`}
-          onClick={() => setShowFilters(!showFilters)}
-          aria-label={showFilters ? "Fermer les filtres" : "Afficher les filtres"}
-          title="Filtrer les paiements"
-        >
-          {showFilters ? <X className="w-5 h-5" /> : <Filter className="w-5 h-5" />}
-          {hasActiveFilters && !showFilters && (
-            <span className="absolute -right-1 -top-1 flex size-3 rounded-full bg-primary" />
-          )}
+        <button onClick={exportToCsv} className="flex items-center justify-center gap-2 h-11 w-auto rounded-md border bg-card px-4 hover:bg-muted bg-background text-foreground" aria-label="Exporter CSV">
+          <Download className="w-4 h-4" />
+          <span>Exporter CSV</span>
         </button>
       </div>
     </div>
