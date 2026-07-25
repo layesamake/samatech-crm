@@ -35,6 +35,7 @@ async function seedRepresentativeData() {
     campaigns: { id: 'campaign1', name: 'Relance', status: 'EN_COURS', audienceType: 'CLIENTS', createdAt: now, updatedAt: now },
     campaignRecipients: { id: 'recipient1', campaignId: 'campaign1', contactId: 'contact1', status: 'A_TRAITER', position: 0, normalizedPhoneSnapshot: '+221776481782', createdAt: now, updatedAt: now },
     expenses: { id: 'expense1', description: 'Transport', amountMinor: 5000, currency: 'XOF', currencyScale: 0, expenseDate: '2026-07-18', status: 'ACTIVE', category: 'TRANSPORT', createdAt: now, updatedAt: now },
+    suppliers: { id: 'supp1', name: 'Fournisseur Test', normalizedName: 'fournisseur test', createdAt: now, updatedAt: now },
     treasuryAccounts: { id: 'acc1', type: 'CASH', name: 'Caisse', normalizedName: 'caisse', currency: 'XOF', currencyScale: 0, openingBalanceMinor: 0, openingDate: '2026-07-01', createdAt: now, updatedAt: now },
     treasuryAllocations: { id: 'alloc1', accountId: 'acc1', sourceType: 'PAYMENT', sourceId: 'payment1', status: 'ACTIVE', createdAt: now, updatedAt: now },
     treasuryOperations: { id: 'op1', accountId: 'acc1', kind: 'ADJUSTMENT', adjustmentDirection: 'IN', amountMinor: 1000, operationDate: '2026-07-18', currency: 'XOF', currencyScale: 0, label: 'Test', status: 'ACTIVE', createdAt: now, updatedAt: now },

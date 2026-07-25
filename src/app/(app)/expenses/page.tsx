@@ -5,11 +5,14 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/infrastructure/database/db';
 import { formatMinor } from '@/modules/invoices/domain/invoice';
 import { EXPENSE_CATEGORY_LABELS, EXPENSE_PAYMENT_METHOD_LABELS, ExpenseRecord, formatExpenseCategory } from '@/modules/expenses/domain/expense';
+import { Filter, Plus, X } from 'lucide-react';
 
 export default function ExpensesPage() {
   const [filterDateFrom, setFilterDateFrom] = useState('');
   const [filterDateTo, setFilterDateTo] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const hasActiveFilters = Boolean(filterDateFrom || filterDateTo || filterCategory);
 
   const expenses = useLiveQuery(async () => {
     let collection = db.expenses.filter((e) => !e.archivedAt);
@@ -39,38 +42,51 @@ export default function ExpensesPage() {
 
   return (
     <main className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <header className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dépenses</h1>
           <p className="text-muted-foreground">Suivez les sorties d'argent de votre entreprise.</p>
         </div>
-        <Link href="/expenses/new" className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
-          Nouvelle dépense
-        </Link>
+        <div className="flex items-center gap-2">
+          <button 
+            type="button"
+            className={`relative flex items-center justify-center h-11 w-11 rounded-md border hover:bg-muted transition-colors ${showFilters || hasActiveFilters ? 'bg-primary/10 border-primary text-primary' : 'bg-card'}`}
+            onClick={() => setShowFilters(!showFilters)}
+            aria-label={showFilters ? "Fermer les filtres" : "Afficher les filtres"}
+            title="Filtrer les dépenses"
+          >
+            {showFilters ? <X className="w-5 h-5" /> : <Filter className="w-5 h-5" />}
+            {hasActiveFilters && !showFilters && (
+              <span className="absolute -right-1 -top-1 flex size-3 rounded-full bg-primary" />
+            )}
+          </button>
+        </div>
       </header>
 
-      <section className="bg-card text-card-foreground rounded-xl border p-4 shadow-sm flex flex-wrap gap-4 bg-background text-foreground">
-        <label className="flex flex-col gap-1 text-sm">
-          <span>Du</span>
-          <input type="date" className="h-9 rounded-md border px-3 bg-background text-foreground" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          <span>Au</span>
-          <input type="date" className="h-9 rounded-md border px-3 bg-background text-foreground" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} />
-        </label>
-        <label className="flex flex-col gap-1 text-sm">
-          <span>Catégorie</span>
-          <select className="h-9 rounded-md border px-3 bg-background text-foreground" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
-            <option value="">Toutes les catégories</option>
-            {Object.entries(EXPENSE_CATEGORY_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>{label}</option>
-            ))}
-          </select>
-        </label>
-        <div className="flex items-end">
-          <button type="button" onClick={() => { setFilterDateFrom(''); setFilterDateTo(''); setFilterCategory(''); }} className="h-9 px-3 text-sm rounded-md hover:bg-muted text-muted-foreground">Effacer</button>
-        </div>
-      </section>
+      {showFilters && (
+        <section className="bg-card text-card-foreground rounded-xl border p-4 shadow-sm flex flex-wrap gap-4 bg-background text-foreground animate-in slide-in-from-top-2">
+          <label className="flex flex-col gap-1 text-sm">
+            <span>Du</span>
+            <input type="date" className="h-9 rounded-md border px-3 bg-background text-foreground" value={filterDateFrom} onChange={e => setFilterDateFrom(e.target.value)} />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            <span>Au</span>
+            <input type="date" className="h-9 rounded-md border px-3 bg-background text-foreground" value={filterDateTo} onChange={e => setFilterDateTo(e.target.value)} />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            <span>Catégorie</span>
+            <select className="h-9 rounded-md border px-3 bg-background text-foreground" value={filterCategory} onChange={e => setFilterCategory(e.target.value)}>
+              <option value="">Toutes les catégories</option>
+              {Object.entries(EXPENSE_CATEGORY_LABELS).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
+            </select>
+          </label>
+          <div className="flex items-end">
+            <button type="button" onClick={() => { setFilterDateFrom(''); setFilterDateTo(''); setFilterCategory(''); }} className="h-9 px-3 text-sm rounded-md hover:bg-muted text-muted-foreground">Effacer</button>
+          </div>
+        </section>
+      )}
 
       {Object.keys(totalsByCurrency).length > 0 && (
         <section className="bg-blue-50/50 dark:bg-blue-950/20 text-card-foreground rounded-xl border border-blue-100 dark:border-blue-900 p-4 shadow-sm bg-background text-foreground">
@@ -139,6 +155,15 @@ export default function ExpensesPage() {
           </table>
         </div>
       </div>
+
+      {/* FAB : Nouvelle dépense */}
+      <Link
+        href="/expenses/new"
+        aria-label="Nouvelle dépense"
+        className="fixed bottom-24 lg:bottom-12 right-6 lg:right-10 z-40 flex size-14 items-center justify-center rounded-full bg-blue-700 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+      >
+        <Plus className="w-8 h-8" />
+      </Link>
     </main>
   );
 }
