@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { AlertTriangle, CalendarClock, ChevronRight, FileWarning, UserPlus, UsersRound } from 'lucide-react';
 import { GetStatisticsUseCase } from '@/modules/statistics/application/get-statistics';
 import { formatMinorExact, PeriodPreset, StatisticsReport } from '@/modules/statistics/domain/statistics';
+import { LocalNotifications } from '@/components/LocalNotifications';
 
 const getStatistics = new GetStatisticsUseCase();
 
@@ -79,6 +80,8 @@ export function MobileDashboard() {
           <PriorityCard href="/prospects" label="Prospects actifs" value={report.prospects.active} icon={UsersRound} tone="primary" />
           <PriorityCard href="/invoices" label="Factures à suivre" value={report.receivables.overdueInvoices} icon={FileWarning} tone="success" />
         </section>
+
+        <LocalNotifications />
 
         <section className="rounded-2xl border bg-card p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between gap-3">

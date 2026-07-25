@@ -10,9 +10,8 @@ import { ManageInvoicesUseCase } from '@/modules/invoices/application/manage-inv
 import { formatMinor, InvoiceAggregate, sumSafeMinor } from '@/modules/invoices/domain/invoice';
 import { ManagePaymentsUseCase } from '@/modules/payments/application/manage-payments';
 import { PAYMENT_METHOD_LABELS, PaymentAggregate, ReceivableRecord, sumActivePayments } from '@/modules/payments/domain/payment';
-import { Pencil, MoreVertical } from 'lucide-react';
+import { Pencil, MoreVertical, Phone } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
 import { OpportunityList } from '@/components/opportunities/OpportunityList';
 
 const manage = new ManageClientsUseCase();
@@ -40,6 +39,9 @@ export default function ClientDetailPage() {
           <p className="text-sm text-muted-foreground">Client depuis le {new Date(client.profile.convertedAt).toLocaleString('fr-FR')}</p>
           <div className="mt-3 flex items-center gap-3">
             <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800 dark:text-emerald-200">CLIENT</span>
+            <a href={`tel:${client.contact.whatsappPhone}`} aria-label={`Appeler ${client.contact.displayName}`} title="Appeler" className="inline-flex size-8 items-center justify-center rounded-full bg-muted text-foreground transition-colors hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <Phone className="size-4" aria-hidden="true" />
+            </a>
             <WhatsAppMessagePanel contactId={client.contact.id} normalizedPhone={client.contact.normalizedWhatsappPhone} displayName={client.contact.displayName} iconOnly />
           </div>
         </div>
