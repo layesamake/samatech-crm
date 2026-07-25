@@ -8,10 +8,16 @@ import { minorToPaymentInput, PAYMENT_METHOD_LABELS, PAYMENT_METHODS, PaymentMet
 import { ManageTreasuryAccountsUseCase, TreasuryAccountWithBalance } from '@/modules/treasury/application/manage-treasury-accounts';
 import { AllocateTreasurySourcesUseCase } from '@/modules/treasury/application/allocate-treasury-sources';
 import { treasuryRepository } from '@/modules/treasury/infrastructure/dexie-treasury-repository';
+import { GetSettingsUseCase } from '@/modules/settings/application/get-settings';
+import { DexieSettingsRepository } from '@/modules/settings/infrastructure/dexie-settings-repository';
+import { downloadPaymentReceiptPdf, generatePaymentReceiptPdf, paymentReceiptFilename, sharePaymentReceiptPdf } from '../pdf/payment-receipt-pdf';
+import { generatePaymentReceiptImage, paymentReceiptImageFilename, sharePaymentReceiptImage } from '../pdf/payment-receipt-image';
+import { Download, Image as ImageIcon, Share2 } from 'lucide-react';
 
 const managePayments = new ManagePaymentsUseCase();
 const accountUseCase = new ManageTreasuryAccountsUseCase(treasuryRepository);
 const allocateUseCase = new AllocateTreasurySourcesUseCase(treasuryRepository);
+const settingsUseCase = new GetSettingsUseCase(new DexieSettingsRepository());
 
 function todayLocal(): string {
   const date = new Date();
@@ -35,6 +41,7 @@ export function PaymentPanel({ value, onInvoiceChanged }: { value: InvoiceAggreg
   const [reverseReason, setReverseReason] = useState('');
   const [accountId, setAccountId] = useState('');
   const [accounts, setAccounts] = useState<TreasuryAccountWithBalance[]>([]);
+  const [receiptBusyId, setReceiptBusyId] = useState('');
 
   useEffect(() => {
     accountUseCase.listAccountsWithBalance().then(setAccounts).catch(console.error);
@@ -76,6 +83,47 @@ export function PaymentPanel({ value, onInvoiceChanged }: { value: InvoiceAggreg
     finally { setPending(false); }
   };
 
+  const receiptData = async (payment: PaymentRecord) => {
+    const company = await settingsUseCase.getCompanyProfile();
+    return { payment, invoice, clientName: value.clientName, companyLogoDataUri: company?.logoDataUri, stampDataUri: company?.stampDataUri };
+  };
+
+  const receiptBytes = async (payment: PaymentRecord) => generatePaymentReceiptPdf(await receiptData(payment));
+
+  const downloadReceipt = async (payment: PaymentRecord) => {
+    setError(''); setSuccess(''); setReceiptBusyId(payment.id);
+    try {
+      const bytes = await receiptBytes(payment);
+      downloadPaymentReceiptPdf(bytes, paymentReceiptFilename(payment));
+      setSuccess('Reçu de paiement téléchargé.');
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : 'Génération du reçu impossible');
+    } finally { setReceiptBusyId(''); }
+  };
+
+  const shareReceipt = async (payment: PaymentRecord) => {
+    setError(''); setSuccess(''); setReceiptBusyId(payment.id);
+    try {
+      const result = await sharePaymentReceiptPdf(await receiptBytes(payment), paymentReceiptFilename(payment));
+      setSuccess(result === 'SHARED' ? 'Choisissez WhatsApp dans le partage pour envoyer le reçu.' : 'Le reçu a été téléchargé : joignez-le manuellement dans WhatsApp.');
+    } catch (caught) {
+      if (caught instanceof DOMException && caught.name === 'AbortError') return;
+      setError(caught instanceof Error ? caught.message : 'Partage du reçu impossible');
+    } finally { setReceiptBusyId(''); }
+  };
+
+  const shareReceiptImage = async (payment: PaymentRecord) => {
+    setError(''); setSuccess(''); setReceiptBusyId(payment.id);
+    try {
+      const image = await generatePaymentReceiptImage(await receiptData(payment));
+      const result = await sharePaymentReceiptImage(image, paymentReceiptImageFilename(payment));
+      setSuccess(result === 'SHARED' ? 'Choisissez WhatsApp dans le partage pour envoyer l’image du reçu.' : 'L’image du reçu a été téléchargée : joignez-la manuellement dans WhatsApp.');
+    } catch (caught) {
+      if (caught instanceof DOMException && caught.name === 'AbortError') return;
+      setError(caught instanceof Error ? caught.message : 'Partage de l’image impossible');
+    } finally { setReceiptBusyId(''); }
+  };
+
   return <section className="space-y-4 rounded-xl border bg-card text-card-foreground p-5 bg-background text-foreground" aria-labelledby="payment-history-title">
     <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 id="payment-history-title" className="font-semibold">Paiements</h2><p className="text-sm text-muted-foreground">Payé {formatMinor(invoice.paidTotalMinor, invoice.currency, invoice.currencyScale)} · Solde {formatMinor(invoice.balanceMinor, invoice.currency, invoice.currencyScale)}</p></div><span className="rounded-full border px-3 py-1 text-sm font-semibold bg-background text-foreground">{invoice.status}</span></div>
     {(invoice.status === 'EMISE' || invoice.status === 'PARTIELLEMENT_PAYEE') && <form onSubmit={submit} className="space-y-3 rounded-lg bg-muted/50 p-4">
@@ -95,6 +143,7 @@ export function PaymentPanel({ value, onInvoiceChanged }: { value: InvoiceAggreg
     {items.length === 0 ? <p className="text-sm text-muted-foreground">Aucun paiement enregistré.</p> : <ol className="space-y-3">{items.map((payment) => <li key={payment.id} className={`rounded-lg border p-4 ${payment.status === 'REVERSED' ? 'border-border bg-muted text-muted-foreground' : ''}`}>
       <div className="flex flex-wrap justify-between gap-2"><strong>{formatMinor(payment.amountMinor, payment.currency, payment.currencyScale)}</strong><span>{payment.status === 'ACTIVE' ? 'ACTIF' : 'CONTREPASSÉ'}</span></div>
       <p className="text-sm">{payment.paymentDate} · {PAYMENT_METHOD_LABELS[payment.method]}</p>{payment.reference && <p className="text-sm">Référence : {payment.reference}</p>}{payment.note && <p className="whitespace-pre-wrap text-sm">{payment.note}</p>}{payment.reversalReason && <p className="mt-1 text-sm">Motif : {payment.reversalReason}</p>}
+      {payment.status === 'ACTIVE' && <div className="mt-3 flex flex-wrap gap-2"><button type="button" disabled={receiptBusyId === payment.id} onClick={() => void downloadReceipt(payment)} className="inline-flex h-11 items-center gap-2 rounded-md border px-3 text-sm font-medium"><Download className="size-4" aria-hidden="true" />Télécharger le PDF</button><button type="button" disabled={receiptBusyId === payment.id} onClick={() => void shareReceipt(payment)} className="inline-flex h-11 items-center gap-2 rounded-md bg-[#0B6B2D] px-3 text-sm font-medium text-white"><Share2 className="size-4" aria-hidden="true" />Partager le PDF</button><button type="button" disabled={receiptBusyId === payment.id} onClick={() => void shareReceiptImage(payment)} className="inline-flex h-11 items-center gap-2 rounded-md border border-[#0B6B2D] px-3 text-sm font-medium text-[#06460e]"><ImageIcon className="size-4" aria-hidden="true" />Partager l’image</button></div>}
       {payment.status === 'ACTIVE' && (reverseId !== payment.id ? <button className="mt-2 h-11 rounded-md border border-red-500/20 px-3 text-red-800 dark:text-red-200 bg-background text-foreground" onClick={() => { setReverseId(payment.id); setReverseReason(''); }}>Contrepasser</button> : <div className="mt-3 space-y-2"><label className="block text-sm">Motif obligatoire<textarea aria-label={`Motif de contrepassation ${payment.id}`} className="mt-1 min-h-20 w-full rounded-md border p-3 bg-background text-foreground" value={reverseReason} onChange={(event) => setReverseReason(event.target.value)} /></label><div className="flex gap-2"><button disabled={pending} className="h-11 rounded-md bg-red-700 px-3 text-white" onClick={() => void reverse(payment)}>Confirmer la contrepassation</button><button className="h-11 rounded-md border px-3 bg-background text-foreground" onClick={() => setReverseId('')}>Garder le paiement</button></div></div>)}
     </li>)}</ol>}
   </section>;

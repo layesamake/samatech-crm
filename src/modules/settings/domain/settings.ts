@@ -29,6 +29,7 @@ export interface CompanyProfile {
   currencySymbol: string;
   invoiceDefaults?: string;
   logoDataUri?: string;
+  stampDataUri?: string;
   managerName?: string;
   managerSignatureDataUri?: string;
 }
@@ -52,6 +53,7 @@ export const CompanyProfileSchema = z.object({
   currencySymbol: z.string().trim().min(1, 'Le symbole monétaire est obligatoire'),
   invoiceDefaults: z.string().optional(),
   logoDataUri: z.string().optional(),
+  stampDataUri: z.string().optional(),
   managerName: z.string().trim().optional(),
   managerSignatureDataUri: z.string().optional(),
 });

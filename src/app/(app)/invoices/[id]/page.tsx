@@ -6,10 +6,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { ManageInvoicesUseCase } from '@/modules/invoices/application/manage-invoices';
 import { formatMinor, formatQuantity, InvoiceAggregate } from '@/modules/invoices/domain/invoice';
 import { PaymentPanel } from '@/modules/payments/presentation/PaymentPanel';
-import { MessageCircle } from 'lucide-react';
+import { Image as ImageIcon, MessageCircle, Share2 } from 'lucide-react';
 const manage = new ManageInvoicesUseCase();
 export default function InvoiceDetailPage() { const router = useRouter(); const { id } = useParams<{ id: string }>(); const [value, setValue] = useState<InvoiceAggregate | null>(); const [error, setError] = useState(''); const [cancelReason, setCancelReason] = useState(''); const [pending, setPending] = useState(false); const refresh = useCallback(() => manage.get(id).then(setValue), [id]); useEffect(() => { void manage.get(id).then(setValue).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible')); }, [id]);
-  if (value === undefined) return <p className="p-4">Chargement...</p>; if (value === null) return <p className="p-4">Facture introuvable.</p>; const { invoice, lines } = value; const pdf = async (mode: 'DOWNLOAD' | 'SHARE') => { setPending(true); setError(''); try { const { downloadPdf, generateInvoicePdf, safePdfFilename, shareOrDownloadPdf } = await import('@/modules/invoices/pdf/invoice-pdf'); const bytes = await generateInvoicePdf(value); const filename = safePdfFilename(invoice.number, invoice.status, invoice.type); if (mode === 'DOWNLOAD') downloadPdf(bytes, filename); else await shareOrDownloadPdf(bytes, filename); } catch (caught) { setError(caught instanceof Error ? caught.message : 'Génération PDF impossible'); } finally { setPending(false); } };
+  if (value === undefined) return <p className="p-4">Chargement...</p>; if (value === null) return <p className="p-4">Facture introuvable.</p>; const { invoice, lines } = value; const pdf = async (mode: 'DOWNLOAD' | 'SHARE') => { setPending(true); setError(''); try { const { downloadPdf, generateInvoicePdf, safePdfFilename, shareOrDownloadPdf } = await import('@/modules/invoices/pdf/invoice-pdf'); const bytes = await generateInvoicePdf(value); const filename = safePdfFilename(invoice.number, invoice.status, invoice.type); if (mode === 'DOWNLOAD') downloadPdf(bytes, filename); else await shareOrDownloadPdf(bytes, filename); } catch (caught) { if (caught instanceof DOMException && caught.name === 'AbortError') return; setError(caught instanceof Error ? caught.message : 'Génération PDF impossible'); } finally { setPending(false); } }; const image = async () => { setPending(true); setError(''); try { const { generateInvoiceImage, safeInvoiceImageFilename, shareOrDownloadInvoiceImage } = await import('@/modules/invoices/pdf/invoice-image'); const file = await generateInvoiceImage(value); await shareOrDownloadInvoiceImage(file, safeInvoiceImageFilename(invoice.number, invoice.status, invoice.type)); } catch (caught) { if (caught instanceof DOMException && caught.name === 'AbortError') return; setError(caught instanceof Error ? caught.message : 'Génération de l’image impossible'); } finally { setPending(false); } };
   
   const generateWhatsAppLink = () => {
     const phone = invoice.clientSnapshot.phone?.replace(/[^0-9+]/g, '') || '';
@@ -37,8 +37,9 @@ export default function InvoiceDetailPage() { const router = useRouter(); const 
               </>
             )}
 
-            <button disabled={pending} onClick={() => void pdf('DOWNLOAD')} className="rounded-md border px-4 py-2 hover:bg-slate-50">Télécharger PDF</button>
-            <button disabled={pending} onClick={() => void pdf('SHARE')} className="rounded-md border px-4 py-2 hover:bg-slate-50">Partager</button>
+            <button disabled={pending} onClick={() => void pdf('DOWNLOAD')} className="rounded-md border px-4 py-2 hover:bg-slate-50">Télécharger le PDF</button>
+            <button disabled={pending} onClick={() => void pdf('SHARE')} className="inline-flex items-center gap-2 rounded-md border px-4 py-2 hover:bg-slate-50"><Share2 className="size-4" aria-hidden="true" />Partager le PDF</button>
+            <button disabled={pending} onClick={() => void image()} className="inline-flex items-center gap-2 rounded-md border border-emerald-700 px-4 py-2 text-emerald-800 hover:bg-emerald-50"><ImageIcon className="size-4" aria-hidden="true" />Partager l’image</button>
             {invoice.status !== 'BROUILLON' && invoice.status !== 'ANNULEE' && invoice.balanceMinor > 0 && invoice.clientSnapshot.phone && (
               <a href={generateWhatsAppLink()} target="_blank" rel="noreferrer" className="flex items-center gap-2 rounded-md bg-[#25D366] px-4 py-2 text-white hover:bg-[#128C7E]">
                 <MessageCircle className="w-4 h-4" />

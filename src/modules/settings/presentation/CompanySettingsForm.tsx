@@ -25,9 +25,10 @@ export default function CompanySettingsForm() {
   });
 
   const logoDataUri = useWatch({ control, name: 'logoDataUri' });
+  const stampDataUri = useWatch({ control, name: 'stampDataUri' });
   const signatureDataUri = useWatch({ control, name: 'managerSignatureDataUri' });
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'logoDataUri' | 'managerSignatureDataUri') => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'logoDataUri' | 'stampDataUri' | 'managerSignatureDataUri') => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
@@ -233,6 +234,24 @@ export default function CompanySettingsForm() {
                  onChange={(e) => handleFileUpload(e, 'logoDataUri')}
                  className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-800 dark:text-blue-200 hover:file:bg-blue-100"
                />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label htmlFor="stamp-upload" className="text-sm font-medium">Cachet de l&apos;entreprise</label>
+            <div className="flex items-center gap-4">
+              {stampDataUri ? (
+                <img src={stampDataUri} alt="Cachet" className="w-16 h-16 object-contain border rounded-md" />
+              ) : (
+                <div className="w-16 h-16 bg-muted border rounded-md flex items-center justify-center text-xs text-slate-400">Aucun</div>
+              )}
+              <input
+                id="stamp-upload"
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={(e) => handleFileUpload(e, 'stampDataUri')}
+                className="flex-1 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500/10 file:text-blue-800 dark:text-blue-200 hover:file:bg-blue-100"
+              />
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import { PDFDocument } from 'pdf-lib';
 import { describe, expect, it } from 'vitest';
 import type { InvoiceAggregate, InvoiceLineRecord, InvoiceStatus } from '../domain/invoice';
 import { generateInvoicePdf, invoiceFinancialSummary, PDF_MIME_TYPE, safePdfFilename } from '../pdf/invoice-pdf';
+import { safeInvoiceImageFilename } from '../pdf/invoice-image';
 
 const now = '2026-07-17T12:00:00.000Z';
 
@@ -55,6 +56,7 @@ describe('PDF de facture Sprint 5', () => {
     expect(PDF_MIME_TYPE).toBe('application/pdf');
     expect(safePdfFilename('FAC/2026 0001')).toBe('facture-fac-2026-0001.pdf');
     expect(safePdfFilename(undefined, 'BROUILLON')).toBe('facture-brouillon.pdf');
+    expect(safeInvoiceImageFilename('FAC/2026 0001')).toBe('facture-fac-2026-0001.png');
   });
 
   it.each([
