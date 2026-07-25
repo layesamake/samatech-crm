@@ -46,7 +46,7 @@ export async function generatePaymentReceiptImage(value: PaymentReceiptImageData
 
   const [logo, stamp] = await Promise.all([
     loadImage(value.companyLogoDataUri ?? value.invoice.companySnapshot.logoDataUri),
-    loadImage(value.stampDataUri),
+    loadImage(value.companySignatureDataUri),
   ]);
   const company = value.invoice.companySnapshot;
   const receiptId = paymentReceiptNumber(value.payment);
@@ -125,7 +125,7 @@ export async function generatePaymentReceiptImage(value: PaymentReceiptImageData
   ctx.stroke();
   ctx.fillStyle = '#6b7280';
   ctx.font = '400 20px Arial, sans-serif';
-  ctx.fillText('Cachet de l’entreprise', signatureX + 24, signatureY + 34);
+  ctx.fillText('Signature de l’entreprise', signatureX + 24, signatureY + 34);
   if (stamp) {
     const dimensions = fitImage(stamp, 220, 160);
     ctx.drawImage(stamp, signatureX + 34, signatureY - dimensions.height - 20, dimensions.width, dimensions.height);

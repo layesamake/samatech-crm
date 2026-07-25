@@ -11,7 +11,7 @@ export interface PaymentReceiptPdfData {
   invoice: InvoiceRecord;
   clientName: string;
   companyLogoDataUri?: string;
-  stampDataUri?: string;
+  companySignatureDataUri?: string;
 }
 
 function safeText(value: unknown): string {
@@ -54,7 +54,7 @@ export async function generatePaymentReceiptPdf(value: PaymentReceiptPdfData): P
     }
   };
 
-  const [logo, stamp] = await Promise.all([embedImage(value.companyLogoDataUri ?? value.invoice.companySnapshot.logoDataUri), embedImage(value.stampDataUri)]);
+  const [logo, signature] = await Promise.all([embedImage(value.companyLogoDataUri ?? value.invoice.companySnapshot.logoDataUri), embedImage(value.companySignatureDataUri)]);
   let y = A4[1] - MARGIN;
   if (logo) {
     const dimensions = logo.scaleToFit(84, 54);
@@ -95,10 +95,10 @@ export async function generatePaymentReceiptPdf(value: PaymentReceiptPdfData): P
 
   const signatureY = 150;
   page.drawLine({ start: { x: A4[0] - MARGIN - 150, y: signatureY }, end: { x: A4[0] - MARGIN, y: signatureY }, thickness: 0.7, color: line });
-  page.drawText('Cachet de l’entreprise', { x: A4[0] - MARGIN - 130, y: signatureY - 16, size: 9, font: regular, color: muted });
-  if (stamp) {
-    const dimensions = stamp.scaleToFit(110, 90);
-    page.drawImage(stamp, { x: A4[0] - MARGIN - 130, y: signatureY + 12, width: dimensions.width, height: dimensions.height });
+  page.drawText('Signature de l’entreprise', { x: A4[0] - MARGIN - 130, y: signatureY - 16, size: 9, font: regular, color: muted });
+  if (signature) {
+    const dimensions = signature.scaleToFit(110, 90);
+    page.drawImage(signature, { x: A4[0] - MARGIN - 130, y: signatureY + 12, width: dimensions.width, height: dimensions.height });
   }
 
   page.drawText('Généré hors connexion par SAMTECH CRM', { x: MARGIN, y: 34, size: 8, font: regular, color: muted });

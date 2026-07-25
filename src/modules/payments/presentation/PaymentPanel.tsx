@@ -85,7 +85,7 @@ export function PaymentPanel({ value, onInvoiceChanged }: { value: InvoiceAggreg
 
   const receiptData = async (payment: PaymentRecord) => {
     const company = await settingsUseCase.getCompanyProfile();
-    return { payment, invoice, clientName: value.clientName, companyLogoDataUri: company?.logoDataUri, stampDataUri: company?.stampDataUri };
+    return { payment, invoice, clientName: value.clientName, companyLogoDataUri: company?.logoDataUri, companySignatureDataUri: company?.managerSignatureDataUri };
   };
 
   const receiptBytes = async (payment: PaymentRecord) => generatePaymentReceiptPdf(await receiptData(payment));

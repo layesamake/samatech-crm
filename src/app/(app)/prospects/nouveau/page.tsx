@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ProductInterestSelector } from "@/components/ProductInterestSelector";
+import { VoiceDictationButton } from "@/modules/voice/presentation/VoiceDictationButton";
+import { applyDictation } from "@/modules/voice/domain/dictation";
 
 const repository = new DexieProspectRepository();
 const createUseCase = new CreateProspectUseCase(repository);
@@ -169,11 +171,11 @@ export default function NouveauProspectPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label htmlFor="firstName">Prénom</Label>
+              <div className="flex items-center justify-between"><Label htmlFor="firstName">Prénom</Label><VoiceDictationButton fieldLabel="prénom" onTranscript={(value) => setValue('firstName', applyDictation(getValues('firstName') ?? '', value), { shouldDirty: true })} /></div>
               <Input id="firstName" className="h-11" placeholder="Ex: Jean" autoComplete="given-name" {...register("firstName")} />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="lastName">Nom</Label>
+              <div className="flex items-center justify-between"><Label htmlFor="lastName">Nom</Label><VoiceDictationButton fieldLabel="nom" onTranscript={(value) => setValue('lastName', applyDictation(getValues('lastName') ?? '', value), { shouldDirty: true })} /></div>
               <Input id="lastName" className="h-11" placeholder="Ex: Dupont" autoComplete="family-name" {...register("lastName")} />
             </div>
           </div>
@@ -253,11 +255,11 @@ export default function NouveauProspectPage() {
                 {errors.email && <p className="text-xs text-red-500">{errors.email.message as string}</p>}
               </div>
               <div className="space-y-1">
-                <Label htmlFor="companyName">Entreprise</Label>
+                <div className="flex items-center justify-between"><Label htmlFor="companyName">Entreprise</Label><VoiceDictationButton fieldLabel="entreprise" onTranscript={(value) => setValue('companyName', applyDictation(getValues('companyName') ?? '', value), { shouldDirty: true })} /></div>
                 <Input id="companyName" className="h-11" placeholder="Ex: Samatech..." autoComplete="organization" {...register("companyName")} />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="notes">Note commerciale</Label>
+                <div className="flex items-center justify-between"><Label htmlFor="notes">Note commerciale</Label><VoiceDictationButton fieldLabel="note commerciale" onTranscript={(value) => setValue('notes', applyDictation(getValues('notes') ?? '', value, 'APPEND'), { shouldDirty: true })} /></div>
                 <textarea id="notes" rows={4} className="w-full rounded-md border px-3 py-2 text-sm bg-background text-foreground" placeholder="Contexte, besoin ou prochaine étape…" {...register("notes")} />
               </div>
               <div className="space-y-1">

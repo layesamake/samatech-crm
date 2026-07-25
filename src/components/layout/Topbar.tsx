@@ -3,6 +3,7 @@
 import { Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { usePathname } from 'next/navigation'
+import { VoiceControl } from '@/modules/voice/presentation/VoiceControl'
 
 const routeTitles: Record<string, string> = {
   '/': 'Tableau de bord',
@@ -40,6 +41,7 @@ export function Topbar() {
         </div>
         <div className="flex items-center gap-x-4 lg:gap-x-6">
           <div id="topbar-actions" className="flex items-center"></div>
+          <VoiceControl />
           
           <Button variant="ghost" size="icon" className="-m-2.5 p-2.5 text-nav-muted hover:text-nav-fg hover:bg-white/10">
             <span className="sr-only">Voir les notifications</span>
