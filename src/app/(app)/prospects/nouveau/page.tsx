@@ -19,9 +19,12 @@ import { Label } from "@/components/ui/label";
 import { ProductInterestSelector } from "@/components/ProductInterestSelector";
 import { VoiceDictationButton } from "@/modules/voice/presentation/VoiceDictationButton";
 import { applyDictation } from "@/modules/voice/domain/dictation";
+import { ManageTagsUseCase } from "@/modules/tags/application/manage-tags";
+import { TagPicker } from "@/modules/tags/presentation/TagPicker";
 
 const repository = new DexieProspectRepository();
 const createUseCase = new CreateProspectUseCase(repository);
+const tagsUseCase = new ManageTagsUseCase();
 
 export default function NouveauProspectPage() {
   const router = useRouter();
@@ -30,6 +33,7 @@ export default function NouveauProspectPage() {
   const [forceDuplicate, setForceDuplicate] = useState(false);
   const [locations, setLocations] = useState<{id: string, name: string}[]>([]);
   const [products, setProducts] = useState<{id: string, name: string}[]>([]);
+  const [tags, setTags] = useState<import('@/modules/prospects/domain/prospect').TagRecord[]>([]);
   
   const [locationMode, setLocationMode] = useState<'SELECT' | 'NEW'>('SELECT');
   const [newLocationName, setNewLocationName] = useState('');
@@ -37,9 +41,10 @@ export default function NouveauProspectPage() {
   useEffect(() => {
     const locRepo = new DexieLocationRepository();
     const catRepo = new DexieCatalogRepository();
-    Promise.all([locRepo.getAllActive(), catRepo.getAllProductsActive()]).then(([locs, prods]) => {
+    Promise.all([locRepo.getAllActive(), catRepo.getAllProductsActive(), tagsUseCase.listActive()]).then(([locs, prods, loadedTags]) => {
       setLocations(locs.map(l => ({ id: l.id, name: l.name })));
       setProducts(prods.map(p => ({ id: p.id, name: p.name })));
+      setTags(loadedTags);
     }).catch(console.error);
   }, []);
 
@@ -244,6 +249,7 @@ export default function NouveauProspectPage() {
               onCreateProduct={handleCreateProduct}
             />
           )} />
+          <Controller name="tagIds" control={control} defaultValue={[]} render={({ field }) => <section className="space-y-2"><h2 className="text-sm font-semibold">Tags</h2><TagPicker tags={tags} selectedIds={field.value ?? []} onChange={field.onChange} /></section>} />
 
           <details className="rounded-xl border bg-muted/20 p-4">
             <summary className="cursor-pointer text-sm font-semibold text-foreground">Plus de détails</summary>

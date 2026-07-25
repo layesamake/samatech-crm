@@ -1,5 +1,5 @@
 import { db } from '../../../infrastructure/database/db';
-import { Prospect, ContactRecord } from '../domain/prospect';
+import { Prospect, ContactRecord, TagRecord } from '../domain/prospect';
 import { TimelineEventRecord } from '@/modules/follow-ups/domain/follow-up';
 
 export interface ProspectSearchCriteria {
@@ -19,8 +19,8 @@ export class DexieProspectRepository {
    * Sauvegarde un prospect (Contact + Profil).
    * Utilise une transaction pour garantir l'atomicité.
    */
-  async save(prospect: Prospect, events: TimelineEventRecord[] = []): Promise<void> {
-    await db.transaction('rw', db.contacts, db.prospectProfiles, db.prospectInterests, db.notes, db.timelineEvents, async () => {
+  async save(prospect: Prospect, events: TimelineEventRecord[] = [], tagIds?: string[]): Promise<void> {
+    await db.transaction('rw', [db.contacts, db.prospectProfiles, db.prospectInterests, db.notes, db.tags, db.contactTags, db.timelineEvents], async () => {
       await db.contacts.put(prospect.contact);
       await db.prospectProfiles.put(prospect.profile);
       
@@ -57,6 +57,14 @@ export class DexieProspectRepository {
           await db.notes.put({ ...note, archivedAt, updatedAt: archivedAt });
         }
       }
+      if (tagIds) {
+        const uniqueTagIds = [...new Set(tagIds)];
+        const tags = uniqueTagIds.length ? await db.tags.where('id').anyOf(uniqueTagIds).toArray() : [];
+        if (tags.length !== uniqueTagIds.length || tags.some((tag) => tag.archivedAt)) throw new Error('Un des tags sélectionnés est indisponible.');
+        await db.contactTags.where('contactId').equals(prospect.contact.id).delete();
+        const now = new Date().toISOString();
+        if (uniqueTagIds.length) await db.contactTags.bulkAdd(uniqueTagIds.map((tagId) => ({ id: crypto.randomUUID(), contactId: prospect.contact.id, tagId, createdAt: now })));
+      }
       if (events.length) await db.timelineEvents.bulkAdd(events);
     });
   }
@@ -71,15 +79,20 @@ export class DexieProspectRepository {
     const profile = await db.prospectProfiles.get({ contactId: id });
     if (!profile) return null;
 
-    const [interests, notes, events] = await Promise.all([
+    const [interests, notes, events, contactTags] = await Promise.all([
       db.prospectInterests.where({ prospectProfileId: profile.id }).toArray(),
       db.notes.where('contactId').equals(id).filter((note) => !note.archivedAt).toArray(),
       db.timelineEvents.where('contactId').equals(id).toArray(),
+      db.contactTags.where('contactId').equals(id).toArray(),
     ]);
 
+    const tagIds = contactTags.map((item) => item.tagId);
+    const tags: TagRecord[] = tagIds.length ? (await db.tags.where('id').anyOf(tagIds).toArray()).filter((tag) => !tag.archivedAt) : [];
+
     events.sort((a, b) => b.occurredAt.localeCompare(a.occurredAt) || b.createdAt.localeCompare(a.createdAt) || b.id.localeCompare(a.id));
-    return { contact, profile, interests, notes, events };
+    return { contact, profile, interests, notes, events, tags };
   }
+
 
   /**
    * Vérifie si un numéro WhatsApp (normalisé) existe déjà parmi les contacts actifs.

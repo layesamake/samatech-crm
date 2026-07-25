@@ -17,9 +17,12 @@ import { DexieCatalogRepository } from '@/modules/catalog/infrastructure/dexie-c
 import { DexieLocationRepository } from '@/modules/locations/infrastructure/dexie-location-repository';
 import { VoiceDictationButton } from '@/modules/voice/presentation/VoiceDictationButton';
 import { applyDictation } from '@/modules/voice/domain/dictation';
+import { ManageTagsUseCase } from '@/modules/tags/application/manage-tags';
+import { TagPicker } from '@/modules/tags/presentation/TagPicker';
 
 const clients = new ManageClientsUseCase();
 const updateClient = new UpdateClientUseCase();
+const tagsUseCase = new ManageTagsUseCase();
 
 export default function EditClientPage() {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +30,7 @@ export default function EditClientPage() {
   const [client, setClient] = useState<ClientAggregate | null>();
   const [locations, setLocations] = useState<Array<{ id: string; name: string; archived: boolean }>>([]);
   const [products, setProducts] = useState<ProductInterestOption[]>([]);
+  const [tags, setTags] = useState<import('@/modules/prospects/domain/prospect').TagRecord[]>([]);
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
 
@@ -38,11 +42,12 @@ export default function EditClientPage() {
     void Promise.all([
       clients.get(id),
       new DexieLocationRepository().getAll(),
-      new DexieCatalogRepository().getAllProducts(),
-    ]).then(([loadedClient, loadedLocations, loadedProducts]) => {
+      new DexieCatalogRepository().getAllProducts(), tagsUseCase.listActive(),
+    ]).then(([loadedClient, loadedLocations, loadedProducts, loadedTags]) => {
       setClient(loadedClient);
       setLocations(loadedLocations.map((location) => ({ id: location.id, name: location.name, archived: Boolean(location.archivedAt) })));
       setProducts(loadedProducts.map((product) => ({ id: product.id, name: product.name, archived: Boolean(product.archivedAt) || !product.isActive })));
+      setTags(loadedTags);
     }).catch((caught: unknown) => setError(caught instanceof Error ? caught.message : 'Chargement impossible'));
   }, [id]);
 
@@ -60,6 +65,7 @@ export default function EditClientPage() {
       locationId: client.contact.locationId ?? '',
       address: client.contact.address ?? '',
       productIds: client.interests.map((interest) => interest.productId),
+      tagIds: client.tags.map((tag) => tag.id),
     });
   }, [client, reset]);
 
@@ -104,6 +110,7 @@ export default function EditClientPage() {
         <div className="space-y-1"><Label htmlFor="locationId">Localité</Label><select id="locationId" className="h-10 w-full rounded-md border bg-background px-3 text-sm" {...register('locationId')}><option value="">Non renseignée</option>{locations.filter((location) => !location.archived || location.id === client?.contact.locationId).map((location) => <option key={location.id} value={location.id}>{location.name}{location.archived ? ' (Archivée)' : ''}</option>)}</select></div>
         <div className="space-y-1"><div className="flex items-center justify-between"><Label htmlFor="address">Adresse</Label><VoiceDictationButton fieldLabel="adresse" onTranscript={(value) => setValue('address', applyDictation(getValues('address') ?? '', value), { shouldDirty: true })} /></div><Input id="address" {...register('address')} /></div>
         <Controller name="productIds" control={control} defaultValue={[]} render={({ field }) => <ProductInterestSelector products={products.filter((product) => !product.archived || (field.value ?? []).includes(product.id))} selectedIds={field.value ?? []} onChange={field.onChange} />} />
+        <Controller name="tagIds" control={control} defaultValue={[]} render={({ field }) => <section className="space-y-2"><h2 className="text-sm font-semibold">Tags</h2><TagPicker tags={tags} selectedIds={field.value ?? []} onChange={field.onChange} /></section>} />
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"><Link href={`/clients/${id}`} className="inline-flex h-11 items-center justify-center rounded-md border px-4 bg-background text-foreground">Annuler</Link><Button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Enregistrement…' : 'Enregistrer les modifications'}</Button></div>
       </form>
     </main>

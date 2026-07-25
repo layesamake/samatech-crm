@@ -80,7 +80,7 @@ export class UpdateProspectUseCase {
       existingProspect.interests = [];
     }
 
-    await this.repository.save(existingProspect, statusChanged ? [{ id: crypto.randomUUID(), contactId: existingProspect.contact.id, type: 'PROSPECT_STATUS_CHANGED', occurredAt: now, createdAt: now, sourceEntityType: 'PROSPECT_PROFILE', sourceEntityId: existingProspect.profile.id, title: 'Statut du prospect modifié', summary: `${previousStatus} → ${data.status}`, payloadVersion: 1 }] : []);
+    await this.repository.save(existingProspect, statusChanged ? [{ id: crypto.randomUUID(), contactId: existingProspect.contact.id, type: 'PROSPECT_STATUS_CHANGED', occurredAt: now, createdAt: now, sourceEntityType: 'PROSPECT_PROFILE', sourceEntityId: existingProspect.profile.id, title: 'Statut du prospect modifié', summary: `${previousStatus} → ${data.status}`, payloadVersion: 1 }] : [], data.tagIds);
 
     return { prospect: existingProspect };
   }

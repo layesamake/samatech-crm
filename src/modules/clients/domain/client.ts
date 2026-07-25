@@ -43,6 +43,7 @@ export const UpdateClientSchema = z.object({
   locationId: z.string().uuid().optional().or(z.literal('')),
   address: z.string().trim().optional(),
   productIds: z.array(z.string().uuid()).optional(),
+  tagIds: z.array(z.string().uuid()).optional(),
 });
 export type UpdateClientInput = z.infer<typeof UpdateClientSchema>;
 export type UpdateClientFormInput = z.input<typeof UpdateClientSchema>;

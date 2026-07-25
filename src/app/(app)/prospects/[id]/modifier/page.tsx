@@ -18,9 +18,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ProductInterestSelector, ProductInterestOption } from "@/components/ProductInterestSelector";
+import { ManageTagsUseCase } from "@/modules/tags/application/manage-tags";
+import { TagPicker } from "@/modules/tags/presentation/TagPicker";
 
 const repository = new DexieProspectRepository();
 const updateUseCase = new UpdateProspectUseCase(repository);
+const tagsUseCase = new ManageTagsUseCase();
 
 export default function ModifierProspectPage() {
   const { id } = useParams() as { id: string };
@@ -30,13 +33,15 @@ export default function ModifierProspectPage() {
   const [warning, setWarning] = useState<string | null>(null);
   const [locations, setLocations] = useState<{id: string, name: string, archived: boolean}[]>([]);
   const [products, setProducts] = useState<ProductInterestOption[]>([]);
+  const [tags, setTags] = useState<import('@/modules/prospects/domain/prospect').TagRecord[]>([]);
 
   useEffect(() => {
     const locRepo = new DexieLocationRepository();
     const catRepo = new DexieCatalogRepository();
-    Promise.all([locRepo.getAll(), catRepo.getAllProducts()]).then(([locs, prods]) => {
+    Promise.all([locRepo.getAll(), catRepo.getAllProducts(), tagsUseCase.listActive()]).then(([locs, prods, loadedTags]) => {
       setLocations(locs.map(l => ({ id: l.id, name: l.name, archived: Boolean(l.archivedAt) })));
       setProducts(prods.map(p => ({ id: p.id, name: p.name, archived: Boolean(p.archivedAt) || !p.isActive })));
+      setTags(loadedTags);
     }).catch(console.error);
   }, []);
 
@@ -69,6 +74,7 @@ export default function ModifierProspectPage() {
         lostReason: prospect.profile.lostReason || "",
         locationId: prospect.contact.locationId || "",
         productIds: prospect.interests ? prospect.interests.map(i => i.productId) : [],
+        tagIds: prospect.tags?.map((tag) => tag.id) ?? [],
       });
     }
   }, [prospect, reset]);
@@ -201,6 +207,7 @@ export default function ModifierProspectPage() {
           <Controller name="productIds" control={control} defaultValue={[]} render={({ field }) => (
             <ProductInterestSelector products={products.filter((product) => !product.archived || (field.value ?? []).includes(product.id))} selectedIds={field.value ?? []} onChange={field.onChange} />
           )} />
+          <Controller name="tagIds" control={control} defaultValue={[]} render={({ field }) => <section className="space-y-2"><h2 className="text-sm font-semibold">Tags</h2><TagPicker tags={tags} selectedIds={field.value ?? []} onChange={field.onChange} /></section>} />
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Enregistrement..." : "Mettre à jour"}

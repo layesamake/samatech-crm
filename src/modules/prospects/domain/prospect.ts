@@ -91,7 +91,12 @@ export interface TagRecord extends AuditFields {
   name: string;
   normalizedName: string;
   color?: string;
+  icon?: TagIcon;
 }
+
+export const TAG_ICONS = ['TAG', 'STAR', 'CROWN', 'HEART', 'FLAME', 'BRIEFCASE'] as const;
+export type TagIcon = (typeof TAG_ICONS)[number];
+export const TAG_COLORS = ['#0B6B2D', '#2563EB', '#7C3AED', '#DB2777', '#EA580C', '#0891B2', '#4D7C0F', '#B45309'] as const;
 
 export interface ContactTagRecord {
   id: UUID;
@@ -156,6 +161,7 @@ export const CreateProspectSchema = z.object({
 
   // Associations produits
   productIds: z.array(z.string().uuid()).optional(),
+  tagIds: z.array(z.string().uuid()).optional(),
 });
 
 export type CreateProspectInput = z.infer<typeof CreateProspectSchema>;
@@ -182,4 +188,5 @@ export interface Prospect {
   interests?: ProspectInterestRecord[];
   notes?: NoteRecord[];
   events?: TimelineEventRecord[];
+  tags?: TagRecord[];
 }

@@ -6,11 +6,12 @@ import CompanySettingsForm from '@/modules/settings/presentation/CompanySettings
 import InvoiceSettingsForm from '@/modules/settings/presentation/InvoiceSettingsForm';
 import LocationsManager from '@/modules/locations/presentation/LocationsManager';
 import AppearanceSettingsForm from '@/modules/settings/presentation/AppearanceSettingsForm';
+import TagsManager from '@/modules/tags/presentation/TagsManager';
 import Link from 'next/link';
 import { Save } from 'lucide-react';
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'COMPANY' | 'INVOICE' | 'LOCATIONS' | 'APPEARANCE'>('COMPANY');
+  const [activeTab, setActiveTab] = useState<'COMPANY' | 'INVOICE' | 'LOCATIONS' | 'TAGS' | 'APPEARANCE'>('COMPANY');
 
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
@@ -64,6 +65,7 @@ export default function SettingsPage() {
         >
           Localités
         </button>
+        <button onClick={() => setActiveTab('TAGS')} className={`px-4 py-2 font-medium text-sm ${activeTab === 'TAGS' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}>Tags</button>
         <button
           onClick={() => setActiveTab('APPEARANCE')}
           className={`px-4 py-2 font-medium text-sm ${activeTab === 'APPEARANCE' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
@@ -76,6 +78,7 @@ export default function SettingsPage() {
         {activeTab === 'COMPANY' && <CompanySettingsForm />}
         {activeTab === 'INVOICE' && <InvoiceSettingsForm />}
         {activeTab === 'LOCATIONS' && <LocationsManager />}
+        {activeTab === 'TAGS' && <TagsManager />}
         {activeTab === 'APPEARANCE' && <AppearanceSettingsForm />}
       </div>
     </div>

@@ -16,6 +16,7 @@ import { ManageClientsUseCase } from "@/modules/clients/application/manage-clien
 import ConvertProspectPanel from "@/modules/clients/presentation/ConvertProspectPanel";
 import { WhatsAppMessagePanel } from "@/modules/messages/presentation/WhatsAppMessagePanel";
 import { OpportunityList } from "@/components/opportunities/OpportunityList";
+import { TagIcon } from '@/modules/tags/presentation/TagIcon';
 
 const repository = new DexieProspectRepository();
 const locRepo = new DexieLocationRepository();
@@ -163,6 +164,7 @@ export default function ProspectDetailPage() {
                   <span className="font-medium text-foreground">{contact.companyName}</span>
                 </div>
               )}
+              <div className="flex justify-between gap-3"><span className="text-muted-foreground">Tags</span><span className="flex flex-wrap justify-end gap-1">{prospect.tags?.length ? prospect.tags.map((tag) => <span key={tag.id} className="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium" style={{ color: tag.color || '#0B6B2D', borderColor: tag.color || '#0B6B2D', backgroundColor: `${tag.color || '#0B6B2D'}20` }}><TagIcon icon={tag.icon} className="size-3" />{tag.name}</span>) : 'Aucun'}</span></div>
             </div>
           </div>
           

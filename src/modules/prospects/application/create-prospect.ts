@@ -82,12 +82,13 @@ export class CreateProspectUseCase {
         createdAt: now,
         updatedAt: now,
       }] : [],
+      tags: [],
     };
 
     // 4. Sauvegarde atomique
     const events: TimelineEventRecord[] = [{ id: uuidv4(), contactId, type: 'PROSPECT_CREATED', occurredAt: now, createdAt: now, sourceEntityType: 'PROSPECT_PROFILE', sourceEntityId: profileId, title: 'Prospect créé', payloadVersion: 1 }];
     if (data.notes) events.push({ id: uuidv4(), contactId, type: 'NOTE_ADDED' as const, occurredAt: now, createdAt: now, sourceEntityType: 'NOTE', sourceEntityId: prospect.notes![0].id, title: 'Note ajoutée', payloadVersion: 1 });
-    await this.repository.save(prospect, events);
+    await this.repository.save(prospect, events, data.tagIds);
 
     return { prospect };
   }
