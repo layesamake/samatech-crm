@@ -31,7 +31,7 @@ const ProspectCard = memo(({ p, onOpen, locationName, nextFollowUp }: { p: Prosp
   >
       <div className="flex justify-between items-start mb-2">
         <h3 className="font-semibold text-foreground line-clamp-1">{p.contact.displayName}</h3>
-        <span className="text-[10px] font-bold px-2 py-1 rounded bg-blue-100 text-blue-800 dark:text-blue-200">
+        <span className="text-[10px] font-bold px-2 py-1 rounded bg-[#06460e] text-white">
           {p.profile.status}
         </span>
       </div>
