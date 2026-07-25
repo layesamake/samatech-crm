@@ -17,7 +17,8 @@ import {
   DollarSign,
   PieChart,
   Briefcase,
-  ChevronDown
+  ChevronDown,
+  Truck
 } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -39,6 +40,7 @@ const links = [
   { href: '/invoices', label: 'Factures', icon: FileText },
   { href: '/payments', label: 'Paiements', icon: CreditCard },
   { href: '/expenses', label: 'Dépenses', icon: Receipt },
+  { href: '/suppliers', label: 'Fournisseurs', icon: Truck },
   { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
   { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
   { href: '/message-templates', label: 'Modèles de messages', icon: MessageSquare },

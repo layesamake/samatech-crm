@@ -12,13 +12,16 @@ import { Prospect } from "@/modules/prospects/domain/prospect";
 import { Button } from "@/components/ui/button";
 import { DexieLocationRepository } from "@/modules/locations/infrastructure/dexie-location-repository";
 import { DexieCatalogRepository } from "@/modules/catalog/infrastructure/dexie-catalog-repository";
+import { DexieTagRepository } from "@/modules/tags/infrastructure/dexie-tag-repository";
 import { ManageFollowUpsUseCase } from "@/modules/follow-ups/application/manage-follow-ups";
+import { TagIcon } from '@/modules/tags/presentation/TagIcon';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const repository = new DexieProspectRepository();
 const listUseCase = new ListProspectsUseCase(repository);
 const locationRepository = new DexieLocationRepository();
 const catalogRepository = new DexieCatalogRepository();
+const tagRepository = new DexieTagRepository();
 const followUpsUseCase = new ManageFollowUpsUseCase();
 
 const ProspectCard = memo(({ p, onOpen, locationName, nextFollowUp }: { p: Prospect; onOpen: () => void; locationName?: string; nextFollowUp?: string }) => (
@@ -36,6 +39,7 @@ const ProspectCard = memo(({ p, onOpen, locationName, nextFollowUp }: { p: Prosp
         </span>
       </div>
       <div className="text-sm text-muted-foreground mb-2">{p.contact.companyName || p.contact.whatsappPhone}</div>
+{p.tags?.length ? <div className="mb-3 flex flex-wrap gap-2">{p.tags.map((tag) => <span key={tag.id} className="inline-flex items-center gap-1.5 rounded-lg border-2 px-3 py-1 text-xs font-bold uppercase tracking-wide shadow-sm" style={{ color: tag.color || '#0B6B2D', borderColor: tag.color || '#0B6B2D', backgroundColor: `${tag.color || '#0B6B2D'}33` }}><TagIcon icon={tag.icon} className="size-4" />{tag.name}</span>)}</div> : null}
       <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
         {locationName && <span className="inline-flex items-center gap-1"><MapPin className="size-3.5" />{locationName}</span>}
         {nextFollowUp && <span className="inline-flex items-center gap-1"><CalendarClock className="size-3.5" />{nextFollowUp}</span>}
@@ -66,10 +70,12 @@ export default function ProspectsPage() {
   const [showArchived, setShowArchived] = useState(false);
   const [locationId, setLocationId] = useState("");
   const [productId, setProductId] = useState("");
+  const [tagId, setTagId] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const locations = useLiveQuery(() => locationRepository.getAllActive(), []) ?? [];
   const products = useLiveQuery(() => catalogRepository.getAllProductsActive(), []) ?? [];
+  const tags = useLiveQuery(() => tagRepository.listActive(), []) ?? [];
   const followUps = useLiveQuery(() => followUpsUseCase.list(), []) ?? [];
 
   const locationById = useMemo(() => new Map(locations.map((location) => [location.id, location.name])), [locations]);
@@ -89,19 +95,21 @@ export default function ProspectsPage() {
       showArchived,
       locationId: locationId || undefined,
       productIds: productId ? [productId] : undefined,
+      tagIds: tagId ? [tagId] : undefined,
       limit
     }),
-    [deferredSearch, filterStatus, showArchived, locationId, productId, limit]
+    [deferredSearch, filterStatus, showArchived, locationId, productId, tagId, limit]
   );
 
-  const hasActiveFilters = Boolean(search || filterStatus || locationId || productId || showArchived);
-  const activeFilterCount = [filterStatus, locationId, productId, showArchived ? 'archived' : ''].filter(Boolean).length;
+  const hasActiveFilters = Boolean(search || filterStatus || locationId || productId || tagId || showArchived);
+  const activeFilterCount = [filterStatus, locationId, productId, tagId, showArchived ? 'archived' : ''].filter(Boolean).length;
 
   const clearFilters = () => {
     setSearch("");
     setFilterStatus("");
     setLocationId("");
     setProductId("");
+    setTagId("");
     setShowArchived(false);
   };
 
@@ -139,6 +147,7 @@ export default function ProspectsPage() {
             {filterStatus && <button type="button" onClick={() => setFilterStatus('')} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">{filterStatus.replace('_', ' ')} ×</button>}
             {locationId && <button type="button" onClick={() => setLocationId('')} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">{locationById.get(locationId)} ×</button>}
             {productId && <button type="button" onClick={() => setProductId('')} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">{products.find((product) => product.id === productId)?.name} ×</button>}
+            {tagId && <button type="button" onClick={() => setTagId('')} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">Tag : {tags.find((tag) => tag.id === tagId)?.name} ×</button>}
             {showArchived && <button type="button" onClick={() => setShowArchived(false)} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">Archives ×</button>}
             {search && <button type="button" onClick={() => setSearch('')} className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">Recherche ×</button>}
             <button type="button" onClick={clearFilters} className="px-2 py-1 text-xs font-semibold text-muted-foreground underline">Tout effacer</button>
@@ -213,7 +222,18 @@ export default function ProspectsPage() {
                   <option value="">Tous les produits</option>
                   {products.map((product) => <option key={product.id} value={product.id}>{product.name}</option>)}
                 </select>
-                
+                <select
+                  aria-label="Filtrer par tag"
+                  className="w-full h-11 bg-transparent border rounded-md px-3 text-sm bg-background text-foreground"
+                  value={tagId}
+                  onChange={(e) => setTagId(e.target.value)}
+                >
+                  <option value="">Tous les tags</option>
+                  {tags.map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}
+                </select>
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-2">
                 <label className="flex items-center gap-2 h-11 text-sm text-foreground bg-transparent border px-3 rounded-md cursor-pointer bg-background text-foreground">
                   <input 
                     type="checkbox" 
@@ -280,6 +300,7 @@ export default function ProspectsPage() {
         <div className="space-y-2"><label className="text-sm font-medium" htmlFor="prospect-filter-status">Statut</label><select id="prospect-filter-status" className="h-11 w-full rounded-md border bg-background px-3 text-sm" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}><option value="">Tous les statuts</option><option value="NOUVEAU">Nouveaux</option><option value="CONTACTE">Contactés</option><option value="INTERESSE">Intéressés</option><option value="A_RELANCER">À relancer</option><option value="NEGOCIATION">Négociation</option></select></div>
         <div className="space-y-2"><label className="text-sm font-medium" htmlFor="prospect-filter-location">Localité</label><select id="prospect-filter-location" className="h-11 w-full rounded-md border bg-background px-3 text-sm" value={locationId} onChange={(e) => setLocationId(e.target.value)}><option value="">Toutes les localités</option>{locations.map((location) => <option key={location.id} value={location.id}>{location.name}</option>)}</select></div>
         <div className="space-y-2"><label className="text-sm font-medium" htmlFor="prospect-filter-product">Produit ou service</label><select id="prospect-filter-product" className="h-11 w-full rounded-md border bg-background px-3 text-sm" value={productId} onChange={(e) => setProductId(e.target.value)}><option value="">Tous les produits</option>{products.map((product) => <option key={product.id} value={product.id}>{product.name}</option>)}</select></div>
+        <div className="space-y-2"><label className="text-sm font-medium" htmlFor="prospect-filter-tag">Tag</label><select id="prospect-filter-tag" className="h-11 w-full rounded-md border bg-background px-3 text-sm" value={tagId} onChange={(e) => setTagId(e.target.value)}><option value="">Tous les tags</option>{tags.map((tag) => <option key={tag.id} value={tag.id}>{tag.name}</option>)}</select></div>
         <label className="flex min-h-11 items-center gap-3 rounded-lg border px-3 text-sm font-medium"><input type="checkbox" checked={showArchived} onChange={(e) => setShowArchived(e.target.checked)} className="size-4 accent-primary" />Afficher les archives</label>
         <div className="flex gap-3 pt-2"><Button type="button" variant="outline" className="min-h-11 flex-1" onClick={clearFilters}>Réinitialiser</Button><Button type="button" className="min-h-11 flex-1" onClick={() => setFiltersOpen(false)}>Afficher les résultats</Button></div>
       </section>

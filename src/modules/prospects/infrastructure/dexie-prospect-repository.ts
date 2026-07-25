@@ -9,6 +9,7 @@ export interface ProspectSearchCriteria {
   locationId?: string;
   source?: string;
   productIds?: string[];
+  tagIds?: string[];
   showArchived?: boolean;
   limit?: number;
   offset?: number;
@@ -175,6 +176,9 @@ export class DexieProspectRepository {
     // Récupérer les intérêts pour les contacts filtrés
     const validProfileIds = profiles.filter(p => contacts.some(c => c.id === p.contactId)).map(p => p.id);
     const interests = await db.prospectInterests.where('prospectProfileId').anyOf(validProfileIds).toArray();
+    const contactTags = contacts.length ? await db.contactTags.where('contactId').anyOf(contacts.map((contact) => contact.id)).toArray() : [];
+    const tagIds = [...new Set(contactTags.map((item) => item.tagId))];
+    const tagsById = new Map((tagIds.length ? await db.tags.where('id').anyOf(tagIds).toArray() : []).filter((tag) => !tag.archivedAt).map((tag) => [tag.id, tag]));
 
     // Reconstruction du tableau résultat final
     let result: Prospect[] = [];
@@ -182,7 +186,7 @@ export class DexieProspectRepository {
       const p = profiles.find(prof => prof.contactId === c.id);
       if (p) {
         const prospectInterests = interests.filter(i => i.prospectProfileId === p.id && !i.archivedAt);
-        result.push({ contact: c, profile: p, interests: prospectInterests });
+        result.push({ contact: c, profile: p, interests: prospectInterests, tags: contactTags.filter((item) => item.contactId === c.id).map((item) => tagsById.get(item.tagId)).filter((tag): tag is TagRecord => Boolean(tag)) });
       }
     }
 
@@ -190,6 +194,10 @@ export class DexieProspectRepository {
       result = result.filter(r => 
         r.interests && r.interests.some(i => criteria.productIds!.includes(i.productId))
       );
+    }
+
+    if (criteria.tagIds && criteria.tagIds.length > 0) {
+      result = result.filter((prospect) => prospect.tags?.some((tag) => criteria.tagIds!.includes(tag.id)));
     }
 
     // Tri par date de mise à jour (plus récent en premier)

@@ -13,6 +13,7 @@ const routeTitles: Record<string, string> = {
   '/invoices': 'Factures',
   '/payments': 'Paiements',
   '/expenses': 'Dépenses',
+  '/suppliers': 'Fournisseurs',
   '/treasury': 'Trésorerie',
   '/campaigns': 'Campagnes',
   '/message-templates': 'Modèles',

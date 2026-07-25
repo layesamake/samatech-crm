@@ -22,6 +22,7 @@ import {
   X,
   UserPlus,
   Briefcase,
+  Truck,
   ChevronDown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,7 @@ const moreLinks = [
   { href: '/invoices', label: 'Factures', icon: FileText },
   { href: '/payments', label: 'Paiements', icon: CreditCard },
   { href: '/expenses', label: 'Dépenses', icon: Receipt },
+  { href: '/suppliers', label: 'Fournisseurs', icon: Truck },
   { href: '/treasury', label: 'Trésorerie', icon: DollarSign },
   { href: '/campaigns', label: 'Campagnes', icon: Megaphone },
   { href: '/message-templates', label: 'Modèles', icon: MessageSquare },

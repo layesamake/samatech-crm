@@ -9,10 +9,13 @@ import { CompanyProfile, InvoiceSettings } from '@/modules/settings/domain/setti
 import { ManageTreasuryAccountsUseCase, TreasuryAccountWithBalance } from '@/modules/treasury/application/manage-treasury-accounts';
 import { AllocateTreasurySourcesUseCase } from '@/modules/treasury/application/allocate-treasury-sources';
 import { treasuryRepository } from '@/modules/treasury/infrastructure/dexie-treasury-repository';
+import { ManageSuppliersUseCase } from '@/modules/suppliers/application/manage-suppliers';
+import { SupplierRecord } from '@/modules/suppliers/domain/supplier';
 
 const manage = new ManageExpensesUseCase();
 const accountUseCase = new ManageTreasuryAccountsUseCase(treasuryRepository);
 const allocateUseCase = new AllocateTreasurySourcesUseCase(treasuryRepository);
+const suppliersUseCase = new ManageSuppliersUseCase();
 
 export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
   const router = useRouter();
@@ -38,6 +41,9 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
   const [customCategory, setCustomCategory] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<ExpenseInput['paymentMethod']>('CASH');
   const [supplier, setSupplier] = useState('');
+  const [supplierId, setSupplierId] = useState('');
+  const [newSupplier, setNewSupplier] = useState('');
+  const [suppliers, setSuppliers] = useState<SupplierRecord[]>([]);
   const [reference, setReference] = useState('');
   const [note, setNote] = useState('');
   const [status, setStatus] = useState<ExpenseRecord['status']>('ACTIVE');
@@ -53,6 +59,7 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
   useEffect(() => {
     accountUseCase.listAccountsWithBalance().then(setAccounts).catch(console.error);
     manage.listCustomCategories().then(setCustomCategories).catch(console.error);
+    suppliersUseCase.list().then(setSuppliers).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -66,6 +73,7 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
         setCustomCategory(current.customCategory ?? '');
         setPaymentMethod(current.paymentMethod);
         setSupplier(current.supplier ?? '');
+        setSupplierId(current.supplierId ?? '');
         setReference(current.reference ?? '');
         setNote(current.note ?? '');
         setStatus(current.status);
@@ -78,6 +86,12 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
     setError('');
     try {
       const amountMinor = parseExpenseAmount(amountText || '0', scale);
+      let selectedSupplier = suppliers.find((item) => item.id === supplierId);
+      if (!selectedSupplier && newSupplier.trim()) {
+        selectedSupplier = await suppliersUseCase.create({ name: newSupplier, kind: 'BOTH' });
+        setSuppliers((items) => [...items, selectedSupplier!].sort((a, b) => a.name.localeCompare(b.name, 'fr')));
+        setSupplierId(selectedSupplier.id);
+      }
       const input: ExpenseInput = {
         expenseDate,
         description,
@@ -87,7 +101,8 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
         category,
         customCategory: customCategory || undefined,
         paymentMethod,
-        supplier: supplier || undefined,
+        supplierId: selectedSupplier?.id,
+        supplier: selectedSupplier?.name ?? (supplier || undefined),
         reference: reference || undefined,
         note: note || undefined,
       };
@@ -198,8 +213,16 @@ export default function ExpenseForm({ expenseId }: { expenseId?: string }) {
         </label>
 
         <label className="text-sm font-medium text-muted-foreground">Fournisseur / Bénéficiaire (Optionnel)
-          <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={supplier} onChange={e => setSupplier(e.target.value)} placeholder="Nom de l'entreprise..." />
+          <select disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={supplierId} onChange={e => { setSupplierId(e.target.value); setNewSupplier(''); setSupplier(''); }}>
+            <option value="">Aucun</option>
+            {suppliers.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+            <option value="__new__">+ Ajouter un nouveau fournisseur / bénéficiaire…</option>
+          </select>
         </label>
+        {supplierId === '__new__' && <label className="text-sm font-medium text-muted-foreground">Nouveau fournisseur / bénéficiaire
+          <input autoFocus disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={newSupplier || supplier} onChange={e => { setNewSupplier(e.target.value); setSupplier(e.target.value); }} placeholder="Nom du nouveau contact..." />
+          <span className="mt-1 block text-xs">Il sera ajouté aux paramètres lors de l’enregistrement.</span>
+        </label>}
 
         <label className="text-sm font-medium text-muted-foreground">Référence (Optionnel)
           <input disabled={status === 'CANCELLED'} className="mt-1 h-11 w-full rounded-md border px-3 bg-background text-foreground" value={reference} onChange={e => setReference(e.target.value)} />

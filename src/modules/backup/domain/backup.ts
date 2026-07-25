@@ -1,6 +1,6 @@
 export const BACKUP_PRODUCT = 'samtech-crm';
 export const BACKUP_FORMAT_VERSION = 1;
-export const CURRENT_SCHEMA_VERSION = 14;
+export const CURRENT_SCHEMA_VERSION = 15;
 export const MAX_BACKUP_BYTES = 25 * 1024 * 1024;
 export const MAX_BACKUP_RECORDS = 250_000;
 
@@ -26,6 +26,7 @@ export const BUSINESS_COLLECTIONS = [
   'campaigns',
   'campaignRecipients',
   'expenses',
+  'suppliers',
   'treasuryAccounts',
   'treasuryAllocations',
   'treasuryOperations',
@@ -221,7 +222,7 @@ export async function validateBackupText(text: string): Promise<{ envelope: Back
   if (!isPlainObject(raw)) throw new BackupValidationError('Enveloppe de sauvegarde invalide.');
   if (raw.product !== BACKUP_PRODUCT) throw new BackupValidationError('Ce fichier ne provient pas de SAMTECH CRM.');
   const parsed = raw as any;
-  if (parsed.sourceSchemaVersion !== CURRENT_SCHEMA_VERSION && parsed.sourceSchemaVersion !== 12 && parsed.sourceSchemaVersion !== 11 && parsed.sourceSchemaVersion !== 10 && parsed.sourceSchemaVersion !== 9 && parsed.sourceSchemaVersion !== 8 && parsed.sourceSchemaVersion !== 7 && parsed.sourceSchemaVersion !== 6 && parsed.sourceSchemaVersion !== 5 && parsed.sourceSchemaVersion !== 4 && parsed.sourceSchemaVersion !== 3) {
+  if (parsed.sourceSchemaVersion !== CURRENT_SCHEMA_VERSION && parsed.sourceSchemaVersion !== 14 && parsed.sourceSchemaVersion !== 12 && parsed.sourceSchemaVersion !== 11 && parsed.sourceSchemaVersion !== 10 && parsed.sourceSchemaVersion !== 9 && parsed.sourceSchemaVersion !== 8 && parsed.sourceSchemaVersion !== 7 && parsed.sourceSchemaVersion !== 6 && parsed.sourceSchemaVersion !== 5 && parsed.sourceSchemaVersion !== 4 && parsed.sourceSchemaVersion !== 3) {
     throw new BackupValidationError('La version de base source est incompatible.');
   }
   if (typeof raw.appVersion !== 'string' || raw.appVersion.length > 50 || Number.isNaN(Date.parse(String(raw.exportedAt)))) {
@@ -247,6 +248,9 @@ export async function validateBackupText(text: string): Promise<{ envelope: Back
   }
   if (envelope.sourceSchemaVersion < 14) {
     if (!names.has('opportunities')) envelope.collections.push({ name: 'opportunities', version: 1, count: 0, records: [] });
+  }
+  if (envelope.sourceSchemaVersion < 15 && !names.has('suppliers')) {
+    envelope.collections.push({ name: 'suppliers', version: 1, count: 0, records: [] });
   }
 
   const finalNames = new Set(envelope.collections.map((c) => c.name));

@@ -12,6 +12,7 @@ import { formatMinorExact } from '@/modules/statistics/domain/statistics';
 import { Search, ArrowUpDown, Plus, Eye, FileText } from 'lucide-react';
 import { ListSkeleton } from '@/components/ui/loading-skeletons';
 import { SwipeableActionItem } from '@/components/ui/swipeable-action-item';
+import { TagIcon } from '@/modules/tags/presentation/TagIcon';
 
 const manage = new ManageClientsUseCase();
 const managePayments = new ManagePaymentsUseCase();
@@ -62,6 +63,7 @@ const ClientRow = memo(({ client, debtByClient, router }: { client: ClientAggreg
             <h2 className="font-bold text-base truncate">
               {client.contact.displayName} {client.contact.archivedAt && <span className="text-xs font-normal text-muted-foreground">(Archivé)</span>}
             </h2>
+{client.tags.length ? <div className="mt-2 flex flex-wrap gap-2">{client.tags.map((tag) => <span key={tag.id} className="inline-flex items-center gap-1.5 rounded-lg border-2 px-3 py-1 text-xs font-bold uppercase tracking-wide shadow-sm" style={{ color: tag.color || '#0B6B2D', borderColor: tag.color || '#0B6B2D', backgroundColor: `${tag.color || '#0B6B2D'}33` }}><TagIcon icon={tag.icon} className="size-4" />{tag.name}</span>)}</div> : null}
             <div className="flex mt-1">
               <div className="flex-1">
                 <p className="text-xs text-muted-foreground mb-0.5">Comptes débiteurs</p>

@@ -17,6 +17,7 @@ import ConvertProspectPanel from "@/modules/clients/presentation/ConvertProspect
 import { WhatsAppMessagePanel } from "@/modules/messages/presentation/WhatsAppMessagePanel";
 import { OpportunityList } from "@/components/opportunities/OpportunityList";
 import { TagIcon } from '@/modules/tags/presentation/TagIcon';
+import { ContactTagsManager } from '@/modules/tags/presentation/ContactTagsManager';
 
 const repository = new DexieProspectRepository();
 const locRepo = new DexieLocationRepository();
@@ -192,6 +193,7 @@ export default function ProspectDetailPage() {
         <section className="bg-card p-4 rounded-xl shadow-sm border border-border">
           <OpportunityList contactId={contact.id} />
         </section>
+        <ContactTagsManager contactId={contact.id} initialTags={prospect.tags ?? []} />
 
         <section className="rounded-xl border bg-card text-card-foreground p-4">
           <h2 className="font-semibold text-foreground">Chronologie commerciale</h2>

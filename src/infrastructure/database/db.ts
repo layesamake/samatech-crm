@@ -17,6 +17,7 @@ import { ExpenseBudgetRecord } from '../../modules/treasury/domain/budget';
 import { TreasuryForecastItemRecord } from '../../modules/treasury/domain/forecast';
 import { CommercialDocumentRecord, CommercialDocumentLineRecord, CommercialDocumentLinkRecord } from '../../modules/commercial-documents/domain/commercial-document';
 import { OpportunityRecord } from '../../modules/opportunities/domain/opportunity';
+import { SupplierRecord } from '../../modules/suppliers/domain/supplier';
 
 export const CURRENT_SCHEMA_VERSION = 14;
 
@@ -54,6 +55,7 @@ export class SamtechCRMDatabase extends Dexie {
   commercialDocumentLines!: Dexie.Table<CommercialDocumentLineRecord, string>;
   commercialDocumentLinks!: Dexie.Table<CommercialDocumentLinkRecord, string>;
   opportunities!: Dexie.Table<OpportunityRecord, string>;
+  suppliers!: Dexie.Table<SupplierRecord, string>;
 
   constructor(name = 'SamtechCRMDatabase') {
     super(name);
@@ -165,6 +167,10 @@ export class SamtechCRMDatabase extends Dexie {
 
     this.version(14).stores({
       opportunities: 'id, contactId, stage, status, expectedCloseDate, archivedAt, [contactId+status], [stage+status]'
+    });
+
+    this.version(15).stores({
+      suppliers: 'id, &normalizedName, name, kind, archivedAt'
     });
   }
 }

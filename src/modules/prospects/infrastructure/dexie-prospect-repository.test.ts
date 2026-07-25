@@ -12,6 +12,8 @@ describe('DexieProspectRepository', () => {
     await db.open();
     await db.contacts.clear();
     await db.prospectProfiles.clear();
+    await db.tags.clear();
+    await db.contactTags.clear();
   });
 
   afterEach(async () => {
@@ -100,5 +102,20 @@ describe('DexieProspectRepository', () => {
     // Inclure les archivés
     const allIncludingArchived = await repository.search({ showArchived: true });
     expect(allIncludingArchived.length).toBe(3);
+  });
+
+  it('devrait filtrer les prospects par tag', async () => {
+    const now = new Date().toISOString();
+    await db.tags.bulkAdd([
+      { id: 'tag-priority', name: 'Prioritaire', normalizedName: 'prioritaire', createdAt: now, updatedAt: now },
+      { id: 'tag-vip', name: 'VIP', normalizedName: 'vip', createdAt: now, updatedAt: now },
+    ]);
+    await repository.save(createTestProspect('1', 'Alice', '111'), [], ['tag-priority']);
+    await repository.save(createTestProspect('2', 'Bob', '222'), [], ['tag-vip']);
+
+    const priorityProspects = await repository.search({ tagIds: ['tag-priority'] });
+
+    expect(priorityProspects).toHaveLength(1);
+    expect(priorityProspects[0].contact.displayName).toBe('Alice');
   });
 });

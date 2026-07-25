@@ -7,11 +7,12 @@ import InvoiceSettingsForm from '@/modules/settings/presentation/InvoiceSettings
 import LocationsManager from '@/modules/locations/presentation/LocationsManager';
 import AppearanceSettingsForm from '@/modules/settings/presentation/AppearanceSettingsForm';
 import TagsManager from '@/modules/tags/presentation/TagsManager';
+import SuppliersManager from '@/modules/suppliers/presentation/SuppliersManager';
 import Link from 'next/link';
 import { Save } from 'lucide-react';
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'COMPANY' | 'INVOICE' | 'LOCATIONS' | 'TAGS' | 'APPEARANCE'>('COMPANY');
+  const [activeTab, setActiveTab] = useState<'COMPANY' | 'INVOICE' | 'LOCATIONS' | 'TAGS' | 'SUPPLIERS' | 'APPEARANCE'>('COMPANY');
 
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
 
@@ -66,6 +67,7 @@ export default function SettingsPage() {
           Localités
         </button>
         <button onClick={() => setActiveTab('TAGS')} className={`px-4 py-2 font-medium text-sm ${activeTab === 'TAGS' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}>Tags</button>
+        <button onClick={() => setActiveTab('SUPPLIERS')} className={`px-4 py-2 font-medium text-sm ${activeTab === 'SUPPLIERS' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}>Fournisseurs</button>
         <button
           onClick={() => setActiveTab('APPEARANCE')}
           className={`px-4 py-2 font-medium text-sm ${activeTab === 'APPEARANCE' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
@@ -79,6 +81,7 @@ export default function SettingsPage() {
         {activeTab === 'INVOICE' && <InvoiceSettingsForm />}
         {activeTab === 'LOCATIONS' && <LocationsManager />}
         {activeTab === 'TAGS' && <TagsManager />}
+        {activeTab === 'SUPPLIERS' && <SuppliersManager />}
         {activeTab === 'APPEARANCE' && <AppearanceSettingsForm />}
       </div>
     </div>

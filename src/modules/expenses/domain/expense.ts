@@ -56,6 +56,7 @@ export interface ExpenseRecord {
   category: ExpenseCategory;
   customCategory?: string; // only if category is 'OTHER'
   paymentMethod: ExpensePaymentMethod;
+  supplierId?: string;
   supplier?: string;
   reference?: string;
   note?: string;
@@ -76,6 +77,7 @@ export const ExpenseInputSchema = z.object({
   category: z.enum(EXPENSE_CATEGORIES),
   customCategory: z.string().trim().max(100).optional(),
   paymentMethod: z.enum(EXPENSE_PAYMENT_METHODS),
+  supplierId: z.string().uuid().optional(),
   supplier: z.string().trim().max(100).optional(),
   reference: z.string().trim().max(200).optional(),
   note: z.string().trim().max(2000).optional(),
